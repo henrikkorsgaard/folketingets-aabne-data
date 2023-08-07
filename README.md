@@ -39,3 +39,7 @@ The datamodel is [quite complex](https://oda.ft.dk/Home/OdaModel) in the way it 
 The key is not to look at the model, but to look at the actual model in the database. 
 
 Easiest way (on linux) to inspect the database is by dumping into textfiles: `sqlcmd -S localhost -U sa -P [password here!] -d ODA -Q "select column_name from information_schema.columns where table_name = 'Debat'" -o "/home/au227822/code/folketingets-aabne-data/debat.txt"`
+
+Get the columns of a table with nullable, datatype etc:
+
+`sqlcmd -S localhost -U sa -P [Password here!] -d ODA -Q "select column_name, data_type, is_nullable from information_schema.columns where table_name = 'Sag'" -o "/home/au227822/code/folketingets-aabne-data/sagcols.txt"`

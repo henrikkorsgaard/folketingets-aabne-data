@@ -1,0 +1,1 @@
+I should totally use python to generate the psql and slq lite files for creating a database. We want both.
