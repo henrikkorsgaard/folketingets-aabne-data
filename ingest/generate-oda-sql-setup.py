@@ -1,15 +1,12 @@
-import pyodbc #pip install pyodbc  
+import pyodbc
+import os
+from dotenv import load_dotenv
+from pathlib import Path
 
-# I had multiple driver and OpenSSL (?) issues when using the ODBC Driver 18 for SQL Server
-# See registred drivers with: odbcinst -q -d
-# See https://www.cdata.com/kb/tech/sql-odbc-python-linux.rst
-# If I ever need to create a user for a mssql db: https://www.sqlservertutorial.net/sql-server-administration/sql-server-create-user/
+dotenv_path = Path("../config_dev.env")
+load_dotenv(dotenv_path=dotenv_path)
 
-server = 'localhost' 
-database = 'ODA' 
-username = 'odadev' 
-password = 'odadev1234' ## need a test user with a different password 
-cnxn =  pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', host=server, database=database, user=username, password=password)
+cnxn =  pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', host=os.getenv("MSSQL_DATABASE_HOST"), database=os.getenv("MSSQL_DATABASE_NAME"), user=os.getenv("MSSQL_DATABASE_USER"), password=os.getenv("MSSQL_DATABASE_PASS"))
 cursor = cnxn.cursor()
 
 
@@ -17,7 +14,6 @@ cursor = cnxn.cursor()
 # and sqlcmd -S localhost -U sa -P [password here!] -d ODA -Q "select *^Crom information_schema.tables" -o "/home/au227822/code/folketingets-aabne-data/tables.txt"
 # Some of these are views on Sag, based on typeid: Aktstykke, Almdel, Debat, EUSag, Forslag
 # I have excluded these for now. 
-
 tables = ['Afstemning', 'Afstemningstype', 'Aktør', 'AktørAktør', 'AktørAktørRolle', 'Aktørtype', 'Dagsordenspunkt', 'DagsordenspunktDokument', 'DagsordenspunktSag', 'Dokument', 'DokumentAktør', 'DokumentAktørRolle', 'Dokumentkategori', 'Dokumentstatus', 'Dokumenttype', 'Emneord', 'EmneordDokument', 'EmneordSag', 'Emneordstype', 'EntitetBeskrivelse', 'Fil', 'KolloneBeskrivelse', 'Møde', 'MødeAktør', 'Mødestatus', 'Mødetype', 'Omtryk','Periode', 'Sag', 'SagAktør', 'SagAktørRolle', 'SagDokument', 'SagDokumentRolle', 'Sagskategori', 'Sagsstatus', 'Sagstrin', 'SagstrinAktør', 'SagstrinAktørRolle', 'SagstrinDokument', 'Sagstrinsstatus','Sagstrinstype', 'Sagstype', 'Sambehandlinger', 'Stemme', 'Stemmetype', ]
 pkeys = {}
 
@@ -67,15 +63,15 @@ while row:
     row = cursor.fetchone()
 
 # very crude way of cleaning the file for each run
-sqlitefile = open("./oda.sqlite.sql", "w")
+sqlitefile = open("sql/oda.sqlite.sql", "w")
 sqlitefile.write("")
 sqlitefile.close()
-sqlitefile = open("./oda.sqlite.sql", "a")
+sqlitefile = open("sql/oda.sqlite.sql", "a")
 
-psqlfile = open("./oda.psql.sql", "w")
+psqlfile = open("sql/oda.psql.sql", "w")
 psqlfile.write("")
 psqlfile.close()
-psqlfile = open("./oda.psql.sql", "a")
+psqlfile = open("sql/oda.psql.sql", "a")
 
 
 for table in tables:
@@ -97,7 +93,7 @@ for table in tables:
             sqlitecreate += "\t" + row[0] + " " + mssql_to_sqlite_types[row[1]] + " PRIMARY KEY,\n"
             psqlcreate += "\t" + row[0] + " " + mssql_to_psql_types[row[1]] + " PRIMARY KEY,\n"
         else:
-            notnull = " NOT NULL,\n" if row[2] == "YES" else ",\n"
+            notnull = " NOT NULL,\n" if row[2] == "NO" else ",\n"
             sqlitecreate += "\t" + row[0] + " " + mssql_to_sqlite_types[row[1]] + notnull
             psqlcreate += "\t" + row[0] + " " + mssql_to_psql_types[row[1]] + notnull
 
