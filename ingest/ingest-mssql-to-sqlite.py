@@ -18,7 +18,7 @@ tables = ['Afstemning', 'Afstemningstype', 'Aktør', 'AktørAktør', 'AktørAkt�
 
 
 for table in tables:
-    print("Ingesting all rows from MSSQL oda." + table " into SQLite oda."+ table)
+    print("Ingesting all rows from MSSQL oda." + table + " into SQLite oda."+ table)
     mssql = "SELECT * FROM " + table
     cursor.execute(mssql)
     all = cursor.fetchall()
