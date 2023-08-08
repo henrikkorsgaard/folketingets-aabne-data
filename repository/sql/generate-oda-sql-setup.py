@@ -32,6 +32,16 @@ mssql_to_psql_types = {
     "bit":"BOOLEAN"
 }
 
+mssql_to_sqlite_types = {
+    "int": "INTEGER",
+    "smallint": "INTEGER",
+    "nvarchar": "TEXT",
+    "varchar": "TEXT",
+    "char": "TEXT",
+    "datetime": "TEXT",
+    "bit":"INTEGER"
+}
+
 # First we need to get the primary key information for each table
 pksql = '''SELECT 
     kcu.*
@@ -57,6 +67,11 @@ while row:
     row = cursor.fetchone()
 
 # very crude way of cleaning the file for each run
+sqlitefile = open("./oda.sqlite.sql", "w")
+sqlitefile.write("")
+sqlitefile.close()
+sqlitefile = open("./oda.sqlite.sql", "a")
+
 psqlfile = open("./oda.psql.sql", "w")
 psqlfile.write("")
 psqlfile.close()
@@ -68,42 +83,33 @@ for table in tables:
     sql = "SELECT column_name, data_type, is_nullable FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '" + table + "'"
     cursor.execute(sql)
     row = cursor.fetchone()
+    
+    sqlitecreate = "DROP TABLE IF EXISTS " + table + ";\n\n"
+    sqlitecreate += "CREATE TABLE IF NOT EXISTS " + table + "  (\n"
+
     psqlcreate = "DROP TABLE IF EXISTS " + table + ";\n\n"
     psqlcreate += "CREATE TABLE IF NOT EXISTS " + table + "  (\n"
+
+
     while row:
         
         if row[0] == pkeys[table]:
+            sqlitecreate += "\t" + row[0] + " " + mssql_to_sqlite_types[row[1]] + " PRIMARY KEY,\n"
             psqlcreate += "\t" + row[0] + " " + mssql_to_psql_types[row[1]] + " PRIMARY KEY,\n"
         else:
             notnull = " NOT NULL,\n" if row[2] == "YES" else ",\n"
+            sqlitecreate += "\t" + row[0] + " " + mssql_to_sqlite_types[row[1]] + notnull
             psqlcreate += "\t" + row[0] + " " + mssql_to_psql_types[row[1]] + notnull
 
         row = cursor.fetchone()
     
+    sqlitecreate = sqlitecreate[0:-2]
+    sqlitecreate += "\n);\n\n"
+    sqlitefile.write(sqlitecreate)
+
     psqlcreate = psqlcreate[0:-2]
     psqlcreate += "\n);\n\n"
     psqlfile.write(psqlcreate)
     
 
 psqlfile.close()
-"""
-tables = ['Afstemning', 'Afstemningstype', 'Aktør', 'AktørAktør', 'AktørAktørRolle', 'Aktørtype', 'Dagsordenspunkt']
-
-
-
-
-
-
-cursor.execute("select column_name, data_type, is_nullable from information_schema.columns where table_name = 'Sag'") 
-row = cursor.fetchone() 
-
-sql = "CREATE TABLE IF NOT EXISTS sat ("
-
-while row: 
-    for 
-    print(row[0], row[1], row[2])
-    row = cursor.fetchone()
-
-sql += ");"
-
-"""

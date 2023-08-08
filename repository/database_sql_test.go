@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func init(){
@@ -46,13 +47,14 @@ func TestPSQLCreateDatabase(t *testing.T) {
 	_, err = db.Exec(string(file))
 	assert.NoError(t, err)
 }
-/*
+
 func TestSqliteCreateDatabase(t *testing.T) {
 
 	sqlFilePath := "./sql/oda.sqlite.sql"
 
-	pool, err := pgxpool.New(context.Background(), connectionString)
-	defer pool.Close()
+	db, err := sql.Open("sqlite3", "./sql/sqlite-test.db")
+	
+	defer db.Close()
 	if err != nil {
 		t.Error("Unexpected error in test " + t.Name() + ": " + err.Error())
 	}
@@ -62,6 +64,6 @@ func TestSqliteCreateDatabase(t *testing.T) {
 		t.Error("Unexpected error in test " + t.Name() + ": " + err.Error())
     }
 
-	_, err = pool.Exec(context.Background(), string(file))
+	_, err = db.Exec(string(file))
 	assert.NoError(t, err)
-}*/
+}
