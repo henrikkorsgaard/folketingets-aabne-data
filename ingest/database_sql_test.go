@@ -51,7 +51,7 @@ func TestSqliteCreateDatabase(t *testing.T) {
 
 	sqlFilePath := "./sql/oda.sqlite.sql"
 
-	db, err := sql.Open("sqlite3", "./sql/oda.sqlite.db")
+	db, err := sql.Open("sqlite3", "./data/oda.sqlite.db")
 	
 	defer db.Close()
 	if err != nil {
@@ -69,7 +69,7 @@ func TestSqliteCreateDatabase(t *testing.T) {
 
 func TestSqliteTestData(t *testing.T) {
 
-	db, err := sql.Open("sqlite3", "./sql/odatest.sqlite.db")
+	db, err := sql.Open("sqlite3", "./data/odatest.sqlite.db")
 	defer db.Close()
 	if err != nil {
 		t.Error("Unexpected error in test " + t.Name() + ": " + err.Error())
