@@ -17,8 +17,6 @@ import (
 
 func init(){
 	fmt.Println("Running database setup and connection tests.")
-	fmt.Println("Note that the tests here only test utilities related to the SQL scripts for setting up the Postgres or Sqlite databased, and the conncetion to MSSQL server")
-	fmt.Println("These are non-essential and might not pass on all systems depending on configuration (e.g. neither MSSQL or Postgresql is a requirement)")
 	godotenv.Load("../config_dev.env")
 }
 
@@ -53,7 +51,7 @@ func TestSqliteCreateDatabase(t *testing.T) {
 
 	sqlFilePath := "./sql/oda.sqlite.sql"
 
-	db, err := sql.Open("sqlite3", "./sql/sqlite-test.db")
+	db, err := sql.Open("sqlite3", "./sql/oda.sqlite.db")
 	
 	defer db.Close()
 	if err != nil {
@@ -67,6 +65,28 @@ func TestSqliteCreateDatabase(t *testing.T) {
 
 	_, err = db.Exec(string(file))
 	assert.NoError(t, err)
+}
+
+func TestSqliteTestData(t *testing.T) {
+
+	db, err := sql.Open("sqlite3", "./sql/odatest.sqlite.db")
+	defer db.Close()
+	if err != nil {
+		t.Error("Unexpected error in test " + t.Name() + ": " + err.Error())
+	}
+
+	row, err := db.Query("SELECT id FROM Afstemning LIMIT 1")
+	assert.NoError(t, err)
+	defer row.Close()
+
+	// When we start developing for real, we need to unmarshal into struct
+	var id int
+
+	for row.Next() {
+		row.Scan(&id)
+	}
+
+	assert.NotEmpty(t, id)
 }
 
 func TestMSSQLDatabaseAccess(t *testing.T) {

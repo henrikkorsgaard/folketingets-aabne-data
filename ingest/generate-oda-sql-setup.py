@@ -62,6 +62,7 @@ while row:
        
     row = cursor.fetchone()
 
+
 # very crude way of cleaning the file for each run
 sqlitefile = open("sql/oda.sqlite.sql", "w")
 sqlitefile.write("")
@@ -72,7 +73,6 @@ psqlfile = open("sql/oda.psql.sql", "w")
 psqlfile.write("")
 psqlfile.close()
 psqlfile = open("sql/oda.psql.sql", "a")
-
 
 for table in tables:
     print("Creating SQL files for " + table)
