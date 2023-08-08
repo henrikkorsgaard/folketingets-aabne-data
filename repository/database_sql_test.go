@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"testing"
 	"os"
-	"context"
+	
 	"io/ioutil"
+	"database/sql"
 
 	
 	"github.com/stretchr/testify/assert"
 	"github.com/joho/godotenv"
-	"github.com/jackc/pgx/v5/pgxpool"
+	_ "github.com/lib/pq"
 )
 
 func init(){
@@ -30,6 +31,25 @@ func TestPSQLCreateDatabase(t *testing.T) {
 	port := os.Getenv("DATABASE_PORT")
 
 	connectionString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user,pass,host,port,name)
+	db, err := sql.Open("postgres", connectionString)
+	
+	defer db.Close()
+	if err != nil {
+		t.Error("Unexpected error in test " + t.Name() + ": " + err.Error())
+	}
+
+	file, err := ioutil.ReadFile(sqlFilePath)
+    if err != nil {
+		t.Error("Unexpected error in test " + t.Name() + ": " + err.Error())
+    }
+
+	_, err = db.Exec(string(file))
+	assert.NoError(t, err)
+}
+/*
+func TestSqliteCreateDatabase(t *testing.T) {
+
+	sqlFilePath := "./sql/oda.sqlite.sql"
 
 	pool, err := pgxpool.New(context.Background(), connectionString)
 	defer pool.Close()
@@ -44,4 +64,4 @@ func TestPSQLCreateDatabase(t *testing.T) {
 
 	_, err = pool.Exec(context.Background(), string(file))
 	assert.NoError(t, err)
-}
+}*/
