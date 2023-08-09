@@ -1,0 +1,17 @@
+"""
+Consider making splitting the schema into individual *.graphql files 
+
+Avoid generating the files. Think of developing the schema as API query definition. 
+"""
+
+schema {
+    query: Query
+}
+
+type Query {
+    afstemning(id:Int): Afstemning! # Return list of afstemning, individual by id or empty if id not found
+}
+
+type Afstemning {
+    id:Int! 
+}
