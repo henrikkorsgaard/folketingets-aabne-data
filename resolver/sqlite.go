@@ -1,7 +1,6 @@
 package resolver
 
 import (
-	"fmt"
 	"os"
 	"sync"
 
@@ -25,10 +24,8 @@ func (s *sqlite) Close(){
 }
 
 func newSqlite() *sqlite {
-	fmt.Println("hu")
-	fmt.Println(os.Getenv("SQLITE_TEST_DATABASE_PATH"))
 	dbOnce.Do(func(){
-		db, err := sql.Open("sqlite3", "../ingest/data/odatest.sqlite.db")
+		db, err := sql.Open("sqlite3", os.Getenv("SQLITE_DATABASE_PATH"))
 		if err != nil {
 			// we want to panic here because there is zero chance of recovering from a faulty db config/setup
 			panic(err)

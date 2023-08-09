@@ -11,9 +11,30 @@ type Afstemning struct {
 }
 
 func NewAfstemning(AfstemningQueryArgs) (*AfstemningResolver, error) {
-	newSqlite()
-	fmt.Println("is this even called?")
+
 	a := AfstemningResolver{} 
+
+	repo := newSqlite()
+	sql := "SELECT id FROM Afstemning LIMIT 1"
+	rows, err := repo.db.Query(sql)
+	defer rows.Close()
+	if err != nil {
+		return &a, err
+	}
+
+	var id int
+
+	for rows.Next() {
+		err = rows.Scan(&id)
+		if err != nil {
+			break
+		}
+	}
+	
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	
 	return &a, nil
 }
 
