@@ -31,7 +31,7 @@ func TestAktørById(t *testing.T){
 }
 
 func TestAktørNotFoundError(t *testing.T){
-	var id int32 = 2
+	var id int32 = 10
 	args := QueryArgs{&id}
 	_, err := NewAktørList(args)
 	assert.ErrorContains(t, err, "Unable to resolve Aktør")

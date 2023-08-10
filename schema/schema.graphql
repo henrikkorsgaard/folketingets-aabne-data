@@ -37,6 +37,16 @@ type Stemme {
 
 type Aktør {
     id:Int!
+    type: String!
+    gruppenavnkort: String
+    navn: String
+    fornavn: String
+    efternavn: String
+    biografi: String 
+    periodeid: Int
+    startdato: Time 
+    slutdato: Time 
+    opdateringsdato: Time!
 }
 
 type Møde {

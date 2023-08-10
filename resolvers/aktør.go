@@ -2,7 +2,11 @@ package resolvers
 
 import (
 	"fmt"
-	"strings"
+	"database/sql"
+
+	"time"
+
+	graphql "github.com/graph-gophers/graphql-go"
 )
 
 type AktørResolver struct {
@@ -11,21 +15,28 @@ type AktørResolver struct {
 
 type Aktør struct {
 	Id int32
+	Type string
+	GruppeNavnKort string
+	Navn string
+	Fornavn string
+	Efternavn string
+	Biografi string 
+	PeriodeID int32 
+	StartDato graphql.Time
+	SlutDato graphql.Time
+	Opdateringsdato graphql.Time
 }
 
 func NewAktørList(args QueryArgs) (resolvers []*AktørResolver, err error){
-
-	if args.Id != nil {
-		aktørResolver, err := NewAktør(args)
-		if aktørResolver != nil {
-			resolvers = append(resolvers, aktørResolver)
-		}
-		return resolvers, err
-	}
-
+	
 	repo := newSqlite()
 
-	query := "SELECT Aktør.id FROM Aktør;"
+	query := "SELECT Aktør.id, Aktørtype.type, Aktør.gruppenavnkort, Aktør.navn, Aktør.fornavn, Aktør.efternavn, Aktør.biografi, Aktør.periodeid, Aktør.startdato, Aktør.slutdato, Aktør.opdateringsdato FROM Aktør JOIN Aktørtype ON Aktør.typeid = Aktørtype.id;"
+
+	if args.Id != nil {
+		query = query[0:len(query)-1]
+		query +=  " WHERE Aktør.id=" + fmt.Sprintf("%d", *args.Id) + ";"
+	}
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -35,48 +46,137 @@ func NewAktørList(args QueryArgs) (resolvers []*AktørResolver, err error){
 	for rows.Next(){
 		aktør := Aktør{}
 
-		err = rows.Scan(&aktør.Id)
+		var gruppenavnkort sql.NullString 
+		var navn sql.NullString 
+		var fornavn sql.NullString 
+		var efternavn sql.NullString 
+		var biografi sql.NullString 
+		var periodeid sql.NullInt32
+		var startdato sql.NullString
+		var slutdato sql.NullString
+		var opdateringsdato string
+
+		err = rows.Scan(&aktør.Id, &aktør.Type, &gruppenavnkort, &navn,&fornavn, &efternavn, &biografi, &periodeid, &startdato, &slutdato, &opdateringsdato)
 
 		if err != nil {
 			break
 		}
+
+		if navn.Valid {
+			aktør.Navn = navn.String
+		}
+
+		if fornavn.Valid {
+			aktør.Fornavn = fornavn.String
+		}
+
+		if efternavn.Valid {
+			aktør.Efternavn = efternavn.String
+		}
+
+		if biografi.Valid {
+			aktør.Biografi = biografi.String
+		}
+
+		if periodeid.Valid {
+			aktør.PeriodeID = periodeid.Int32
+		}
+
+		if startdato.Valid {
+			t_start, err := time.Parse(time.DateTime, startdato.String)
+			if err != nil {
+				break
+			}
+			aktør.StartDato.Time = t_start
+		}
+
+		if slutdato.Valid {
+			t_slut, err := time.Parse(time.DateTime, slutdato.String)
+			if err != nil {
+				break
+			}
+			aktør.SlutDato.Time = t_slut
+		}
+
+		t_op, err := time.Parse(time.DateTime, opdateringsdato)
+		if err != nil {
+			break
+		}
+
+		
+		aktør.Opdateringsdato.Time = t_op
 
 		aktørResolver := AktørResolver{aktør}
 		resolvers = append(resolvers, &aktørResolver)
 	}
 
 	if rows.Err() != nil {
-		if strings.Contains(err.Error(), "sql: no rows in result set") {
-			err = fmt.Errorf("Unable to resolve Afstemning in database.")
-		}
+		err = rows.Err()
+	}
+
+	if args.Id != nil && len(resolvers) == 0 {
+		err = fmt.Errorf("Unable to resolve Aktør: Id %d does not exist", *args.Id)
 	}
 
 	return
 }
 
+// we need the single return if other objects has a single entity in their schema
 func NewAktør(args QueryArgs) (resolver *AktørResolver,err error) {
-	repo := newSqlite()
-
-	query := "SELECT Aktør.id FROM Aktør WHERE Aktør.id=" + fmt.Sprintf("%d", *args.Id) + ";"
-	
-	aktør := Aktør{}
-	
-	row := repo.db.QueryRow(query)
-	
-	err = row.Scan(&aktør.Id)
-
+	resolvers, err := NewAktørList(args)
 	if err != nil {
-		if strings.Contains(err.Error(), "sql: no rows in result set") {
-			err = fmt.Errorf("Unable to resolve Aktør: Id %d does not exist", *args.Id)
-		}
 		return
 	}
 
-	resolver = &AktørResolver{aktør}
+	if len(resolvers) > 0 {
+		resolver = resolvers[0]
+	}
 
 	return 
 }
 
 func (a *AktørResolver) Id() int32 {
 	return a.aktør.Id
+}
+
+func (a *AktørResolver) Type() string {
+	return a.aktør.Type
+}
+
+func (a *AktørResolver) Gruppenavnkort() *string {
+	return &a.aktør.GruppeNavnKort
+}
+
+func (a *AktørResolver) Navn() *string {
+	return &a.aktør.Navn
+}
+
+func (a *AktørResolver) Fornavn() *string {
+	return &a.aktør.Navn
+}
+
+func (a *AktørResolver) Efternavn() *string {
+	return &a.aktør.Navn
+}
+
+func (a *AktørResolver) Biografi() *string {
+	return &a.aktør.Navn
+}
+
+//TODO: this should return a periodeResolver
+func (a *AktørResolver) PeriodeID() *int32 {
+	return &a.aktør.PeriodeID
+}
+
+func (a *AktørResolver) Startdato() *graphql.Time {
+	return &a.aktør.StartDato
+}
+
+func (a *AktørResolver) Slutdato() *graphql.Time {
+	return &a.aktør.SlutDato
+}
+
+
+func (a *AktørResolver) Opdateringsdato() graphql.Time {
+	return a.aktør.Opdateringsdato
 }
