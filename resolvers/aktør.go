@@ -3,11 +3,16 @@ package resolvers
 import (
 	"fmt"
 	"database/sql"
-
+	"strings"
 	"time"
 
 	graphql "github.com/graph-gophers/graphql-go"
 )
+
+type AktørQueryArgs struct {
+	QueryArgs
+	Type *string
+}
 
 type AktørResolver struct {
 	aktør Aktør
@@ -27,7 +32,7 @@ type Aktør struct {
 	Opdateringsdato graphql.Time
 }
 
-func NewAktørList(args QueryArgs) (resolvers []*AktørResolver, err error){
+func NewAktørList(args AktørQueryArgs) (resolvers []*AktørResolver, err error){
 	
 	repo := newSqlite()
 
@@ -36,6 +41,16 @@ func NewAktørList(args QueryArgs) (resolvers []*AktørResolver, err error){
 	if args.Id != nil {
 		query = query[0:len(query)-1]
 		query +=  " WHERE Aktør.id=" + fmt.Sprintf("%d", *args.Id) + ";"
+	}
+
+	if args.Type != nil {
+		query = query[0:len(query)-1]
+		aktørType := fmt.Sprintf("%s", strings.Title(*args.Type))
+		if args.Id != nil {
+			query += " AND Aktørtype.type='" + aktørType + "';"
+		} else {
+			query +=  " WHERE Aktørtype.type='" + aktørType + "';"
+		}
 	}
 
 	rows, err := repo.db.Query(query)
@@ -122,7 +137,7 @@ func NewAktørList(args QueryArgs) (resolvers []*AktørResolver, err error){
 }
 
 // we need the single return if other objects has a single entity in their schema
-func NewAktør(args QueryArgs) (resolver *AktørResolver,err error) {
+func NewAktør(args AktørQueryArgs) (resolver *AktørResolver,err error) {
 	resolvers, err := NewAktørList(args)
 	if err != nil {
 		return

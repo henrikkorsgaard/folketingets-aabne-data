@@ -94,7 +94,7 @@ func (s *StemmeResolver) Opdateringsdato() graphql.Time {
 }
 
 func (s *StemmeResolver) Aktør() (*AktørResolver, error) {
-	args := QueryArgs{&s.stemme.AktørID}
+	args := AktørQueryArgs{QueryArgs:QueryArgs{&s.stemme.AktørID}}
 	return NewAktør(args)
 }
 
