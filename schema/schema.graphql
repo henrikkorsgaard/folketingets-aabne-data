@@ -4,6 +4,9 @@ Consider making splitting the schema into individual *.graphql files
 Avoid generating the files. Think of developing the schema as API query definition. 
 """
 
+# Import graphql datatype 
+scalar Time
+
 schema {
     query: Query
 }

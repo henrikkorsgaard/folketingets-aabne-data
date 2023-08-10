@@ -3,6 +3,9 @@ package resolvers
 import (
 	"database/sql"
 	"fmt"
+	"time"
+
+	graphql "github.com/graph-gophers/graphql-go"
 )
 
 type AfstemningQueryArgs struct {
@@ -19,32 +22,41 @@ type Afstemning struct {
 	Konklusion string
 	Vedtaget int32
 	Kommentar string
-	//MødeID int32 // Table: Møde
+	MødeID int32 // Table: Møde , see how to resolve this with https://github.com/tonyghita/graphql-go-example/blob/37cd51aae44b998ee3baa2b7e9c21c56e11a5fe3/resolver/starship.go#L207
 	Type string // Table: Afstemningstype 
-	//SagstringID integer // Table: Sagstrin
-	//Opdateringsdato Time.time // DB: as text
+	SagstrinID int32 // Table: Sagstrin
+	Opdateringsdato graphql.Time //I have no idea what timezone, but given we do not operate on the update date, then accuracy is not important (famous last words)
 }
 
-func NewAfstemning(args AfstemningQueryArgs) (*AfstemningResolver, error) {
+
+func NewAfstemning(args AfstemningQueryArgs) (resolver *AfstemningResolver,err error) {
 	
-	resolver := AfstemningResolver{} 
 	repo := newSqlite()
 
-	// SELECT Afstemning.*, Afstemningstype.type FROM Afstemning JOIN Afstemningstype ON Afstemning.typeid = Afstemningstype.id;
-
-	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemningstype.type FROM Afstemning JOIN AFstemningstype ON Afstemning.typeid = Afstemningstype.id WHERE Afstemning.id=" + fmt.Sprintf("%d", 8474) + ";"
+	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN AFstemningstype ON Afstemning.typeid = Afstemningstype.id WHERE Afstemning.id=" + fmt.Sprintf("%d", *args.Id) + ";"
 	
 	afstemning := Afstemning{}
 	var konklusion sql.NullString
 	var kommentar sql.NullString
+	var sagstringid sql.NullInt32
+	var opdateringsdato string
 	
 	row := repo.db.QueryRow(query)
 	
-	err := row.Scan(&afstemning.Id, &afstemning.Nummer, &konklusion, &afstemning.Vedtaget, &kommentar,&afstemning.Type)
+	err = row.Scan(&afstemning.Id, &afstemning.Nummer, &konklusion, &afstemning.Vedtaget, &kommentar, &afstemning.MødeID ,&afstemning.Type, &sagstringid, &opdateringsdato)
+
 	if err != nil {
-		fmt.Println(err.Error())
+		// TODO: Implement proper graphql errors, see: https://github.com/graph-gophers/graphql-go#custom-errors
+		return
 	}
 
+	t, err := time.Parse(time.DateTime, opdateringsdato)
+	if err != nil {
+		return
+	}
+
+	afstemning.Opdateringsdato.Time = t
+	
 	if konklusion.Valid {
 		afstemning.Konklusion = konklusion.String
 	}
@@ -52,8 +64,12 @@ func NewAfstemning(args AfstemningQueryArgs) (*AfstemningResolver, error) {
 	if kommentar.Valid {
 		afstemning.Kommentar = kommentar.String
 	}
+
+	if sagstringid.Valid {
+		afstemning.SagstrinID = sagstringid.Int32
+	}
 	
-	return &resolver, nil
+	return
 }
 
 func (a *AfstemningResolver) Id() int32 {

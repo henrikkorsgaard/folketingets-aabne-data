@@ -5,11 +5,9 @@ import (
 	"os"
 	"testing"
 	
-
 	"github.com/stretchr/testify/assert"
 	"github.com/joho/godotenv"
 	
-
 )
 
 func init(){
@@ -23,5 +21,13 @@ func TestAfstemning(t *testing.T){
 	args := AfstemningQueryArgs{&id}
 	_, err := NewAfstemning(args)
 
+	assert.NoError(t, err)
+}
+
+
+func TestAfstemningNotFoundError(t *testing.T){
+	var id int = 2
+	args := AfstemningQueryArgs{&id}
+	_, err := NewAfstemning(args)
 	assert.NoError(t, err)
 }
