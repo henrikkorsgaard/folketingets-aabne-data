@@ -3,7 +3,6 @@ package resolvers
 import (
 	"database/sql"
 	"fmt"
-	"strings"
 	"time"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -27,17 +26,14 @@ type Afstemning struct {
 
 func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err error){
 
-	if args.Id != nil {
-		afstemningResolver, err := NewAfstemning(args)
-		if afstemningResolver != nil {
-			resolvers = append(resolvers, afstemningResolver)
-		}
-		return resolvers, err
-	}
-
 	repo := newSqlite()
 
 	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN Afstemningstype ON Afstemning.typeid = Afstemningstype.id;"
+
+	if args.Id != nil {
+		query = query[0:len(query)-1]
+		query +=  " WHERE Afstemning.id=" + fmt.Sprintf("%d", *args.Id) + ";"
+	}
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -57,61 +53,37 @@ func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err err
 			break
 		}
 
+		t_op, err := time.Parse(time.DateTime, opdateringsdato)
+		if err != nil {
+			break
+		}
+
+		afstemning.Opdateringsdato.Time = t_op
+
 		afstemingResolver := AfstemningResolver{afstemning}
 		resolvers = append(resolvers, &afstemingResolver)
 	}
 
 	if rows.Err() != nil {
-		if strings.Contains(err.Error(), "sql: no rows in result set") {
-			err = fmt.Errorf("Unable to resolve Afstemning in database.")
-		}
+		err = rows.Err()
+	}
+
+	if args.Id != nil && len(resolvers) == 0 {
+		err = fmt.Errorf("Unable to resolve Afstemning: Id %d does not exist", *args.Id)
 	}
 
 	return
 }
 
 func NewAfstemning(args QueryArgs) (resolver *AfstemningResolver,err error) {
-	repo := newSqlite()
-
-	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN Afstemningstype ON Afstemning.typeid = Afstemningstype.id WHERE Afstemning.id=" + fmt.Sprintf("%d", *args.Id) + ";"
-	
-	afstemning := Afstemning{}
-	var konklusion sql.NullString
-	var kommentar sql.NullString
-	var sagstringid sql.NullInt32
-	var opdateringsdato string
-	
-	row := repo.db.QueryRow(query)
-	
-	err = row.Scan(&afstemning.Id, &afstemning.Nummer, &konklusion, &afstemning.Vedtaget, &kommentar, &afstemning.MødeID ,&afstemning.Type, &sagstringid, &opdateringsdato)
-
-	if err != nil {
-		if strings.Contains(err.Error(), "sql: no rows in result set") {
-			err = fmt.Errorf("Unable to resolve Afstemning: Id %d does not exist", *args.Id)
-		}
-		return
-	}
-
-	t, err := time.Parse(time.DateTime, opdateringsdato)
+	resolvers, err := NewAfstemningList(args)
 	if err != nil {
 		return
 	}
 
-	afstemning.Opdateringsdato.Time = t
-	
-	if konklusion.Valid {
-		afstemning.Konklusion = konklusion.String
+	if len(resolvers) > 0 {
+		resolver = resolvers[0]
 	}
-
-	if kommentar.Valid {
-		afstemning.Kommentar = kommentar.String
-	}
-
-	if sagstringid.Valid {
-		afstemning.SagstrinID = sagstringid.Int32
-	}
-
-	resolver = &AfstemningResolver{afstemning}
 
 	return 
 }

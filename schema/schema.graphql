@@ -14,6 +14,7 @@ schema {
 type Query {
     afstemning(id:Int): [Afstemning]!
     stemme(id:Int): [Stemme]!
+    aktør(id:Int): [Aktør]!
 }
 
 type Afstemning {

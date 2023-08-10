@@ -2,7 +2,6 @@ package resolvers
 import (
 	
 	"fmt"
-	"strings"
 	"time"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -23,17 +22,14 @@ type Stemme struct {
 
 func NewStemmeList(args QueryArgs) (resolvers []*StemmeResolver, err error){
 
-	if args.Id != nil {
-		stemmeResolver, err := NewStemme(args)
-		if stemmeResolver != nil {
-			resolvers = append(resolvers, stemmeResolver)
-		}
-		return resolvers, err
-	}
-
 	repo := newSqlite()
 
 	query := "SELECT Stemme.id, Stemmetype.type, Stemme.afstemningid, Stemme.aktørid, Stemme.opdateringsdato FROM Stemme JOIN Stemmetype ON Stemme.typeid = Stemmetype.id;"
+
+	if args.Id != nil {
+		query = query[0:len(query)-1]
+		query +=  " WHERE Stemme.id=" + fmt.Sprintf("%d", *args.Id) + ";"
+	}
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -62,43 +58,27 @@ func NewStemmeList(args QueryArgs) (resolvers []*StemmeResolver, err error){
 	}
 
 	if rows.Err() != nil {
-		if strings.Contains(err.Error(), "sql: no rows in result set") {
-			err = fmt.Errorf("Unable to resolve Stemme in database.")
-		}
+		err = rows.Err()
+	}
+
+	if args.Id != nil && len(resolvers) == 0 {
+		err = fmt.Errorf("Unable to resolve Stemme: Id %d does not exist", *args.Id)
 	}
 
 	return
 }
 
 func NewStemme(args QueryArgs) (resolver *StemmeResolver,err error) {
-	repo := newSqlite()
-
-	query := "SELECT Stemme.id, Stemmetype.type, Stemme.afstemningid, Stemme.aktørid, Stemme.opdateringsdato FROM Stemme JOIN Stemmetype ON Stemme.typeid = Stemmetype.id WHERE Stemme.id=" + fmt.Sprintf("%d", *args.Id) + ";"
-	
-	stemme := Stemme{}
-	var opdateringsdato string
-	
-	row := repo.db.QueryRow(query)
-	
-	err = row.Scan(&stemme.Id, &stemme.Type, &stemme.AfstemningID, &stemme.AktørID, &opdateringsdato)
-
-	if err != nil {
-		if strings.Contains(err.Error(), "sql: no rows in result set") {
-			err = fmt.Errorf("Unable to resolve Stemme: Id %d does not exist", *args.Id)
-		}
-		return
-	}
-
-	t, err := time.Parse(time.DateTime, opdateringsdato)
+	resolvers, err := NewStemmeList(args)
 	if err != nil {
 		return
 	}
 
-	stemme.Opdateringsdato.Time = t
+	if len(resolvers) > 0 {
+		resolver = resolvers[0]
+	}
 
-	resolver = &StemmeResolver{stemme}
-
-	return 
+	return  
 }
 
 func (s *StemmeResolver) Id() int32 {
