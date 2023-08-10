@@ -10,7 +10,7 @@ import (
 )
 
 type AfstemningQueryArgs struct {
-	Id *int 
+	Id *int32
 }
 
 type AfstemningResolver struct {
@@ -29,9 +29,52 @@ type Afstemning struct {
 	Opdateringsdato graphql.Time //I have no idea what timezone, but given we do not operate on the update date, then accuracy is not important (famous last words)
 }
 
+func NewAfstemningList(args AfstemningQueryArgs) (resolvers []*AfstemningResolver, err error){
+
+	if args.Id != nil {
+		afstemingResolver, err := NewAfstemning(args)
+		if afstemingResolver != nil {
+			resolvers = append(resolvers, afstemingResolver)
+		}
+		return resolvers, err
+	}
+
+	repo := newSqlite()
+
+	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN AFstemningstype ON Afstemning.typeid = Afstemningstype.id;"
+
+	rows, err := repo.db.Query(query)
+	if err != nil {
+		return
+	}
+
+	for rows.Next(){
+		afstemning := Afstemning{}
+		var konklusion sql.NullString
+		var kommentar sql.NullString
+		var sagstringid sql.NullInt32
+		var opdateringsdato string
+
+		err = rows.Scan(&afstemning.Id, &afstemning.Nummer, &konklusion, &afstemning.Vedtaget, &kommentar, &afstemning.MødeID ,&afstemning.Type, &sagstringid, &opdateringsdato)
+
+		if err != nil {
+			break
+		}
+
+		afstemingResolver := AfstemningResolver{afstemning}
+		resolvers = append(resolvers, &afstemingResolver)
+	}
+
+	if rows.Err() != nil {
+		if strings.Contains(err.Error(), "sql: no rows in result set") {
+			err = fmt.Errorf("Unable to resolve Afstemning in database.")
+		}
+	}
+
+	return
+}
 
 func NewAfstemning(args AfstemningQueryArgs) (resolver *AfstemningResolver,err error) {
-	
 	repo := newSqlite()
 
 	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN AFstemningstype ON Afstemning.typeid = Afstemningstype.id WHERE Afstemning.id=" + fmt.Sprintf("%d", *args.Id) + ";"
@@ -71,10 +114,41 @@ func NewAfstemning(args AfstemningQueryArgs) (resolver *AfstemningResolver,err e
 	if sagstringid.Valid {
 		afstemning.SagstrinID = sagstringid.Int32
 	}
-	
-	return
+
+	resolver = &AfstemningResolver{afstemning}
+
+	return 
 }
 
 func (a *AfstemningResolver) Id() int32 {
 	return a.afstemning.Id
+}
+
+func (a *AfstemningResolver) Nummer() int32 {
+	return a.afstemning.Nummer
+}
+
+func (a *AfstemningResolver) Konklusion() *string {
+	return &a.afstemning.Konklusion
+}
+
+func (a *AfstemningResolver) Vedtaget() int32 {
+	return a.afstemning.Vedtaget
+}
+
+func (a *AfstemningResolver) Kommentar() *string {
+	return &a.afstemning.Kommentar
+}
+
+func (a *AfstemningResolver) Type() string {
+	return a.afstemning.Type
+}
+
+func (a *AfstemningResolver) Opdateringsdato() graphql.Time {
+	return a.afstemning.Opdateringsdato
+}
+
+func (a *AfstemningResolver) Møde()  (*MødeResolver, error) {
+	margs := MødeQueryArgs{&a.afstemning.MødeID}
+	return NewMøde(margs)
 }

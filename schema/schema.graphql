@@ -12,9 +12,20 @@ schema {
 }
 
 type Query {
-    afstemning(id:Int): Afstemning! # Return list of afstemning, individual by id or empty if id not found
+    afstemning(id:Int): [Afstemning]!
 }
 
 type Afstemning {
-    id:Int! 
+    id:Int!
+    nummer:Int!
+    konklusion:String
+    vedtaget:Int!
+    kommentar:String
+    møde: Møde! 
+    type: String!
+    opdateringsdato: Time!
+}
+
+type Møde {
+    id:Int!
 }

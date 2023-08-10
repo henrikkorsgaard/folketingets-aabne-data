@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+    <script type="text/javascript">
+        console.log("hep")
+
+        fetchGraphQL({ query: "{ afstemning(id:8990) {id, nummer, møde {id}} }" })
+        fetchGraphQL({ query: "{ afstemning {id, nummer} }" })
+    
+        function fetchGraphQL(query){
+            fetch("/query", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify(query),
+            })
+            .then(r => r.json())
+            .then(data => console.log("data returned:", data))
+        }
+
+    </script>
+</body>
+</html>
