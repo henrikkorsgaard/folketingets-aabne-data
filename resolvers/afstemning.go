@@ -3,6 +3,7 @@ package resolvers
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -46,7 +47,9 @@ func NewAfstemning(args AfstemningQueryArgs) (resolver *AfstemningResolver,err e
 	err = row.Scan(&afstemning.Id, &afstemning.Nummer, &konklusion, &afstemning.Vedtaget, &kommentar, &afstemning.MødeID ,&afstemning.Type, &sagstringid, &opdateringsdato)
 
 	if err != nil {
-		// TODO: Implement proper graphql errors, see: https://github.com/graph-gophers/graphql-go#custom-errors
+		if strings.Contains(err.Error(), "sql: no rows in result set") {
+			err = fmt.Errorf("Unable to resolve Afstemning: Id %d does not exist", *args.Id)
+		}
 		return
 	}
 

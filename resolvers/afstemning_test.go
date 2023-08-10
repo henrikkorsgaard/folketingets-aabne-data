@@ -29,5 +29,5 @@ func TestAfstemningNotFoundError(t *testing.T){
 	var id int = 2
 	args := AfstemningQueryArgs{&id}
 	_, err := NewAfstemning(args)
-	assert.NoError(t, err)
+	assert.ErrorContains(t, err, "Unable to resolve Afstemning")
 }
