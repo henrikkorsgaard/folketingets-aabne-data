@@ -9,10 +9,6 @@ import (
 	graphql "github.com/graph-gophers/graphql-go"
 )
 
-type AfstemningQueryArgs struct {
-	Id *int32
-}
-
 type AfstemningResolver struct {
 	afstemning Afstemning
 }
@@ -29,19 +25,19 @@ type Afstemning struct {
 	Opdateringsdato graphql.Time //I have no idea what timezone, but given we do not operate on the update date, then accuracy is not important (famous last words)
 }
 
-func NewAfstemningList(args AfstemningQueryArgs) (resolvers []*AfstemningResolver, err error){
+func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err error){
 
 	if args.Id != nil {
-		afstemingResolver, err := NewAfstemning(args)
-		if afstemingResolver != nil {
-			resolvers = append(resolvers, afstemingResolver)
+		afstemningResolver, err := NewAfstemning(args)
+		if afstemningResolver != nil {
+			resolvers = append(resolvers, afstemningResolver)
 		}
 		return resolvers, err
 	}
 
 	repo := newSqlite()
 
-	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN AFstemningstype ON Afstemning.typeid = Afstemningstype.id;"
+	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN Afstemningstype ON Afstemning.typeid = Afstemningstype.id;"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -74,10 +70,10 @@ func NewAfstemningList(args AfstemningQueryArgs) (resolvers []*AfstemningResolve
 	return
 }
 
-func NewAfstemning(args AfstemningQueryArgs) (resolver *AfstemningResolver,err error) {
+func NewAfstemning(args QueryArgs) (resolver *AfstemningResolver,err error) {
 	repo := newSqlite()
 
-	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN AFstemningstype ON Afstemning.typeid = Afstemningstype.id WHERE Afstemning.id=" + fmt.Sprintf("%d", *args.Id) + ";"
+	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN Afstemningstype ON Afstemning.typeid = Afstemningstype.id WHERE Afstemning.id=" + fmt.Sprintf("%d", *args.Id) + ";"
 	
 	afstemning := Afstemning{}
 	var konklusion sql.NullString
@@ -149,6 +145,6 @@ func (a *AfstemningResolver) Opdateringsdato() graphql.Time {
 }
 
 func (a *AfstemningResolver) Møde()  (*MødeResolver, error) {
-	margs := MødeQueryArgs{&a.afstemning.MødeID}
+	margs := QueryArgs{&a.afstemning.MødeID}
 	return NewMøde(margs)
 }

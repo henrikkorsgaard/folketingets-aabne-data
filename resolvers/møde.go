@@ -7,10 +7,6 @@ import (
 	
 )
 
-type MødeQueryArgs struct {
-	Id *int32
-}
-
 type MødeResolver struct {
 	møde Møde
 }
@@ -19,7 +15,7 @@ type Møde struct {
 	Id int32
 }
 
-func NewMøde(args MødeQueryArgs) (resolver *MødeResolver,err error) {
+func NewMøde(args QueryArgs) (resolver *MødeResolver,err error) {
 	
 	repo := newSqlite()
 

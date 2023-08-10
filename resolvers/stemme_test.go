@@ -18,15 +18,15 @@ func init(){
 
 func TestStemme(t *testing.T){
 	
-	args := StemmeQueryArgs{}
+	args := QueryArgs{}
 	_, err := NewStemmeList(args)
 	assert.NoError(t, err)
 }
 
 func TestStemmeById(t *testing.T){
-	var id int32 = 8357
-	args := StemmeQueryArgs{&id}
-	_, err := NewStemeList(args)
+	var id int32 = 2129580
+	args := QueryArgs{&id}
+	_, err := NewStemmeList(args)
 
 	assert.NoError(t, err)
 }
@@ -34,7 +34,7 @@ func TestStemmeById(t *testing.T){
 
 func TestStemmeNotFoundError(t *testing.T){
 	var id int32 = 2
-	args := StemmeQueryArgs{&id}
+	args := QueryArgs{&id}
 	_, err := NewStemmeList(args)
-	assert.ErrorContains(t, err, "Unable to resolve Afstemning")
+	assert.ErrorContains(t, err, "Unable to resolve Stemme")
 }
