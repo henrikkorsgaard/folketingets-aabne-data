@@ -11,30 +11,30 @@ import (
 )
 
 func init(){
-	fmt.Println("Running tests for the Afstemning")
+	fmt.Println("Running tests for the Stemme")
 	godotenv.Load("../config_dev.env")
 	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/odatest.sqlite.db")
 }
 
-func TestAfstemning(t *testing.T){
+func TestStemme(t *testing.T){
 	
-	args := AfstemningQueryArgs{}
-	_, err := NewAfstemningList(args)
+	args := StemmeQueryArgs{}
+	_, err := NewStemmeList(args)
 	assert.NoError(t, err)
 }
 
-func TestAfstemningById(t *testing.T){
+func TestStemmeById(t *testing.T){
 	var id int32 = 8357
-	args := AfstemningQueryArgs{&id}
-	_, err := NewAfstemningList(args)
+	args := StemmeQueryArgs{&id}
+	_, err := NewStemeList(args)
 
 	assert.NoError(t, err)
 }
 
 
-func TestAfstemningNotFoundError(t *testing.T){
+func TestStemmeNotFoundError(t *testing.T){
 	var id int32 = 2
-	args := AfstemningQueryArgs{&id}
-	_, err := NewAfstemningList(args)
+	args := StemmeQueryArgs{&id}
+	_, err := NewStemmeList(args)
 	assert.ErrorContains(t, err, "Unable to resolve Afstemning")
 }

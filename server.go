@@ -11,6 +11,7 @@ import (
 		"github.com/joho/godotenv"
 
 		"henrikkorsgaard/folketingets-aabne-data/resolvers"
+		"github.com/friendsofgo/graphiql"
 )
 
 func main() {
@@ -23,11 +24,17 @@ func main() {
 		panic(err)
 	}
 
+	graphiqlHandler, err := graphiql.NewGraphiqlHandler("/graphql")
+	if err != nil {
+		panic(err)
+	}
+
 	qr := resolvers.QueryResolver{}
 
     schema := graphql.MustParseSchema(string(b), &qr)
 	http.HandleFunc("/", handleTestClient)
-    http.Handle("/query", &relay.Handler{Schema: schema})
+	http.Handle("/graphiql", graphiqlHandler)
+    http.Handle("/graphql", &relay.Handler{Schema: schema})
 	
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
