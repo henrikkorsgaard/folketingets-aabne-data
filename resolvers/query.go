@@ -1,4 +1,4 @@
-package resolver 
+package resolvers
 
 type QueryResolver struct {}
 

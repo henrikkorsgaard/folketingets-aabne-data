@@ -12,3 +12,8 @@ The ingest directory contains a README.md and a series of utilities for ingestin
 - Use the generated PSQL and Sqlite SQL scripts to create the neccesary tables for the data
 - Ingest the data from the MS SQL Server into a SQLite database file (around 750mb)
 - Ingest the data from the MS SQL Server into a Postgres DB (around 960mb), see config_dev.env for hints about configuration (or change to match local psql setup)
+
+
+## Analysis ideas emergin from building this service
+
+- The Afstemning.kommentar field seem to contain info on voting errors, with the name of the member who made the mistake. Maybe count who makes the most mistakes when voting.

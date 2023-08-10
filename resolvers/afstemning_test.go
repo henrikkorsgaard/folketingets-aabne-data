@@ -1,4 +1,4 @@
-package resolver
+package resolvers
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ func init(){
 }
 
 func TestAfstemning(t *testing.T){
-	var id int = 10
+	var id int = 8357
 	args := AfstemningQueryArgs{&id}
 	_, err := NewAfstemning(args)
 
