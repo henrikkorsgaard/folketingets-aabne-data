@@ -16,7 +16,7 @@ import (
 
 func main() {
 
-	godotenv.Load("../config_dev.env")
+	godotenv.Load("config_dev.env")
 	os.Setenv("SQLITE_DATABASE_PATH", "ingest/data/odatest.sqlite.db")
 
 	b, err := ioutil.ReadFile("./schema/schema.graphql")
@@ -31,7 +31,7 @@ func main() {
 
 	qr := resolvers.QueryResolver{}
 
-    schema := graphql.MustParseSchema(string(b), &qr)
+    schema := graphql.MustParseSchema(string(b), &qr, graphql.MaxDepth(3))
 	http.HandleFunc("/", handleTestClient)
 	http.Handle("/graphiql", graphiqlHandler)
     http.Handle("/graphql", &relay.Handler{Schema: schema})

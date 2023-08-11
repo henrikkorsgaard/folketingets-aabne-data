@@ -24,7 +24,7 @@ func TestAktør(t *testing.T){
 
 func TestAktørById(t *testing.T){
 	var id int32 = 19050
-	args := AktørQueryArgs{QueryArgs: QueryArgs{&id}}
+	args := AktørQueryArgs{QueryArgs:QueryArgs{Id:&id}}
 	_, err := NewAktørList(args)
 
 	assert.NoError(t, err)
@@ -41,7 +41,7 @@ func TestAktørByType(t *testing.T){
 func TestAktørByTypeAndId(t *testing.T){
 	var ty string = "person"
 	var id int32 = 19000
-	args := AktørQueryArgs{QueryArgs: QueryArgs{&id}, Type: &ty}
+	args := AktørQueryArgs{QueryArgs: QueryArgs{Id:&id}, Type: &ty}
 	_, err := NewAktørList(args)
 
 	assert.NoError(t, err)
@@ -49,7 +49,7 @@ func TestAktørByTypeAndId(t *testing.T){
 
 func TestAktørNotFoundError(t *testing.T){
 	var id int32 = 10
-	args := AktørQueryArgs{QueryArgs: QueryArgs{&id}}
+	args := AktørQueryArgs{QueryArgs: QueryArgs{Id:&id}}
 	_, err := NewAktørList(args)
 	assert.ErrorContains(t, err, "Unable to resolve Aktør")
 }

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"strings"
 	"time"
+	"os"
 
 	graphql "github.com/graph-gophers/graphql-go"
 )
@@ -36,22 +37,28 @@ func NewAktørList(args AktørQueryArgs) (resolvers []*AktørResolver, err error
 	
 	repo := newSqlite()
 
-	query := "SELECT Aktør.id, Aktørtype.type, Aktør.gruppenavnkort, Aktør.navn, Aktør.fornavn, Aktør.efternavn, Aktør.biografi, Aktør.periodeid, Aktør.startdato, Aktør.slutdato, Aktør.opdateringsdato FROM Aktør JOIN Aktørtype ON Aktør.typeid = Aktørtype.id;"
+	query := "SELECT Aktør.id, Aktørtype.type, Aktør.gruppenavnkort, Aktør.navn, Aktør.fornavn, Aktør.efternavn, Aktør.biografi, Aktør.periodeid, Aktør.startdato, Aktør.slutdato, Aktør.opdateringsdato FROM Aktør JOIN Aktørtype ON Aktør.typeid = Aktørtype.id"
 
 	if args.Id != nil {
-		query = query[0:len(query)-1]
-		query +=  " WHERE Aktør.id=" + fmt.Sprintf("%d", *args.Id) + ";"
+		query +=  " WHERE Aktør.id=" + fmt.Sprintf("%d", *args.Id)
 	}
 
 	if args.Type != nil {
-		query = query[0:len(query)-1]
-		aktørType := fmt.Sprintf("%s", strings.Title(*args.Type))
 		if args.Id != nil {
-			query += " AND Aktørtype.type='" + aktørType + "';"
+			query += " AND "
 		} else {
-			query +=  " WHERE Aktørtype.type='" + aktørType + "';"
+			query +=  " WHERE "
 		}
+
+		query += "Aktørtype.type='" + fmt.Sprintf("%s", strings.Title(*args.Type)) + "'"
 	}
+
+	if args.Offset == nil {
+		var offset int32 = 0
+		args.Offset = &offset
+	}
+
+	query+= " LIMIT " + os.Getenv("GRAPHQL_QUERY_LIMIT") + " OFFSET " + fmt.Sprintf("%d", *args.Offset) + ";"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {

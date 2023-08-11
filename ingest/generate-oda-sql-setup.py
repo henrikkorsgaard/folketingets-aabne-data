@@ -7,6 +7,7 @@ dotenv_path = Path("../config_dev.env")
 load_dotenv(dotenv_path=dotenv_path)
 
 cnxn =  pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', host=os.getenv("MSSQL_DATABASE_HOST"), database=os.getenv("MSSQL_DATABASE_NAME"), user=os.getenv("MSSQL_DATABASE_USER"), password=os.getenv("MSSQL_DATABASE_PASS"))
+
 cursor = cnxn.cursor()
 
 

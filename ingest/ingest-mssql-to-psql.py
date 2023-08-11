@@ -8,7 +8,8 @@ from pathlib import Path
 dotenv_path = Path("../config_dev.env")
 load_dotenv(dotenv_path=dotenv_path)
 
-conn =  pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', host=os.getenv("MSSQL_DATABASE_HOST"), database=os.getenv("MSSQL_DATABASE_NAME"), user=os.getenv("MSSQL_DATABASE_USER"), password=os.getenv("MSSQL_DATABASE_PASS"))
+conn =  pyodbc.connect(driver='mssqæ', host=os.getenv("MSSQL_DATABASE_HOST"), database=os.getenv("MSSQL_DATABASE_NAME"), user=os.getenv("MSSQL_DATABASE_USER"), password=os.getenv("MSSQL_DATABASE_PASS"))
+
 cursor = conn.cursor()
 #"postgres://%s:%s@%s:%s/%s", user,pass,host,port,name
 psql_conn = psycopg2.connect(database=os.getenv("PSQL_DATABASE_NAME"),user=os.getenv("PSQL_DATABASE_USER"),password=os.getenv("PSQL_DATABASE_PASS"), host=os.getenv("PSQL_DATABASE_HOST"), port=os.getenv("PSQL_DATABASE_PORT"))

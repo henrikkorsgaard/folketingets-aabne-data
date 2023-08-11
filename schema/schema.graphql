@@ -26,6 +26,7 @@ type Afstemning {
     møde: Møde! 
     type: String!
     opdateringsdato: Time!
+    stemmer: [Stemme!]!
 }
 
 type Stemme {

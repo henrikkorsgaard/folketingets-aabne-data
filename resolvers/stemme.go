@@ -3,10 +3,16 @@ import (
 	
 	"fmt"
 	"time"
+	"os"
 
 	graphql "github.com/graph-gophers/graphql-go"
 
 )
+
+type StemmeQueryArgs struct {
+	QueryArgs
+	AfstemningId *int32
+}
 
 type StemmeResolver struct {
 	stemme Stemme
@@ -15,21 +21,37 @@ type StemmeResolver struct {
 type Stemme struct {
 	Id int32
 	Type string
-	AfstemningID int32
+	AfstemningId int32
 	AktørID int32 
 	Opdateringsdato graphql.Time
 }
 
-func NewStemmeList(args QueryArgs) (resolvers []*StemmeResolver, err error){
+func NewStemmeList(args StemmeQueryArgs) (resolvers []*StemmeResolver, err error){
 
 	repo := newSqlite()
 
-	query := "SELECT Stemme.id, Stemmetype.type, Stemme.afstemningid, Stemme.aktørid, Stemme.opdateringsdato FROM Stemme JOIN Stemmetype ON Stemme.typeid = Stemmetype.id;"
+	query := "SELECT Stemme.id, Stemmetype.type, Stemme.afstemningid, Stemme.aktørid, Stemme.opdateringsdato FROM Stemme JOIN Stemmetype ON Stemme.typeid = Stemmetype.id"
 
 	if args.Id != nil {
-		query = query[0:len(query)-1]
-		query +=  " WHERE Stemme.id=" + fmt.Sprintf("%d", *args.Id) + ";"
+		query +=  " WHERE Stemme.id=" + fmt.Sprintf("%d", *args.Id)
 	}
+
+	if args.AfstemningId != nil {
+		
+		afstemningId := fmt.Sprintf("%d", *args.AfstemningId)
+		if args.Id != nil {
+			query += " AND Stemme.afstemningid=" + afstemningId
+		} else {
+			query +=  " WHERE Stemme.afstemningid=" + afstemningId 
+		}
+	}
+
+	if args.Offset == nil {
+		var offset int32 = 0
+		args.Offset = &offset
+	}
+
+	query+= " LIMIT " + os.Getenv("GRAPHQL_QUERY_LIMIT") + " OFFSET " + fmt.Sprintf("%d", *args.Offset) + ";"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -40,7 +62,7 @@ func NewStemmeList(args QueryArgs) (resolvers []*StemmeResolver, err error){
 		stemme := Stemme{}
 		var opdateringsdato string
 
-		err = rows.Scan(&stemme.Id, &stemme.Type, &stemme.AfstemningID, &stemme.AktørID, &opdateringsdato)
+		err = rows.Scan(&stemme.Id, &stemme.Type, &stemme.AfstemningId, &stemme.AktørID, &opdateringsdato)
 
 		if err != nil {
 			break
@@ -68,7 +90,7 @@ func NewStemmeList(args QueryArgs) (resolvers []*StemmeResolver, err error){
 	return
 }
 
-func NewStemme(args QueryArgs) (resolver *StemmeResolver,err error) {
+func NewStemme(args StemmeQueryArgs) (resolver *StemmeResolver,err error) {
 	resolvers, err := NewStemmeList(args)
 	if err != nil {
 		return
@@ -94,11 +116,11 @@ func (s *StemmeResolver) Opdateringsdato() graphql.Time {
 }
 
 func (s *StemmeResolver) Aktør() (*AktørResolver, error) {
-	args := AktørQueryArgs{QueryArgs:QueryArgs{&s.stemme.AktørID}}
+	args := AktørQueryArgs{QueryArgs:QueryArgs{Id: &s.stemme.AktørID}}
 	return NewAktør(args)
 }
 
 func (s *StemmeResolver) Afstemning() (*AfstemningResolver, error) {
-	args := QueryArgs{&s.stemme.AfstemningID}
+	args := QueryArgs{Id:  &s.stemme.AfstemningId}
 	return NewAfstemning(args)
 }

@@ -34,5 +34,3 @@ for table in tables:
     sqlite_conn.commit()
 
 sqlite_conn.close()
-    
-    

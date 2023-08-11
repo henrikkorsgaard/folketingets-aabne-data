@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
+	"os"
 
 	graphql "github.com/graph-gophers/graphql-go"
 )
@@ -28,12 +29,18 @@ func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err err
 
 	repo := newSqlite()
 
-	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN Afstemningstype ON Afstemning.typeid = Afstemningstype.id;"
+	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN Afstemningstype ON Afstemning.typeid = Afstemningstype.id"
 
 	if args.Id != nil {
-		query = query[0:len(query)-1]
-		query +=  " WHERE Afstemning.id=" + fmt.Sprintf("%d", *args.Id) + ";"
+		query +=  " WHERE Afstemning.id=" + fmt.Sprintf("%d", *args.Id)
 	}
+
+	if args.Offset == nil {
+		var offset int32 = 0
+		args.Offset = &offset
+	}
+
+	query+= " LIMIT " + os.Getenv("GRAPHQL_QUERY_LIMIT") + " OFFSET " + fmt.Sprintf("%d", *args.Offset) + ";"
 
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -117,6 +124,13 @@ func (a *AfstemningResolver) Opdateringsdato() graphql.Time {
 }
 
 func (a *AfstemningResolver) Møde()  (*MødeResolver, error) {
-	margs := QueryArgs{&a.afstemning.MødeID}
+	margs := QueryArgs{Id:&a.afstemning.MødeID}
 	return NewMøde(margs)
+}
+
+func (a *AfstemningResolver) Stemmer()  ([]*StemmeResolver, error) {
+	// this could return stemme resolver based on just the stemmer from the database in the original call
+
+	args := StemmeQueryArgs{AfstemningId:&a.afstemning.Id}
+	return NewStemmeList(args)
 }

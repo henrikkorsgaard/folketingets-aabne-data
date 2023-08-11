@@ -11,6 +11,12 @@ Pull and run and explore the data on localhost:8080/graphiql!
 
 ## Notes
 
+### Todo
+
+- Seperate queries for individual enteties and lists
+- Combine queries for e.g. Afstemning and stemme to optimize response a bit.
+- Prepare test data that resolves for the relations
+
 ### Tests
 I mainly run tests to make sure that I cover the contract implied in the GraphQL schema definition and making sure that I can call the database with the individual entities and resolvers. I do not verify the structs and data coverage in the resolver queries. That will be caught with the schema contract and/or graphIql test.
 
@@ -26,6 +32,15 @@ The ingest directory contains a README.md and a series of utilities for ingestin
 - I should pack this in a docker instance
 - See how much Docker will compress the full database
 - Make a CRON job for updating the database. 
+
+### Alternative approches [Why not?]
+
+There are several ways I could generate GraphQL schemas and/or use a service like PostGraphile to make a GraphQl service on to of the database. 
+
+First, I'm making this service as a deep dive into GraphQL with the goal of understanding the technology, schema and query relation, and how to make a GraphQL microservice. 
+I find that developing this from the database and up is a great way to learn.
+
+Second, to get the most out of GraphQL, generated code (db schema/GQL schema first) and external services rely on FOREIGN KEY relations to establish relationships for the GraphQL schema. The MSSQL database does not contain any foreign keys, so generating the schemas and/or using a service will only get me 50% there. The relations are described in the [ODA oData metadata](https://oda.ft.dk/api/$metadata). I just don't feel like parsing XML at the moment. I also suspect that the relations (NavigationProperty) is a messy source of relations. Once I have understood the dataset, I might add foreign keys to the database where it makes sense.s
 
 ### Analysis ideas emerging from building this service
 

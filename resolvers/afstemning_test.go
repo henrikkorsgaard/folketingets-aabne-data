@@ -25,7 +25,7 @@ func TestAfstemning(t *testing.T){
 
 func TestAfstemningById(t *testing.T){
 	var id int32 = 8357
-	args := QueryArgs{&id}
+	args := QueryArgs{Id:&id}
 	_, err := NewAfstemningList(args)
 
 	assert.NoError(t, err)
@@ -34,7 +34,7 @@ func TestAfstemningById(t *testing.T){
 
 func TestAfstemningNotFoundError(t *testing.T){
 	var id int32 = 2
-	args := QueryArgs{&id}
+	args := QueryArgs{Id:&id}
 	_, err := NewAfstemningList(args)
 	assert.ErrorContains(t, err, "Unable to resolve Afstemning")
 }

@@ -43,3 +43,4 @@ This will roughly test:
 - That the generated Sqlite SQL is valid
 - That the MS SQL Server is reachable
 - That the test data is generated
+
