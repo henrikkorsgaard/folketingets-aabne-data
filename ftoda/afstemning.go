@@ -1,21 +1,18 @@
 package ftoda
 
-import (
-	
-	//"gorm.io/gorm"
-	//graphql "github.com/graph-gophers/graphql-go"
-)
+//"gorm.io/gorm"
+//graphql "github.com/graph-gophers/graphql-go"
 
 type Afstemning struct {
-	Id int 					`gorm:"primaryKey"`
-	Nummer int
-	Konklusion string
-	Vedtaget int
-	Kommentar string
-	MødeID int
-	Type string
-	SagstrinID int 
-	Opdateringsdato string 
+	Id              int `gorm:"primaryKey"`
+	Nummer          int
+	Konklusion      string
+	Vedtaget        int
+	Kommentar       string
+	MødeID          int
+	Type            string
+	SagstrinID      int
+	Opdateringsdato string
 }
 
 func (Afstemning) TableName() string {
@@ -25,11 +22,11 @@ func (Afstemning) TableName() string {
 func (r *Repository) GetAfstemning(id int) (afstemning Afstemning, err error) {
 	result := r.db.First(&afstemning, id)
 	err = result.Error
-	return 
+	return
 }
 
-func (r *Repository) GetAllAfstemning(limit int, offset int)(afstemninger []Afstemning, err error) {
-	result := r.db.Limit(200).Offset(offset).Find(&afstemninger)
+func (r *Repository) GetAllAfstemning(limit int, offset int) (afstemninger []Afstemning, err error) {
+	result := r.db.Limit(limit).Offset(offset).Find(&afstemninger)
 	err = result.Error
 
 	return

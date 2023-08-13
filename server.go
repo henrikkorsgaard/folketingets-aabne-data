@@ -1,17 +1,18 @@
 package main
 
 import (
-        "log"
-        "net/http"
-		"io/ioutil"
-		"os"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 
-        graphql "github.com/graph-gophers/graphql-go"
-        "github.com/graph-gophers/graphql-go/relay"
-		"github.com/joho/godotenv"
+	graphql "github.com/graph-gophers/graphql-go"
+	"github.com/graph-gophers/graphql-go/relay"
+	"github.com/joho/godotenv"
 
-		"henrikkorsgaard/folketingets-aabne-data/resolvers"
-		"github.com/friendsofgo/graphiql"
+	"henrikkorsgaard/folketingets-aabne-data/resolvers"
+
+	"github.com/friendsofgo/graphiql"
 )
 
 func main() {
@@ -46,10 +47,9 @@ func main() {
 
 	qr := resolvers.QueryResolver{}
 
-    schema := graphql.MustParseSchema(string(b), &qr, graphql.MaxDepth(5))
+	schema := graphql.MustParseSchema(string(b), &qr, graphql.MaxDepth(5))
 	http.Handle("/", graphiqlHandler)
-    http.Handle("/graphql", &relay.Handler{Schema: schema})
-	
-    log.Fatal(http.ListenAndServe(":8080", nil))
-}
+	http.Handle("/graphql", &relay.Handler{Schema: schema})
 
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}

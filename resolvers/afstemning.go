@@ -1,7 +1,6 @@
 package resolvers
 
 import (
-
 	"time"
 
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
@@ -13,7 +12,7 @@ type AfstemningResolver struct {
 	afstemning ftoda.Afstemning
 }
 
-func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err error){
+func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err error) {
 
 	repo := ftoda.NewRepository()
 
@@ -39,48 +38,11 @@ func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err err
 		afstemingResolver := AfstemningResolver{afstemning}
 		resolvers = append(resolvers, &afstemingResolver)
 	}
-	/*
-	rows, err := repo.db.Query(query)
-	if err != nil {
-		return
-	}
-
-	for rows.Next(){
-		afstemning := Afstemning{}
-		var konklusion sql.NullString
-		var kommentar sql.NullString
-		var sagstringid sql.NullInt32
-		var opdateringsdato string
-
-		err = rows.Scan(&afstemning.Id, &afstemning.Nummer, &konklusion, &afstemning.Vedtaget, &kommentar, &afstemning.MødeID ,&afstemning.Type, &sagstringid, &opdateringsdato)
-
-		if err != nil {
-			break
-		}
-
-		t_op, err := time.Parse(time.DateTime, opdateringsdato)
-		if err != nil {
-			break
-		}
-
-		afstemning.Opdateringsdato.Time = t_op
-
-		afstemingResolver := AfstemningResolver{afstemning}
-		resolvers = append(resolvers, &afstemingResolver)
-	}
-
-	if rows.Err() != nil {
-		err = rows.Err()
-	}
-
-	if args.Id != nil && len(resolvers) == 0 {
-		err = fmt.Errorf("Unable to resolve Afstemning: Id %d does not exist", *args.Id)
-	}*/
 
 	return
 }
 
-func NewAfstemning(args QueryArgs) (resolver *AfstemningResolver,err error) {
+func NewAfstemning(args QueryArgs) (resolver *AfstemningResolver, err error) {
 
 	resolvers, err := NewAfstemningList(args)
 	if err != nil {
@@ -91,7 +53,7 @@ func NewAfstemning(args QueryArgs) (resolver *AfstemningResolver,err error) {
 		resolver = resolvers[0]
 	}
 
-	return 
+	return
 }
 
 func (a *AfstemningResolver) Id() int32 {
@@ -126,15 +88,15 @@ func (a *AfstemningResolver) Opdateringsdato() graphql.Time {
 	return graphql.Time{t}
 }
 
-func (a *AfstemningResolver) Møde()  (*MødeResolver, error) {
+func (a *AfstemningResolver) Møde() (*MødeResolver, error) {
 	id := int32(a.afstemning.MødeID)
-	margs := QueryArgs{Id:&id}
+	margs := QueryArgs{Id: &id}
 	return NewMøde(margs)
 }
 
-func (a *AfstemningResolver) Stemmer()  ([]*StemmeResolver, error) {
+func (a *AfstemningResolver) Stemmer() ([]*StemmeResolver, error) {
 	// This introduces the N+1 problem
 	id := int32(a.afstemning.Id)
-	args := StemmeQueryArgs{AfstemningId:&id}
+	args := StemmeQueryArgs{AfstemningId: &id}
 	return NewStemmeList(args)
 }

@@ -1,8 +1,10 @@
 package resolvers
+
 import (
+	"henrikkorsgaard/folketingets-aabne-data/ftoda"
+	"time"
 
 	graphql "github.com/graph-gophers/graphql-go"
-
 )
 
 type StemmeQueryArgs struct {
@@ -11,82 +13,41 @@ type StemmeQueryArgs struct {
 }
 
 type StemmeResolver struct {
-	stemme Stemme
+	stemme ftoda.Stemme
 }
 
-type Stemme struct {
-	Id int32
-	Type string
-	AfstemningId int32
-	AktørID int32 
-	Opdateringsdato graphql.Time
-}
+func NewStemmeList(args StemmeQueryArgs) (resolvers []*StemmeResolver, err error) {
 
-func NewStemmeList(args StemmeQueryArgs) (resolvers []*StemmeResolver, err error){
-	/*
-	repo := newSqlite()
-
-	query := "SELECT Stemme.id, Stemmetype.type, Stemme.afstemningid, Stemme.aktørid, Stemme.opdateringsdato FROM Stemme JOIN Stemmetype ON Stemme.typeid = Stemmetype.id"
+	repo := ftoda.NewRepository()
 
 	if args.Id != nil {
-		query +=  " WHERE Stemme.id=" + fmt.Sprintf("%d", *args.Id)
+		var stemme ftoda.Stemme
+		stemme, err = repo.GetStemme(int(*args.Id))
+
+		stemmeResolver := StemmeResolver{stemme}
+		resolvers = append(resolvers, &stemmeResolver)
+
+		return
 	}
 
-	if args.AfstemningId != nil {
-		
-		afstemningId := fmt.Sprintf("%d", *args.AfstemningId)
-		if args.Id != nil {
-			query += " AND Stemme.afstemningid=" + afstemningId
-		} else {
-			query +=  " WHERE Stemme.afstemningid=" + afstemningId 
-		}
-	}
-
+	// if the query does not supply an offset
+	// we set it to 0
 	if args.Offset == nil {
 		var offset int32 = 0
 		args.Offset = &offset
 	}
 
-	query+= " LIMIT " + os.Getenv("GRAPHQL_QUERY_LIMIT") + " OFFSET " + fmt.Sprintf("%d", *args.Offset) + ";"
+	stemmer, err := repo.GetAllStemme(200, int(*args.Offset))
 
-	rows, err := repo.db.Query(query)
-	if err != nil {
-		return
-	}
-
-	for rows.Next(){
-		stemme := Stemme{}
-		var opdateringsdato string
-
-		err = rows.Scan(&stemme.Id, &stemme.Type, &stemme.AfstemningId, &stemme.AktørID, &opdateringsdato)
-
-		if err != nil {
-			break
-		}
-
-		t, err := time.Parse(time.DateTime, opdateringsdato)
-		if err != nil {
-			break
-		}
-
-		stemme.Opdateringsdato.Time = t
-
+	for _, stemme := range stemmer {
 		stemmeResolver := StemmeResolver{stemme}
 		resolvers = append(resolvers, &stemmeResolver)
 	}
 
-	if rows.Err() != nil {
-		err = rows.Err()
-	}
-
-	if args.Id != nil && len(resolvers) == 0 {
-		err = fmt.Errorf("Unable to resolve Stemme: Id %d does not exist", *args.Id)
-	}
-	*/
 	return
 }
 
-func NewStemme(args StemmeQueryArgs) (resolver *StemmeResolver,err error) {
+func NewStemme(args StemmeQueryArgs) (resolver *StemmeResolver, err error) {
 	resolvers, err := NewStemmeList(args)
 	if err != nil {
 		return
@@ -96,11 +57,11 @@ func NewStemme(args StemmeQueryArgs) (resolver *StemmeResolver,err error) {
 		resolver = resolvers[0]
 	}
 
-	return  
+	return
 }
 
 func (s *StemmeResolver) Id() int32 {
-	return s.stemme.Id
+	return int32(s.stemme.Id)
 }
 
 func (s *StemmeResolver) Type() *string {
@@ -108,15 +69,21 @@ func (s *StemmeResolver) Type() *string {
 }
 
 func (s *StemmeResolver) Opdateringsdato() graphql.Time {
-	return s.stemme.Opdateringsdato
+	t, err := time.Parse(time.DateTime, s.stemme.Opdateringsdato)
+	if err != nil {
+		panic(err) // This field is not null, I want to catch errors in development
+	}
+	return graphql.Time{t}
 }
 
 func (s *StemmeResolver) Aktør() (*AktørResolver, error) {
-	args := AktørQueryArgs{QueryArgs:QueryArgs{Id: &s.stemme.AktørID}}
+	id := int32(s.stemme.AktørId)
+	args := AktørQueryArgs{QueryArgs: QueryArgs{Id: &id}}
 	return NewAktør(args)
 }
 
 func (s *StemmeResolver) Afstemning() (*AfstemningResolver, error) {
-	args := QueryArgs{Id:  &s.stemme.AfstemningId}
+	id := int32(s.stemme.AfstemningId)
+	args := QueryArgs{Id: &id}
 	return NewAfstemning(args)
 }
