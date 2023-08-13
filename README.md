@@ -13,9 +13,8 @@ Pull and run and explore the data on localhost:8080/graphiql!
 
 ### Todo
 
-- Seperate queries for individual enteties and lists
-- Combine queries for e.g. Afstemning and stemme to optimize response a bit.
-- Prepare test data that resolves for the relations
+- Solve the N + 1 problem with Dataloader: https://github.com/graph-gophers/dataloader
+- The coupling between the resolvers and the database is too tight. Use a ORM, like GORM!
 
 ### Tests
 I mainly run tests to make sure that I cover the contract implied in the GraphQL schema definition and making sure that I can call the database with the individual entities and resolvers. I do not verify the structs and data coverage in the resolver queries. That will be caught with the schema contract and/or graphIql test.

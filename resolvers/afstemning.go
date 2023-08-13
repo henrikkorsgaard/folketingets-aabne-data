@@ -13,18 +13,6 @@ type AfstemningResolver struct {
 	afstemning Afstemning
 }
 
-type Afstemning struct {
-	Id int32
-	Nummer int32
-	Konklusion string
-	Vedtaget int32
-	Kommentar string
-	MødeID int32 // Table: Møde , see how to resolve this with https://github.com/tonyghita/graphql-go-example/blob/37cd51aae44b998ee3baa2b7e9c21c56e11a5fe3/resolver/starship.go#L207
-	Type string // Table: Afstemningstype 
-	SagstrinID int32 // Table: Sagstrin
-	Opdateringsdato graphql.Time //I have no idea what timezone, but given we do not operate on the update date, then accuracy is not important (famous last words)
-}
-
 func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err error){
 
 	repo := newSqlite()
@@ -129,7 +117,8 @@ func (a *AfstemningResolver) Møde()  (*MødeResolver, error) {
 }
 
 func (a *AfstemningResolver) Stemmer()  ([]*StemmeResolver, error) {
-	// this could return stemme resolver based on just the stemmer from the database in the original call
+	// This introduces the N+1 problem
+	
 
 	args := StemmeQueryArgs{AfstemningId:&a.afstemning.Id}
 	return NewStemmeList(args)

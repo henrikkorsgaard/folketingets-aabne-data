@@ -5,6 +5,7 @@ Avoid generating the files. Think of developing the schema as API query definiti
 """
 
 # Import graphql datatype 
+# Consider structuring your graphql schemas like this: https://github.com/OscarYuen/go-graphql-starter/tree/master/schema
 scalar Time
 
 schema {
@@ -15,7 +16,7 @@ type Query {
     afstemning(id:Int): [Afstemning]!
     stemme(id:Int): [Stemme]!
     aktør(id:Int, type:String): [Aktør]!
-    sag(id:Int):[Sag]!
+    #sag(id:Int):[Sag]!
 }
 
 type Afstemning {
