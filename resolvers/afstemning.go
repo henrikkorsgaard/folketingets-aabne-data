@@ -1,35 +1,45 @@
 package resolvers
 
 import (
-	"database/sql"
-	"fmt"
+
 	"time"
-	"os"
+
+	"henrikkorsgaard/folketingets-aabne-data/ftoda"
 
 	graphql "github.com/graph-gophers/graphql-go"
 )
 
 type AfstemningResolver struct {
-	afstemning Afstemning
+	afstemning ftoda.Afstemning
 }
 
 func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err error){
 
-	repo := newSqlite()
-
-	query := "SELECT Afstemning.id, Afstemning.nummer, Afstemning.konklusion, Afstemning.vedtaget, Afstemning.kommentar, Afstemning.mødeid, Afstemningstype.type, Afstemning.sagstrinid, Afstemning.opdateringsdato FROM Afstemning JOIN Afstemningstype ON Afstemning.typeid = Afstemningstype.id"
+	repo := ftoda.NewRepository()
 
 	if args.Id != nil {
-		query +=  " WHERE Afstemning.id=" + fmt.Sprintf("%d", *args.Id)
+		var afstemning ftoda.Afstemning
+		afstemning, err = repo.GetAfstemning(int(*args.Id))
+
+		afstemingResolver := AfstemningResolver{afstemning}
+		resolvers = append(resolvers, &afstemingResolver)
+		return
 	}
 
+	// if the query does not supply an offset
+	// we set it to 0
 	if args.Offset == nil {
 		var offset int32 = 0
 		args.Offset = &offset
 	}
 
-	query+= " LIMIT " + os.Getenv("GRAPHQL_QUERY_LIMIT") + " OFFSET " + fmt.Sprintf("%d", *args.Offset) + ";"
+	afstemninger, err := repo.GetAllAfstemning(100, int(*args.Offset))
 
+	for _, afstemning := range afstemninger {
+		afstemingResolver := AfstemningResolver{afstemning}
+		resolvers = append(resolvers, &afstemingResolver)
+	}
+	/*
 	rows, err := repo.db.Query(query)
 	if err != nil {
 		return
@@ -65,12 +75,13 @@ func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err err
 
 	if args.Id != nil && len(resolvers) == 0 {
 		err = fmt.Errorf("Unable to resolve Afstemning: Id %d does not exist", *args.Id)
-	}
+	}*/
 
 	return
 }
 
 func NewAfstemning(args QueryArgs) (resolver *AfstemningResolver,err error) {
+
 	resolvers, err := NewAfstemningList(args)
 	if err != nil {
 		return
@@ -84,11 +95,11 @@ func NewAfstemning(args QueryArgs) (resolver *AfstemningResolver,err error) {
 }
 
 func (a *AfstemningResolver) Id() int32 {
-	return a.afstemning.Id
+	return int32(a.afstemning.Id)
 }
 
 func (a *AfstemningResolver) Nummer() int32 {
-	return a.afstemning.Nummer
+	return int32(a.afstemning.Nummer)
 }
 
 func (a *AfstemningResolver) Konklusion() *string {
@@ -96,7 +107,7 @@ func (a *AfstemningResolver) Konklusion() *string {
 }
 
 func (a *AfstemningResolver) Vedtaget() int32 {
-	return a.afstemning.Vedtaget
+	return int32(a.afstemning.Vedtaget)
 }
 
 func (a *AfstemningResolver) Kommentar() *string {
@@ -108,18 +119,22 @@ func (a *AfstemningResolver) Type() string {
 }
 
 func (a *AfstemningResolver) Opdateringsdato() graphql.Time {
-	return a.afstemning.Opdateringsdato
+	t, err := time.Parse(time.DateTime, a.afstemning.Opdateringsdato)
+	if err != nil {
+		panic(err) // This field is not null, I want to catch errors in development
+	}
+	return graphql.Time{t}
 }
 
 func (a *AfstemningResolver) Møde()  (*MødeResolver, error) {
-	margs := QueryArgs{Id:&a.afstemning.MødeID}
+	id := int32(a.afstemning.MødeID)
+	margs := QueryArgs{Id:&id}
 	return NewMøde(margs)
 }
 
 func (a *AfstemningResolver) Stemmer()  ([]*StemmeResolver, error) {
 	// This introduces the N+1 problem
-	
-
-	args := StemmeQueryArgs{AfstemningId:&a.afstemning.Id}
+	id := int32(a.afstemning.Id)
+	args := StemmeQueryArgs{AfstemningId:&id}
 	return NewStemmeList(args)
 }

@@ -1,39 +1,44 @@
 package ftoda
 
 import (
-
+	
 	//"gorm.io/gorm"
 	//graphql "github.com/graph-gophers/graphql-go"
 )
 
 type Afstemning struct {
-	Id int32 `gorm:"primaryKey"`
-	Nummer int32
+	Id int 					`gorm:"primaryKey"`
+	Nummer int
 	Konklusion string
-	Vedtaget int32
+	Vedtaget int
 	Kommentar string
-	MødeID int32 
+	MødeID int
 	Type string
-	SagstrinID int32 
-	//Opdateringsdato graphql.Time // need to implement scanner before I can use this.
+	SagstrinID int 
+	Opdateringsdato string 
 }
 
 func (Afstemning) TableName() string {
 	return "Afstemning"
 }
 
-// Return one 
-func (r *Repository) GetAfstemning(id int32) (afstemning Afstemning, err error) {
-	r.db.First(&afstemning)
+func (r *Repository) GetAfstemning(id int) (afstemning Afstemning, err error) {
+	result := r.db.First(&afstemning, id)
+	err = result.Error
 	return 
 }
 
-// Return all * with the provided limits and offsets
-func (r *Repository) GetAllAfstemning() (afstemninger []Afstemning, err error) {
+func (r *Repository) GetAllAfstemning(limit int, offset int)(afstemninger []Afstemning, err error) {
+	result := r.db.Limit(200).Offset(offset).Find(&afstemninger)
+	err = result.Error
+
 	return
 }
 
-// Return ids --> only used internally with the loader
-func (r *Repository) GetAfstemningList(ids []int32) (afsemninger []Afstemning, err error) {
+func (r *Repository) GetAfstemningByIds(ids []int) (afstemninger []Afstemning, err error) {
+
+	result := r.db.Find(&afstemninger, ids)
+	err = result.Error
+
 	return
 }

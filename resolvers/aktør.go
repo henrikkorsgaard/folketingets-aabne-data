@@ -1,11 +1,7 @@
 package resolvers
 
 import (
-	"fmt"
-	"database/sql"
-	"strings"
-	"time"
-	"os"
+	
 
 	graphql "github.com/graph-gophers/graphql-go"
 )
@@ -34,7 +30,7 @@ type Aktør struct {
 }
 
 func NewAktørList(args AktørQueryArgs) (resolvers []*AktørResolver, err error){
-	
+	/*
 	repo := newSqlite()
 
 	query := "SELECT Aktør.id, Aktørtype.type, Aktør.gruppenavnkort, Aktør.navn, Aktør.fornavn, Aktør.efternavn, Aktør.biografi, Aktør.periodeid, Aktør.startdato, Aktør.slutdato, Aktør.opdateringsdato FROM Aktør JOIN Aktørtype ON Aktør.typeid = Aktørtype.id"
@@ -139,6 +135,7 @@ func NewAktørList(args AktørQueryArgs) (resolvers []*AktørResolver, err error
 	if args.Id != nil && len(resolvers) == 0 {
 		err = fmt.Errorf("Unable to resolve Aktør: Id %d does not exist", *args.Id)
 	}
+	*/
 
 	return
 }

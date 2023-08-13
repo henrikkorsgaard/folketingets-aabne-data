@@ -1,9 +1,5 @@
 package resolvers
 import (
-	
-	"fmt"
-	"time"
-	"os"
 
 	graphql "github.com/graph-gophers/graphql-go"
 
@@ -27,7 +23,7 @@ type Stemme struct {
 }
 
 func NewStemmeList(args StemmeQueryArgs) (resolvers []*StemmeResolver, err error){
-
+	/*
 	repo := newSqlite()
 
 	query := "SELECT Stemme.id, Stemmetype.type, Stemme.afstemningid, Stemme.aktørid, Stemme.opdateringsdato FROM Stemme JOIN Stemmetype ON Stemme.typeid = Stemmetype.id"
@@ -86,7 +82,7 @@ func NewStemmeList(args StemmeQueryArgs) (resolvers []*StemmeResolver, err error
 	if args.Id != nil && len(resolvers) == 0 {
 		err = fmt.Errorf("Unable to resolve Stemme: Id %d does not exist", *args.Id)
 	}
-
+	*/
 	return
 }
 

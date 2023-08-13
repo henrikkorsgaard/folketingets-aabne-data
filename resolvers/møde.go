@@ -2,9 +2,6 @@ package resolvers
 
 import (
 	
-	"os"
-	"fmt"
-	"strings"
 	
 )
 
@@ -17,7 +14,7 @@ type Møde struct {
 }
 
 func NewMøde(args QueryArgs) (resolver *MødeResolver,err error) {
-	
+	/*
 	repo := newSqlite()
 
 	query := "SELECT Møde.id FROM Møde WHERE Møde.id=" + fmt.Sprintf("%d", *args.Id)
@@ -43,7 +40,7 @@ func NewMøde(args QueryArgs) (resolver *MødeResolver,err error) {
 	}
 
 	resolver = &MødeResolver{møde}
-
+	*/
 	return 
 }
 
