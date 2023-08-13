@@ -47,13 +47,9 @@ func main() {
 	qr := resolvers.QueryResolver{}
 
     schema := graphql.MustParseSchema(string(b), &qr, graphql.MaxDepth(5))
-	http.HandleFunc("/", handleTestClient)
-	http.Handle("/graphiql", graphiqlHandler)
+	http.Handle("/", graphiqlHandler)
     http.Handle("/graphql", &relay.Handler{Schema: schema})
 	
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func handleTestClient(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w,r,"client/client.html")
-}
