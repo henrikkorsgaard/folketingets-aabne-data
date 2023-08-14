@@ -13,8 +13,8 @@ schema {
 }
 
 type Query {
-    afstemning(id:Int): [Afstemning]!
-    aktør(id:Int, type:String): [Aktør]!
+    #afstemning(id:Int): [Afstemning]!
+    #aktør(id:Int, type:String): [Aktør]!
     #sag(id:Int):[Sag]!
 }
 
@@ -38,8 +38,8 @@ type Stemme {
     id:Int!
     type:String
     afstemning:Afstemning!
-    aktør:Aktør!
-    opdateringsdato: Time!
+    #aktør:Aktør!
+    #opdateringsdato: Time!
 }
 
 type Aktør {

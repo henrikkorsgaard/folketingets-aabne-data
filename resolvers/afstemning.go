@@ -1,9 +1,9 @@
 package resolvers
 
 import (
-	"time"
 	"context"
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
+	"time"
 
 	graphql "github.com/graph-gophers/graphql-go"
 )
@@ -12,13 +12,11 @@ type AfstemningResolver struct {
 	afstemning ftoda.Afstemning
 }
 
-
 // This is the pattern to follow.
 func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err error) {
 
-	repo := ftoda.NewRepository()
-
 	if args.Id != nil {
+		// load one I guess
 		var afstemning ftoda.Afstemning
 		afstemning, err = repo.GetAfstemning(int(*args.Id))
 
@@ -34,6 +32,7 @@ func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err err
 		args.Offset = &offset
 	}
 
+	//load all i guess
 	afstemninger, err := repo.GetAllAfstemning(100, int(*args.Offset))
 
 	for _, afstemning := range afstemninger {

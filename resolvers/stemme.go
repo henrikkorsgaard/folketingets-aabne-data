@@ -1,13 +1,8 @@
 package resolvers
 
 import (
-	"context"
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
-	"time"
-
-	graphql "github.com/graph-gophers/graphql-go"
 )
-
 
 type StemmeQueryArgs struct {
 	QueryArgs
@@ -18,52 +13,19 @@ type StemmeResolver struct {
 	stemme ftoda.Stemme
 }
 
-func NewStemmeList(ctx context.Context, args StemmeQueryArgs) (resolvers []*StemmeResolver, err error) {
-		
-	repo := ftoda.NewRepository()
+func NewStemmeList(args StemmeQueryArgs) (resolvers []*StemmeResolver, err error) {
 
 	if args.AfstemningId != nil {
-		loader := ftoda.NewStemmeLoader()
-
 		id := int(*args.AfstemningId)
-	
-		thunk := loader.Load(ctx,id)
-		result, inerr := thunk()
-		if inerr != nil {
-			err = inerr
-		}
-		
-		stemmer := *result 
+		var stemmer []ftoda.Stemme
+		stemmer, err = ftoda.LoadStemmerFromAfstemning(id)
+
 		for _, stemme := range stemmer {
 			stemmeResolver := StemmeResolver{stemme}
-			resolvers  = append(resolvers, &stemmeResolver)
+			resolvers = append(resolvers, &stemmeResolver)
 		}
 
-		return 
-	}
-
-	if args.Id != nil {
-		var stemme ftoda.Stemme
-		stemme, err = repo.GetStemme(int(*args.Id))
-
-		stemmeResolver := StemmeResolver{stemme}
-		resolvers = append(resolvers, &stemmeResolver)
-
 		return
-	}
-
-	// if the query does not supply an offset
-	// we set it to 0
-	if args.Offset == nil {
-		var offset int32 = 0
-		args.Offset = &offset
-	}
-
-	stemmer, err := repo.GetAllStemme(200, int(*args.Offset))
-
-	for _, stemme := range stemmer {
-		stemmeResolver := StemmeResolver{stemme}
-		resolvers = append(resolvers, &stemmeResolver)
 	}
 
 	return
@@ -77,6 +39,7 @@ func (s *StemmeResolver) Type() *string {
 	return &s.stemme.Type
 }
 
+/*
 func (s *StemmeResolver) Opdateringsdato() graphql.Time {
 	t, err := time.Parse(time.DateTime, s.stemme.Opdateringsdato)
 	if err != nil {
@@ -85,6 +48,7 @@ func (s *StemmeResolver) Opdateringsdato() graphql.Time {
 	return graphql.Time{t}
 }
 
+/*
 func (s *StemmeResolver) Aktør() (*AktørResolver, error) {
 	id := int32(s.stemme.AktørId)
 	args := AktørQueryArgs{QueryArgs: QueryArgs{Id: &id}}
@@ -95,4 +59,4 @@ func (s *StemmeResolver) Afstemning() (*AfstemningResolver, error) {
 	id := int32(s.stemme.AfstemningId)
 	args := QueryArgs{Id: &id}
 	return NewAfstemning(args)
-}
+}*/
