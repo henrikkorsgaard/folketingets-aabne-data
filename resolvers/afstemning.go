@@ -2,7 +2,7 @@ package resolvers
 
 import (
 	"time"
-
+	"context"
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -95,8 +95,7 @@ func (a *AfstemningResolver) Møde() (*MødeResolver, error) {
 }
 
 func (a *AfstemningResolver) Stemmer() ([]*StemmeResolver, error) {
-	// This introduces the N+1 problem
 	id := int32(a.afstemning.Id)
 	args := StemmeQueryArgs{AfstemningId: &id}
-	return NewStemmeList(args)
+	return NewStemmeList(context.Background(), args)
 }
