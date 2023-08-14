@@ -11,10 +11,11 @@ Pull and run and explore the data on localhost:8080/graphiql!
 
 ## Notes
 
-### Todo
 
-- Solve the N + 1 problem with Dataloader: https://github.com/graph-gophers/dataloader
-- The coupling between the resolvers and the database is too tight. Use a ORM, like GORM!
+### Notes on schema design
+One of the critical findings in a recent study by my students and in reviewing the ERD behind the data, is that the ERD introduces too many relations for people to be able to formulate a query. When translating the data to a GraphQL API, I will make an opinionated schema. Here are some notes
+
+**Stemme (vote)**: This table contain the votes cast at a particular parliament vote sesstion (table: Afstemning) and then members of parliament (table: Aktør). It does not make sense to have Stemme on the root query. An atomic vote does not make sense without the relations and querying on votes will lead to subsequent queries to establish the relationship ({stemme {afstemning {id} vote {afstemningid, aktør {name}}}}). Hence, I have made it so that the entry point is either afstemning (vote session) or aktør (voter). 
 
 ### Tests
 I mainly run tests to make sure that I cover the contract implied in the GraphQL schema definition and making sure that I can call the database with the individual entities and resolvers. I do not verify the structs and data coverage in the resolver queries. That will be caught with the schema contract and/or graphIql test.

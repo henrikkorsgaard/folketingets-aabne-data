@@ -26,14 +26,13 @@ func (r *Repository) GetAfstemning(id int) (afstemning Afstemning, err error) {
 }
 
 func (r *Repository) GetAllAfstemning(limit int, offset int) (afstemninger []Afstemning, err error) {
-	result := r.db.Limit(100).Offset(900).Find(&afstemninger)
+	result := r.db.Limit(limit).Offset(offset).Find(&afstemninger)
 	err = result.Error
 
 	return
 }
 
 func (r *Repository) GetAfstemningByIds(ids []int) (afstemninger []Afstemning, err error) {
-
 	result := r.db.Find(&afstemninger, ids)
 	err = result.Error
 

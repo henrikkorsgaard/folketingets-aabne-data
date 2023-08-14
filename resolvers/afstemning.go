@@ -12,6 +12,8 @@ type AfstemningResolver struct {
 	afstemning ftoda.Afstemning
 }
 
+
+// This is the pattern to follow.
 func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err error) {
 
 	repo := ftoda.NewRepository()

@@ -18,7 +18,6 @@ type StemmeResolver struct {
 	stemme ftoda.Stemme
 }
 
-
 func NewStemmeList(ctx context.Context, args StemmeQueryArgs) (resolvers []*StemmeResolver, err error) {
 		
 	repo := ftoda.NewRepository()
@@ -69,7 +68,6 @@ func NewStemmeList(ctx context.Context, args StemmeQueryArgs) (resolvers []*Stem
 
 	return
 }
-
 
 func (s *StemmeResolver) Id() int32 {
 	return int32(s.stemme.Id)

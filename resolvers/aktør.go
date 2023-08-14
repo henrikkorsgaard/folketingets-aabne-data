@@ -1,7 +1,6 @@
 package resolvers
 
 import (
-	
 
 	graphql "github.com/graph-gophers/graphql-go"
 )
@@ -15,38 +14,16 @@ type AktørResolver struct {
 	aktør Aktør
 }
 
-type Aktør struct {
-	Id int32
-	Type string
-	GruppeNavnKort string
-	Navn string
-	Fornavn string
-	Efternavn string
-	Biografi string 
-	PeriodeID int32 
-	StartDato graphql.Time
-	SlutDato graphql.Time
-	Opdateringsdato graphql.Time
-}
 
 func NewAktørList(args AktørQueryArgs) (resolvers []*AktørResolver, err error){
 	/*
-	repo := newSqlite()
-
-	query := "SELECT Aktør.id, Aktørtype.type, Aktør.gruppenavnkort, Aktør.navn, Aktør.fornavn, Aktør.efternavn, Aktør.biografi, Aktør.periodeid, Aktør.startdato, Aktør.slutdato, Aktør.opdateringsdato FROM Aktør JOIN Aktørtype ON Aktør.typeid = Aktørtype.id"
-
-	if args.Id != nil {
-		query +=  " WHERE Aktør.id=" + fmt.Sprintf("%d", *args.Id)
+	
+	if args.Type != nil {
+		// query by type
 	}
 
-	if args.Type != nil {
-		if args.Id != nil {
-			query += " AND "
-		} else {
-			query +=  " WHERE "
-		}
-
-		query += "Aktørtype.type='" + fmt.Sprintf("%s", strings.Title(*args.Type)) + "'"
+	if args.Id != nil {
+		// query by type
 	}
 
 	if args.Offset == nil {
@@ -54,93 +31,14 @@ func NewAktørList(args AktørQueryArgs) (resolvers []*AktørResolver, err error
 		args.Offset = &offset
 	}
 
-	query+= " LIMIT " + os.Getenv("GRAPHQL_QUERY_LIMIT") + " OFFSET " + fmt.Sprintf("%d", *args.Offset) + ";"
+	
 
-	rows, err := repo.db.Query(query)
-	if err != nil {
-		return
-	}
-
-	for rows.Next(){
-		aktør := Aktør{}
-
-		var gruppenavnkort sql.NullString 
-		var navn sql.NullString 
-		var fornavn sql.NullString 
-		var efternavn sql.NullString 
-		var biografi sql.NullString 
-		var periodeid sql.NullInt32
-		var startdato sql.NullString
-		var slutdato sql.NullString
-		var opdateringsdato string
-
-		err = rows.Scan(&aktør.Id, &aktør.Type, &gruppenavnkort, &navn,&fornavn, &efternavn, &biografi, &periodeid, &startdato, &slutdato, &opdateringsdato)
-
-		if err != nil {
-			break
-		}
-
-		if navn.Valid {
-			aktør.Navn = navn.String
-		}
-
-		if fornavn.Valid {
-			aktør.Fornavn = fornavn.String
-		}
-
-		if efternavn.Valid {
-			aktør.Efternavn = efternavn.String
-		}
-
-		if biografi.Valid {
-			aktør.Biografi = biografi.String
-		}
-
-		if periodeid.Valid {
-			aktør.PeriodeID = periodeid.Int32
-		}
-
-		if startdato.Valid {
-			t_start, err := time.Parse(time.DateTime, startdato.String)
-			if err != nil {
-				break
-			}
-			aktør.StartDato.Time = t_start
-		}
-
-		if slutdato.Valid {
-			t_slut, err := time.Parse(time.DateTime, slutdato.String)
-			if err != nil {
-				break
-			}
-			aktør.SlutDato.Time = t_slut
-		}
-
-		t_op, err := time.Parse(time.DateTime, opdateringsdato)
-		if err != nil {
-			break
-		}
-
-		
-		aktør.Opdateringsdato.Time = t_op
-
-		aktørResolver := AktørResolver{aktør}
-		resolvers = append(resolvers, &aktørResolver)
-	}
-
-	if rows.Err() != nil {
-		err = rows.Err()
-	}
-
-	if args.Id != nil && len(resolvers) == 0 {
-		err = fmt.Errorf("Unable to resolve Aktør: Id %d does not exist", *args.Id)
-	}
 	*/
 
 	return
 }
 
-// we need the single return if other objects has a single entity in their schema
+//This will still be subject to N+1 unless I load it here. Other entities might call it from a list and then this will result in N+1 calls into NewAktør. Use AktørLoader
 func NewAktør(args AktørQueryArgs) (resolver *AktørResolver,err error) {
 	resolvers, err := NewAktørList(args)
 	if err != nil {
