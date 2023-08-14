@@ -5,6 +5,9 @@ This projects explore different ways for interacting with the Danish Parliament 
 The goal is to implement a GraphQL microservice for querying the Danish Parliament Open Data.
 
 ## Try it!
+
+Currently broken due to refactoring -- wait a few days till the dataloaders are integrated!
+
 I have added a small http server that will serve the GraphQL endpoint (/graphql) and a simple GraphIQL (/graphiql) front end for exploration. 
 
 Pull and run and explore the data on localhost:8080/graphiql!
