@@ -97,12 +97,7 @@ func (r *Repository) getAktører(limit int, offset int) (aktører []Aktør, err 
 }
 
 func (r *Repository) getAktørerByIds(ids []int) (aktører []Aktør, err error) {
-	// we need to find and include the thing from the tables 
-
-	// This also applies to afstemning.Type
-	// SELECT Afstemning.*, Afstemningstype.Type FROM JOIN etc.... check older commits.
-	// HOW DO WE DO JOINS IN GORM?
-	result := r.db.Find(&aktører, ids)
+	result := r.db.Table("Aktør").Select("Aktør.*, Aktørtype.type").Joins("left join Aktørtype on Aktør.typeid = Aktørtype.id").Find(&aktører, ids)
 	err = result.Error
 	return 
 }

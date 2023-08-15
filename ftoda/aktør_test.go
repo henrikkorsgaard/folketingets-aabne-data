@@ -22,6 +22,13 @@ func TestAktørLoaderAll(t *testing.T) {
 	assert.Len(t, aktører, 100)
 }
 
+func TestAktørTypeNotNull(t *testing.T) {
+	aktør, err := LoadAktørById(19109)
+	assert.NoError(t, err)
+	assert.Equal(t,"Privatperson", aktør.Type)
+	
+}
+
 func TestAktørLoadByName(t *testing.T) {
 	name := "Anne Madsen"
 	aktør, err := LoadAktørByName(name)
