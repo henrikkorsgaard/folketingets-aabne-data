@@ -7,11 +7,11 @@ type QueryArgs struct {
 
 type QueryResolver struct{}
 
-func (qr *QueryResolver) Afstemning(args QueryArgs) ([]*AfstemningResolver, error) {
+func (qr *QueryResolver) Afstemning(args AfstemningQueryArgs) ([]*AfstemningResolver, error) {
+
 	return NewAfstemningList(args)
 }
 
-/*
 func (qr *QueryResolver) Aktør(args AktørQueryArgs) ([]*AktørResolver, error) {
 	return NewAktørList(args)
-}*/
+}

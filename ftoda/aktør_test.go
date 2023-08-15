@@ -17,7 +17,7 @@ func init() {
 }
 
 func TestAktørLoaderAll(t *testing.T) {
-	aktører, err := LoadAfstemninger(100, 0)
+	aktører, err := LoadAktører(100, 0)
 	assert.NoError(t, err)
 	assert.Len(t, aktører, 100)
 }
@@ -26,6 +26,13 @@ func TestAktørTypeJoin(t *testing.T) {
 	aktør, err := LoadAktørById(19109)
 	assert.NoError(t, err)
 	assert.Equal(t,"Privatperson", aktør.Type)
+}
+
+func TestAktørLoaderByAktørType(t *testing.T) {
+	aktørtype := "Ministertitel"
+	aktører, err := LoadAktørerByType(100, 0, aktørtype)
+	assert.NoError(t, err)
+	assert.Equal(t, aktørtype, aktører[0].Type)
 }
 
 func TestAktørLoadByName(t *testing.T) {

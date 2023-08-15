@@ -68,6 +68,15 @@ type Afstemning struct {
 	Opdateringsdato string
 }
 
+type Afstemningstype int 
+
+const (
+	EndeligVedtagelse Afstemningstype = iota
+	UdvalgsIndstilling
+	ForslagTilVedtagelse
+	ÆndringsForslag
+)
+
 func (Afstemning) TableName() string {
 	return "Afstemning"
 }
@@ -91,6 +100,11 @@ func LoadAfstemninger(limit int, offset int) (afstemninger []Afstemning, err err
 func (r *Repository) getAfstemninger(limit int, offset int) (afstemninger []Afstemning, err error) {
 	result := r.db.Limit(limit).Offset(offset).Find(&afstemninger)
 	err = result.Error
+	return
+}
+
+func (r *Repository) getAfstemingerByType(limit int, offset int, afstemningsType Afstemningstype) (afstemninger []Afstemning, err error) {
+	
 	return
 }
 

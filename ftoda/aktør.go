@@ -90,8 +90,20 @@ func LoadAktører(limit int, offset int) (aktører []Aktør, err error) {
 	return repo.getAktører(limit, offset)
 }
 
+func LoadAktørerByType(limit int, offset int, aktørType string) (aktører []Aktør, err error) {
+	repo := newRepository()
+	return repo.getAktørerByType(limit, offset, aktørType)
+}
+
+
 func (r *Repository) getAktører(limit int, offset int) (aktører []Aktør, err error) {
 	result := r.db.Limit(limit).Offset(offset).Find(&aktører)
+	err = result.Error
+	return
+}
+
+func (r *Repository) getAktørerByType(limit int, offset int, aktørType string) (aktører []Aktør, err error) {
+	result := r.db.Table("Aktør").Limit(limit).Offset(offset).Select("Aktør.*, Aktørtype.type").Joins("left join Aktørtype on Aktør.typeid = Aktørtype.id").Where("Aktørtype.type = ?", aktørType).Find(&aktører)
 	err = result.Error
 	return
 }

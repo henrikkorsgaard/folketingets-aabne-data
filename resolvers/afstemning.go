@@ -8,12 +8,17 @@ import (
 	graphql "github.com/graph-gophers/graphql-go"
 )
 
+type AfstemningQueryArgs struct {
+	QueryArgs
+	Type *string
+}
+
 type AfstemningResolver struct {
 	afstemning ftoda.Afstemning
 }
 
 // This is the pattern to follow.
-func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err error) {
+func NewAfstemningList(args AfstemningQueryArgs) (resolvers []*AfstemningResolver, err error) {
 
 	if args.Id != nil {
 		var afstemningResolver *AfstemningResolver
@@ -41,7 +46,7 @@ func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err err
 	return
 }
 
-func NewAfstemning(args QueryArgs) (resolver *AfstemningResolver, err error) {
+func NewAfstemning(args AfstemningQueryArgs) (resolver *AfstemningResolver, err error) {
 	
 	if args.Id != nil {
 		

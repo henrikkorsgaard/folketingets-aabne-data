@@ -36,7 +36,6 @@ func TestAktørByType(t *testing.T){
 	aktørtype := "Ministertitel"
 	args := AktørQueryArgs{Type:&aktørtype}
 	aktører, err := NewAktørList(args)
-	fmt.Printf("%+v\n", aktører[0])
 	assert.NoError(t, err)
 	assert.Equal(t, aktørtype, aktører[0].Type())
 }
@@ -47,7 +46,7 @@ func TestAktørByName(t *testing.T){
 	aktør, err := NewAktør(args)
 
 	assert.NoError(t, err)
-	assert.Equal(t, name, aktør.Navn())
+	assert.Equal(t, name, *aktør.Navn())
 }
 
 

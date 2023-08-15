@@ -26,12 +26,18 @@ func NewAktørList(args AktørQueryArgs) (resolvers []*AktørResolver, err error
 		return
 	}
 
+
 	if args.Offset == nil {
 		var offset int32 = 0
 		args.Offset = &offset
 	} 
 
-	aktører, err := ftoda.LoadAktører(100, int(*args.Offset))
+	var aktører []ftoda.Aktør
+	if args.Type != nil {
+		aktører, err = ftoda.LoadAktørerByType(100, int(*args.Offset), *args.Type)
+	} else {
+		aktører, err = ftoda.LoadAktører(100, int(*args.Offset))
+	}
 
 	for _, aktør := range aktører {
 		aktørResolver := AktørResolver{aktør}
@@ -83,7 +89,7 @@ func (a *AktørResolver) Id() int32 {
 }
 
 func (a *AktørResolver) Type() string {
-	return a.aktør.Navn
+	return a.aktør.Type
 }
 
 func (a *AktørResolver) GruppeNavnKort() *string {
@@ -109,6 +115,14 @@ func (a *AktørResolver) Biografi() *string {
 func (a *AktørResolver) Periode() *int32 {
 	periode := int32(a.aktør.Periode)
 	return &periode
+}
+
+func (a *AktørResolver) Startdato() *graphql.Time {
+	return nil
+}
+
+func (a *AktørResolver) Slutdato() *graphql.Time {
+	return nil
 }
 
 func (a *AktørResolver) Opdateringsdato() graphql.Time {

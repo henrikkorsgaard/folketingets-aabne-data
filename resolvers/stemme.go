@@ -59,6 +59,6 @@ func (s *StemmeResolver) Aktør() (*AktørResolver, error) {
 
 func (s *StemmeResolver) Afstemning() (*AfstemningResolver, error) {
 	id := int32(s.stemme.AfstemningId)
-	args := QueryArgs{Id: &id}
+	args := AfstemningQueryArgs{QueryArgs:QueryArgs{Id: &id}}
 	return NewAfstemning(args)
 }

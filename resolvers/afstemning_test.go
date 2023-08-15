@@ -17,7 +17,7 @@ func init(){
 }
 
 func TestAfstemning(t *testing.T){
-	args := QueryArgs{}
+	args :=AfstemningQueryArgs{}
 	afstemninger, err := NewAfstemningList(args)
 	assert.NoError(t, err)
 	assert.Len(t, afstemninger, 100)
@@ -25,7 +25,7 @@ func TestAfstemning(t *testing.T){
 
 func TestAfstemningById(t *testing.T){
 	var id int32 = 8357
-	args := QueryArgs{Id:&id}
+	args := AfstemningQueryArgs{QueryArgs:QueryArgs{Id:&id}}
 	afstemning, err := NewAfstemning(args)
 
 	assert.NoError(t, err)
@@ -35,8 +35,8 @@ func TestAfstemningById(t *testing.T){
 
 func TestAfstemningNotFoundError(t *testing.T){
 	var id int32 = 2
-	args := QueryArgs{Id:&id}
+	args := AfstemningQueryArgs{QueryArgs:QueryArgs{Id:&id}}
 	_, err := NewAfstemning(args)
-	assert.ErrorContains(t, err, "unable to resolve")
+	assert.ErrorContains(t, err, "Unable to resolve")
 }
 
