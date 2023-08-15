@@ -30,3 +30,24 @@ func TestAfstemningLoadByIds(t *testing.T) {
 		assert.Equal(t, key, afstemning.Id)
 	}
 }
+
+// We wan to make sure the loader will return errors on ids not found
+func TestAfstemningNotFoundError(t *testing.T){
+	idError := 2
+	_, err := LoadAfstemning(idError)
+	assert.ErrorContains(t, err, "record not found")
+}
+
+// We wan to make sure the loader will return errors on ids not found when we send multiple request to the loader
+func TestAfstemningFoundThenNotFoundError(t *testing.T){
+	idExist := 8357
+	idError := 2
+	
+	afstemning, err := LoadAfstemning(idExist)
+	assert.NoError(t, err)
+	assert.Equal(t, idExist, afstemning.Id)
+	
+	_, err = LoadAfstemning(idError)
+	assert.ErrorContains(t, err, "record not found")
+}
+

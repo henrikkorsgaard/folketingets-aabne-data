@@ -17,24 +17,26 @@ func init(){
 }
 
 func TestAfstemning(t *testing.T){
-	
 	args := QueryArgs{}
-	_, err := NewAfstemningList(args)
+	afstemninger, err := NewAfstemningList(args)
 	assert.NoError(t, err)
+	assert.Len(t, afstemninger, 100)
 }
 
 func TestAfstemningById(t *testing.T){
 	var id int32 = 8357
 	args := QueryArgs{Id:&id}
-	_, err := NewAfstemningList(args)
+	afstemning, err := NewAfstemning(args)
 
 	assert.NoError(t, err)
+	assert.Equal(t, id, afstemning.Id())
 }
 
 
 func TestAfstemningNotFoundError(t *testing.T){
 	var id int32 = 2
 	args := QueryArgs{Id:&id}
-	_, err := NewAfstemningList(args)
-	assert.ErrorContains(t, err, "record not found")
+	_, err := NewAfstemning(args)
+	assert.ErrorContains(t, err, "unable to resolve")
 }
+

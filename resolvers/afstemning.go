@@ -1,7 +1,7 @@
 package resolvers
 
 import (
-	"context"
+	"errors"
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
 	"time"
 
@@ -16,12 +16,10 @@ type AfstemningResolver struct {
 func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err error) {
 
 	if args.Id != nil {
-		// load one I guess
-		var afstemning ftoda.Afstemning
-		afstemning, err = repo.GetAfstemning(int(*args.Id))
-
-		afstemingResolver := AfstemningResolver{afstemning}
-		resolvers = append(resolvers, &afstemingResolver)
+		var afstemningResolver *AfstemningResolver
+		afstemningResolver, err = NewAfstemning(args)
+		resolvers = append(resolvers, afstemningResolver)
+		
 		return
 	}
 
@@ -33,7 +31,7 @@ func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err err
 	}
 
 	//load all i guess
-	afstemninger, err := repo.GetAllAfstemning(100, int(*args.Offset))
+	afstemninger, err := ftoda.LoadAfstemninger(100, int(*args.Offset)) 
 
 	for _, afstemning := range afstemninger {
 		afstemingResolver := AfstemningResolver{afstemning}
@@ -44,15 +42,22 @@ func NewAfstemningList(args QueryArgs) (resolvers []*AfstemningResolver, err err
 }
 
 func NewAfstemning(args QueryArgs) (resolver *AfstemningResolver, err error) {
+	
+	if args.Id != nil {
+		
+		id := int(*args.Id)
+		
+		var afstemning ftoda.Afstemning
+	
+		afstemning, err = ftoda.LoadAfstemning(id)
 
-	resolvers, err := NewAfstemningList(args)
-	if err != nil {
+		if err != nil {
+			err = errors.New("Unable to resolve Afstemning: " + err.Error())
+		}
+		resolver = &AfstemningResolver{afstemning}	
 		return
 	}
-
-	if len(resolvers) > 0 {
-		resolver = resolvers[0]
-	}
+	err = errors.New("unable to resolve Afstemning")
 
 	return
 }
@@ -89,14 +94,12 @@ func (a *AfstemningResolver) Opdateringsdato() graphql.Time {
 	return graphql.Time{t}
 }
 
-func (a *AfstemningResolver) Møde() (*MødeResolver, error) {
-	id := int32(a.afstemning.MødeID)
-	margs := QueryArgs{Id: &id}
-	return NewMøde(margs)
+func (a *AfstemningResolver) Møde() int32 {
+	return int32(a.afstemning.MødeId)
 }
 
 func (a *AfstemningResolver) Stemmer() ([]*StemmeResolver, error) {
 	id := int32(a.afstemning.Id)
 	args := StemmeQueryArgs{AfstemningId: &id}
-	return NewStemmeList(context.Background(), args)
+	return NewStemmeList(args)
 }

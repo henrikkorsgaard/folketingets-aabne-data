@@ -1,6 +1,8 @@
 package ftoda
 
 import (
+	"fmt"
+	"slices"
 	"context"
 	"sync"
 
@@ -15,15 +17,33 @@ var (
 func afstemningBatchFunction(ctx context.Context, keys []int) (results []*dataloader.Result[*Afstemning]) {
 	repo := newRepository()
 	afstemninger, err := repo.getAfstemningerByIds(keys)
-
+	// This is database errors, we handle discrepencies below
 	if err != nil {
 		panic(err)
 	}
 
-	for _, afstemning := range afstemninger {
-		results = append(results, &dataloader.Result[*Afstemning]{Data: &afstemning})
-	}
+	
+	//Two error cases:
+	// 1: Len(keys) == 1; len(afstemninger) == 0
+	// We never iterate through the afstemninger and never find out we have an error
+	// 2: Len(keys) > len(afstemninger)
+	// We have a couple of errors that need handling
+	
+	// Instead of iterating through the database result,
+	// We iterate through the keys and then use the slice.IndexFunc to see if an Afstemning with the key is in the results. If not, we append an error to the results.
+	for _, key := range keys {
+		i := slices.IndexFunc(afstemninger, func(afstemning Afstemning) bool {
+			return afstemning.Id == key
+		})
 
+		if i == -1 {
+			e := fmt.Errorf("record not found: Afstemning with id %d not found", key)
+			results = append(results, &dataloader.Result[*Afstemning]{Data: &Afstemning{},Error: e})
+		} else {
+			results = append(results, &dataloader.Result[*Afstemning]{Data: &afstemninger[i]})
+		}
+	}
+	
 	return
 }
 
@@ -53,13 +73,12 @@ func (Afstemning) TableName() string {
 }
 
 func LoadAfstemning(id int) (afstemning Afstemning, err error) {
+	
 	loader := newAfstemmeLoader()
 	thunk := loader.Load(context.Background(), id)
-
 	result, err := thunk()
-
 	afstemning = *result
-
+	
 	return
 }
 
@@ -78,5 +97,6 @@ func (r *Repository) getAfstemninger(limit int, offset int) (afstemninger []Afst
 func (r *Repository) getAfstemningerByIds(ids []int) (afstemninger []Afstemning, err error) {
 	result := r.db.Find(&afstemninger, ids)
 	err = result.Error
+	
 	return
 }

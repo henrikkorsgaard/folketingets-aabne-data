@@ -1,6 +1,9 @@
 package resolvers
 
 import (
+	"time"
+
+	graphql "github.com/graph-gophers/graphql-go"
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
 )
 
@@ -39,7 +42,7 @@ func (s *StemmeResolver) Type() *string {
 	return &s.stemme.Type
 }
 
-/*
+
 func (s *StemmeResolver) Opdateringsdato() graphql.Time {
 	t, err := time.Parse(time.DateTime, s.stemme.Opdateringsdato)
 	if err != nil {
@@ -48,7 +51,6 @@ func (s *StemmeResolver) Opdateringsdato() graphql.Time {
 	return graphql.Time{t}
 }
 
-/*
 func (s *StemmeResolver) Aktør() (*AktørResolver, error) {
 	id := int32(s.stemme.AktørId)
 	args := AktørQueryArgs{QueryArgs: QueryArgs{Id: &id}}
@@ -59,4 +61,4 @@ func (s *StemmeResolver) Afstemning() (*AfstemningResolver, error) {
 	id := int32(s.stemme.AfstemningId)
 	args := QueryArgs{Id: &id}
 	return NewAfstemning(args)
-}*/
+}
