@@ -22,6 +22,12 @@ func TestAfstemningLoaderAll(t *testing.T) {
 	assert.Len(t, afstemninger, 100)
 }
 
+func TestAfstemningTypeJoin(t *testing.T) {
+	afstemning, err := LoadAfstemning(9351)
+	assert.NoError(t, err)
+	assert.Equal(t,"Endelig vedtagelse", afstemning.Type)
+}
+
 func TestAfstemningLoadByIds(t *testing.T) {
 	ids := []int{9351, 9352, 9353, 9354, 9355}
 	for _, key := range ids {

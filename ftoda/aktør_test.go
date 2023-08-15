@@ -22,11 +22,10 @@ func TestAktørLoaderAll(t *testing.T) {
 	assert.Len(t, aktører, 100)
 }
 
-func TestAktørTypeNotNull(t *testing.T) {
+func TestAktørTypeJoin(t *testing.T) {
 	aktør, err := LoadAktørById(19109)
 	assert.NoError(t, err)
 	assert.Equal(t,"Privatperson", aktør.Type)
-	
 }
 
 func TestAktørLoadByName(t *testing.T) {
@@ -34,7 +33,6 @@ func TestAktørLoadByName(t *testing.T) {
 	aktør, err := LoadAktørByName(name)
 	assert.NoError(t, err)
 	assert.Equal(t, name, aktør.Navn)
-	
 }
 
 func TestAktørLoadByIds(t *testing.T) {

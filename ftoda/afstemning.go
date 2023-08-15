@@ -95,7 +95,8 @@ func (r *Repository) getAfstemninger(limit int, offset int) (afstemninger []Afst
 }
 
 func (r *Repository) getAfstemningerByIds(ids []int) (afstemninger []Afstemning, err error) {
-	result := r.db.Find(&afstemninger, ids)
+	result := r.db.Table("Afstemning").Select("Afstemning.*, Afstemningstype.type").Joins("left join Afstemningstype on Afstemning.typeid = Afstemningstype.id").Find(&afstemninger, ids)
+
 	err = result.Error
 	
 	return
