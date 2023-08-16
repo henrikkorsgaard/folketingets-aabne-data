@@ -13,7 +13,7 @@ import (
 func init(){
 	fmt.Println("Running tests for the Afstemning")
 	godotenv.Load("../config_dev.env")
-	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/odatest.sqlite.db")
+	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }
 
 func TestAfstemning(t *testing.T){
@@ -34,7 +34,7 @@ func TestAfstemningById(t *testing.T){
 
 
 func TestAfstemningNotFoundError(t *testing.T){
-	var id int32 = 2
+	var id int32 = 20000
 	args := AfstemningQueryArgs{QueryArgs:QueryArgs{Id:&id}}
 	_, err := NewAfstemning(args)
 	assert.ErrorContains(t, err, "Unable to resolve")

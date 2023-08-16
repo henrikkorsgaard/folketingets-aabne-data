@@ -12,11 +12,11 @@ import (
 func init() {
 	fmt.Println("Running tests for the Afstemning")
 	godotenv.Load("../config_dev.env")
-	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/odatest.sqlite.db")
+	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }
 
 func TestStemmerByAfstemningId(t *testing.T) {
-	var afsid int32 = 9351
+	var afsid int32 = 206
 	args := StemmeQueryArgs{AfstemningId: &afsid}
 	stemmeResolvers, err := NewStemmeList(args)
 

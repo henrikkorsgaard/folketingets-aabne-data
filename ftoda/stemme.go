@@ -15,7 +15,17 @@ var (
 
 func stemmeBatchFunction(ctx context.Context, keys []int) (results []*dataloader.Result[*[]Stemme]) {
 	repo := newRepository()
-	stemmer, err := repo.getStemmeByAfstemningIds(keys)
+	var stemmer []Stemme
+	var err error
+	if ctx.Value("parent") == "afstemning" {
+		stemmer, err = repo.getStemmerByAfstemningIds(keys)
+	}
+	
+	if ctx.Value("parent") == "aktør" {
+		stemmer, err = repo.getStemmerByAktørIds(keys)
+	}
+
+
 	if err != nil {
 		panic(err) // Want to force a solution if an error occurs.
 	}
@@ -23,7 +33,13 @@ func stemmeBatchFunction(ctx context.Context, keys []int) (results []*dataloader
 	stemmerByKey := make(map[int][]Stemme)
 
 	for _, stemme := range stemmer {
-		stemmerByKey[stemme.AfstemningId] = append(stemmerByKey[stemme.AfstemningId], stemme)
+		if ctx.Value("parent") == "afstemning" {
+			stemmerByKey[stemme.AfstemningId] = append(stemmerByKey[stemme.AfstemningId], stemme)
+		} 
+
+		if ctx.Value("parent") == "aktør" {
+			stemmerByKey[stemme.AktørId] = append(stemmerByKey[stemme.AktørId], stemme)
+		}
 	}
 
 	for _, key := range keys {
@@ -47,7 +63,7 @@ type Stemme struct {
 	Id              int `gorm:"primaryKey"`
 	Type            string
 	AfstemningId    int `gorm:"column:afstemningid"`
-	AktørId         int
+	AktørId         int `gorm:"column:aktørid"`
 	Opdateringsdato string
 }
 
@@ -55,9 +71,11 @@ func (Stemme) TableName() string {
 	return "Stemme"
 }
 
-func LoadStemmerFromAfstemning(id int) (stemmer []Stemme, err error) {
+func LoadStemmerFromAktør(id int) (stemmer []Stemme, err error) {
 	loader := newStemmeLoader()
-	thunk := loader.Load(context.Background(), id)
+
+	ctx := context.WithValue(context.Background(), "parent", "aktør")
+	thunk := loader.Load(ctx, id)
 
 	result, err := thunk()
 
@@ -65,8 +83,26 @@ func LoadStemmerFromAfstemning(id int) (stemmer []Stemme, err error) {
 	return
 }
 
-func (r *Repository) getStemmeByAfstemningIds(ids []int) (stemmer []Stemme, err error) {
+func LoadStemmerFromAfstemning(id int) (stemmer []Stemme, err error) {
+	loader := newStemmeLoader()
+
+	ctx := context.WithValue(context.Background(), "parent", "afstemning")
+	thunk := loader.Load(ctx, id)
+
+	result, err := thunk()
+
+	stemmer = *result
+	return
+}
+
+func (r *Repository) getStemmerByAfstemningIds(ids []int) (stemmer []Stemme, err error) {
 	result := r.db.Where("afstemningid IN ?", ids).Find(&stemmer)
+	err = result.Error
+	return
+}
+
+func (r *Repository) getStemmerByAktørIds(ids []int) (stemmer []Stemme, err error) {
+	result := r.db.Where("aktørid IN ?", ids).Find(&stemmer)
 	err = result.Error
 	return
 }

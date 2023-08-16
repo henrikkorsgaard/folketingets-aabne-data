@@ -13,7 +13,7 @@ import (
 func init(){
 	fmt.Println("Running tests for the Aktør")
 	godotenv.Load("../config_dev.env")
-	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/odatest.sqlite.db")
+	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }
 
 func TestAktør(t *testing.T){
@@ -24,7 +24,7 @@ func TestAktør(t *testing.T){
 }
 
 func TestAktørById(t *testing.T){
-	var id int32 = 20029
+	var id int32 = 200
 	args := AktørQueryArgs{QueryArgs:QueryArgs{Id:&id}}
 	aktør, err := NewAktør(args)
 
@@ -41,7 +41,7 @@ func TestAktørByType(t *testing.T){
 }
 
 func TestAktørByName(t *testing.T){
-	name := "Anne Madsen"
+	name := "Karen Ellemann"
 	args := AktørQueryArgs{Navn:&name}
 	aktør, err := NewAktør(args)
 
@@ -51,7 +51,7 @@ func TestAktørByName(t *testing.T){
 
 
 func TestAktørNotFoundError(t *testing.T){
-	var id int32 = 2
+	var id int32 = 20000
 	args := AktørQueryArgs{QueryArgs:QueryArgs{Id:&id}}
 	_, err := NewAktør(args)
 	assert.ErrorContains(t, err, "unable to resolve")

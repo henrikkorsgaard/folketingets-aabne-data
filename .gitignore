@@ -1,2 +1,2 @@
 *.db 
-!ingest/data/odatest.sqlite.db
+!ingest/data/oda.test.sqlite.db

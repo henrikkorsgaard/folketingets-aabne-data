@@ -13,7 +13,7 @@ import (
 func init() {
 	fmt.Println("Running tests for Aktør")
 	godotenv.Load("../config_dev.env")
-	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/odatest.sqlite.db")
+	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }
 
 func TestAktørLoaderAll(t *testing.T) {
@@ -23,7 +23,7 @@ func TestAktørLoaderAll(t *testing.T) {
 }
 
 func TestAktørTypeJoin(t *testing.T) {
-	aktør, err := LoadAktørById(19109)
+	aktør, err := LoadAktørById(1528)
 	assert.NoError(t, err)
 	assert.Equal(t,"Privatperson", aktør.Type)
 }
@@ -36,14 +36,14 @@ func TestAktørLoaderByAktørType(t *testing.T) {
 }
 
 func TestAktørLoadByName(t *testing.T) {
-	name := "Anne Madsen"
+	name := "Karen Ellemann"
 	aktør, err := LoadAktørByName(name)
 	assert.NoError(t, err)
 	assert.Equal(t, name, aktør.Navn)
 }
 
 func TestAktørLoadByIds(t *testing.T) {
-	ids := []int{19107,19108,19109,19110,19111}
+	ids := []int{107,136,140,142,150,165}
 	for _, key := range ids {
 		aktør, err := LoadAktørById(key)
 		assert.NoError(t, err)
@@ -53,15 +53,15 @@ func TestAktørLoadByIds(t *testing.T) {
 
 // We wan to make sure the loader will return errors on ids not found
 func TestAktørNotFoundError(t *testing.T){
-	idError := 2
+	idError := 200000
 	_, err := LoadAktørById(idError)
 	assert.ErrorContains(t, err, "record not found")
 }
 
 // We wan to make sure the loader will return errors on ids not found when we send multiple request to the loader
 func TestAktørFoundThenNotFoundError(t *testing.T){
-	idExist := 19109
-	idError := 2
+	idExist := 107
+	idError := 200000
 
 	aktør, err := LoadAktørById(idExist)
 	assert.NoError(t, err)

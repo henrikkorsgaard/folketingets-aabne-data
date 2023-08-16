@@ -133,4 +133,11 @@ func (a *AktørResolver) Opdateringsdato() graphql.Time {
 	return graphql.Time{t}
 }
 
+func (a *AktørResolver) Stemmer() (*[]*StemmeResolver, error) {
+	id := int32(a.aktør.Id)
+	args := StemmeQueryArgs{AktørId: &id}
+	stemmeResolvers, err := NewStemmeList(args)
+	return &stemmeResolvers, err
+}
+
 

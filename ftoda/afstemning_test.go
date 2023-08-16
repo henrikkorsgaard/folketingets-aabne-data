@@ -13,7 +13,7 @@ import (
 func init() {
 	fmt.Println("Running tests for Afstemning")
 	godotenv.Load("../config_dev.env")
-	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/odatest.sqlite.db")
+	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }
 
 func TestAfstemningLoaderAll(t *testing.T) {
@@ -39,7 +39,7 @@ func TestAfstemningLoadByIds(t *testing.T) {
 
 // We wan to make sure the loader will return errors on ids not found
 func TestAfstemningNotFoundError(t *testing.T){
-	idError := 2
+	idError := 20000
 	_, err := LoadAfstemning(idError)
 	assert.ErrorContains(t, err, "record not found")
 }
@@ -47,7 +47,7 @@ func TestAfstemningNotFoundError(t *testing.T){
 // We wan to make sure the loader will return errors on ids not found when we send multiple request to the loader
 func TestAfstemningFoundThenNotFoundError(t *testing.T){
 	idExist := 8357
-	idError := 2
+	idError := 20000
 	
 	afstemning, err := LoadAfstemning(idExist)
 	assert.NoError(t, err)

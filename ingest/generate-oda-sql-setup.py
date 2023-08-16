@@ -70,6 +70,11 @@ sqlitefile.write("")
 sqlitefile.close()
 sqlitefile = open("sql/oda.sqlite.sql", "a")
 
+sqlitetestfile = open("sql/oda.test.sqlite.sql", "w")
+sqlitetestfile.write("")
+sqlitetestfile.close()
+sqlitetestfile = open("sql/oda.test.sqlite.sql", "a")
+
 psqlfile = open("sql/oda.psql.sql", "w")
 psqlfile.write("")
 psqlfile.close()
@@ -81,25 +86,32 @@ for table in tables:
     cursor.execute(sql)
     row = cursor.fetchone()
     
-    sqlitecreate = "DROP TABLE IF EXISTS " + table + ";\n\n"
-    sqlitecreate += "CREATE TABLE IF NOT EXISTS " + table + "  (\n"
+    sqlitetestcreate = "DROP TABLE IF EXISTS " + table + ";\n\n"
+    sqlitetestcreate += "CREATE TABLE IF NOT EXISTS " + table + "  (\n"
+    sqlitecreate = "CREATE TABLE IF NOT EXISTS " + table + "  (\n"
 
-    psqlcreate = "DROP TABLE IF EXISTS " + table + ";\n\n"
-    psqlcreate += "CREATE TABLE IF NOT EXISTS " + table + "  (\n"
+    #psqlcreate = "DROP TABLE IF EXISTS " + table + ";\n\n"
+    psqlcreate = "CREATE TABLE IF NOT EXISTS " + table + "  (\n"
 
 
     while row:
         
         if row[0] == pkeys[table]:
+            sqlitetestcreate += "\t" + row[0] + " " + mssql_to_sqlite_types[row[1]] + " PRIMARY KEY,\n"
             sqlitecreate += "\t" + row[0] + " " + mssql_to_sqlite_types[row[1]] + " PRIMARY KEY,\n"
             psqlcreate += "\t" + row[0] + " " + mssql_to_psql_types[row[1]] + " PRIMARY KEY,\n"
         else:
             notnull = " NOT NULL,\n" if row[2] == "NO" else ",\n"
+            sqlitetestcreate += "\t" + row[0] + " " + mssql_to_sqlite_types[row[1]] + notnull
             sqlitecreate += "\t" + row[0] + " " + mssql_to_sqlite_types[row[1]] + notnull
             psqlcreate += "\t" + row[0] + " " + mssql_to_psql_types[row[1]] + notnull
 
         row = cursor.fetchone()
     
+    sqlitetestcreate = sqlitetestcreate[0:-2]
+    sqlitetestcreate += "\n);\n\n"
+    sqlitetestfile.write(sqlitetestcreate)
+
     sqlitecreate = sqlitecreate[0:-2]
     sqlitecreate += "\n);\n\n"
     sqlitefile.write(sqlitecreate)

@@ -10,6 +10,7 @@ import (
 type StemmeQueryArgs struct {
 	QueryArgs
 	AfstemningId *int32
+	AktørId *int32
 }
 
 type StemmeResolver struct {
@@ -27,8 +28,17 @@ func NewStemmeList(args StemmeQueryArgs) (resolvers []*StemmeResolver, err error
 			stemmeResolver := StemmeResolver{stemme}
 			resolvers = append(resolvers, &stemmeResolver)
 		}
+	}
 
-		return
+	if args.AktørId != nil {
+		id := int(*args.AktørId)
+		var stemmer []ftoda.Stemme
+		stemmer, err = ftoda.LoadStemmerFromAktør(id)
+
+		for _, stemme := range stemmer {
+			stemmeResolver := StemmeResolver{stemme}
+			resolvers = append(resolvers, &stemmeResolver)
+		}
 	}
 
 	return

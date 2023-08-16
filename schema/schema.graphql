@@ -54,5 +54,5 @@ type Aktør {
     startdato: Time 
     slutdato: Time
     opdateringsdato: Time!
-    # stemmer: [Stemme] Todo
+    stemmer: [Stemme]
 }

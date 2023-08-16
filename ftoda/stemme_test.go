@@ -12,21 +12,24 @@ import (
 func init() {
 	fmt.Println("Running tests for Stemme")
 	godotenv.Load("../config_dev.env")
-	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/odatest.sqlite.db")
+	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }
 
-func TestStemmeByAfstemningsIds(t *testing.T) {
-	ids := []int{9351, 9352, 9353, 9354, 9355}
-	repo := newRepository()
-	_, err := repo.getStemmeByAfstemningIds(ids)
-	assert.NoError(t, err)
-}
-
-func TestStemmeLoaderByAfstemningsIds(t *testing.T) {
-	ids := []int{9351, 9352, 9353, 9354, 9355}
+func TestStemmeLoaderByAfstemningIds(t *testing.T) {
+	ids := []int{290, 291, 292, 293, 294}
 	for _, key := range ids {
 		stemmer, err := LoadStemmerFromAfstemning(key)
 		assert.NoError(t, err)
-		assert.Equal(t, key, stemmer[100].AfstemningId)
+		assert.Equal(t, key, stemmer[100].AfstemningId) //A vote always have 179 votes.
 	}
 }
+
+func TestStemmeLoaderByAktørIds(t *testing.T) {
+	ids := []int{213,214,215,216}
+	for _, key := range ids {
+		stemmer, err := LoadStemmerFromAktør(key)
+		assert.NoError(t, err)
+		assert.Equal(t, key, stemmer[0].AktørId) //Aktør votes n times in career
+	}
+}
+
