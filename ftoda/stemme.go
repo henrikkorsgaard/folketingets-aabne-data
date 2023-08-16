@@ -96,13 +96,13 @@ func LoadStemmerFromAfstemning(id int) (stemmer []Stemme, err error) {
 }
 
 func (r *Repository) getStemmerByAfstemningIds(ids []int) (stemmer []Stemme, err error) {
-	result := r.db.Where("afstemningid IN ?", ids).Find(&stemmer)
+	result := r.db.Select("Stemme.*, Stemmetype.type").Joins("left join Stemmetype on Stemme.typeid = Stemmetype.id").Where("afstemningid IN ?", ids).Find(&stemmer)
 	err = result.Error
 	return
 }
 
 func (r *Repository) getStemmerByAktørIds(ids []int) (stemmer []Stemme, err error) {
-	result := r.db.Where("aktørid IN ?", ids).Find(&stemmer)
+	result := r.db.Select("Stemme.*, Stemmetype.type").Joins("left join Stemmetype on Stemme.typeid = Stemmetype.id").Where("aktørid IN ?", ids).Find(&stemmer)
 	err = result.Error
 	return
 }

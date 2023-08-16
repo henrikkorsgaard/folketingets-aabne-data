@@ -21,6 +21,7 @@ func TestStemmeLoaderByAfstemningIds(t *testing.T) {
 		stemmer, err := LoadStemmerFromAfstemning(key)
 		assert.NoError(t, err)
 		assert.Equal(t, key, stemmer[100].AfstemningId) //A vote always have 179 votes.
+		assert.NotEmpty(t, stemmer[100].Type, "Testing that Stemme type is not empty")
 	}
 }
 
@@ -30,6 +31,7 @@ func TestStemmeLoaderByAktørIds(t *testing.T) {
 		stemmer, err := LoadStemmerFromAktør(key)
 		assert.NoError(t, err)
 		assert.Equal(t, key, stemmer[0].AktørId) //Aktør votes n times in career
+		assert.NotEmpty(t, stemmer[0].Type, "Testing that Stemme type is not empty")
 	}
 }
 
