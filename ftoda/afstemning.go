@@ -68,15 +68,6 @@ type Afstemning struct {
 	Opdateringsdato string
 }
 
-type Afstemningstype int 
-
-const (
-	EndeligVedtagelse Afstemningstype = iota
-	UdvalgsIndstilling
-	ForslagTilVedtagelse
-	ÆndringsForslag
-)
-
 func (Afstemning) TableName() string {
 	return "Afstemning"
 }
@@ -97,15 +88,21 @@ func LoadAfstemninger(limit int, offset int) (afstemninger []Afstemning, err err
 	return repo.getAfstemninger(limit, offset)
 }
 
+func LoadAfstemningerByType(limit int, offset int, afstemningsType string) (afstemninger []Afstemning, err error) {
+	//This should just load from the database directly
+	repo := newRepository()
+	return repo.getAfstemningerByType(limit, offset, afstemningsType)
+}
+
 func (r *Repository) getAfstemninger(limit int, offset int) (afstemninger []Afstemning, err error) {
 	result := r.db.Table("Afstemning").Limit(limit).Offset(offset).Select("Afstemning.*, Afstemningstype.type").Joins("left join Afstemningstype on Afstemning.typeid = Afstemningstype.id").Find(&afstemninger)
-	
 	err = result.Error
 	return
 }
 
-func (r *Repository) getAfstemingerByType(limit int, offset int, afstemningsType Afstemningstype) (afstemninger []Afstemning, err error) {
-	//TODO
+func (r *Repository) getAfstemningerByType(limit int, offset int, afstemningsType string) (afstemninger []Afstemning, err error) {
+	result := r.db.Table("Afstemning").Limit(limit).Offset(offset).Select("Afstemning.*, Afstemningstype.type").Joins("left join Afstemningstype on Afstemning.typeid = Afstemningstype.id").Where("Afstemningstype.type = ?", afstemningsType).Find(&afstemninger)
+	err = result.Error
 	return
 }
 

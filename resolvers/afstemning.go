@@ -35,8 +35,16 @@ func NewAfstemningList(args AfstemningQueryArgs) (resolvers []*AfstemningResolve
 		args.Offset = &offset
 	}
 
-	//load all i guess
-	afstemninger, err := ftoda.LoadAfstemninger(100, int(*args.Offset)) 
+	var afstemninger []ftoda.Afstemning
+
+	if args.Type != nil {
+		afstemninger, err = ftoda.LoadAfstemningerByType(100, int(*args.Offset), *args.Type) 
+	} else {
+		//load all i guess
+		afstemninger, err = ftoda.LoadAfstemninger(100, int(*args.Offset)) 
+	}
+
+	
 
 	for _, afstemning := range afstemninger {
 		afstemingResolver := AfstemningResolver{afstemning}

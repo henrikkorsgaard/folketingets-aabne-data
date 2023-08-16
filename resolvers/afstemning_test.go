@@ -27,6 +27,15 @@ func TestAfstemningAll(t *testing.T){
 	assert.NotEmpty(t, afstemninger[0].Møde(), "Testing Afstemning.Vedtaget not empty")
 }
 
+func TestAfstemningByType(t *testing.T){
+	afstemningsType := "Endelig vedtagelse"
+	args :=AfstemningQueryArgs{Type:&afstemningsType}
+	afstemninger, err := NewAfstemningList(args)
+	assert.NoError(t, err)
+	assert.Len(t, afstemninger, 100)
+	// Want to make sure not null types are in the data
+}
+
 func TestAfstemningById(t *testing.T){
 	var id int32 = 1
 	args := AfstemningQueryArgs{QueryArgs:QueryArgs{Id:&id}}

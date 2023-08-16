@@ -16,12 +16,18 @@ func init() {
 	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }
 
-func TestAfstemningLoaderAll(t *testing.T) {
+func TestAfstemningAll(t *testing.T) {
 	afstemninger, err := LoadAfstemninger(100, 0)
 	assert.NoError(t, err)
 	assert.Len(t, afstemninger, 100)
 	assert.NotEmpty(t, afstemninger[0].Type, "Testing Afstemning.Type not empty")
 	assert.NotEmpty(t, afstemninger[0].Vedtaget, "Testing Afstemning.Vedtaget not empty")
+}
+
+func TestAfstemningByType(t *testing.T) {
+	afstemninger, err := LoadAfstemningerByType(100, 0, "Endelig vedtagelse")
+	assert.NoError(t, err)
+	assert.Len(t, afstemninger, 100)
 }
 
 func TestAfstemningTypeJoin(t *testing.T) {
