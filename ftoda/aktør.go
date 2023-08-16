@@ -97,7 +97,7 @@ func LoadAktørerByType(limit int, offset int, aktørType string) (aktører []Ak
 
 
 func (r *Repository) getAktører(limit int, offset int) (aktører []Aktør, err error) {
-	result := r.db.Limit(limit).Offset(offset).Find(&aktører)
+	result := r.db.Table("Aktør").Limit(limit).Offset(offset).Select("Aktør.*, Aktørtype.type").Joins("left join Aktørtype on Aktør.typeid = Aktørtype.id").Find(&aktører)
 	err = result.Error
 	return
 }

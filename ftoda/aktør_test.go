@@ -20,6 +20,7 @@ func TestAktørLoaderAll(t *testing.T) {
 	aktører, err := LoadAktører(100, 0)
 	assert.NoError(t, err)
 	assert.Len(t, aktører, 100)
+	assert.NotEmpty(t, aktører[0].Type, "Testing that Aktør.Type is not empty")
 }
 
 func TestAktørTypeJoin(t *testing.T) {
