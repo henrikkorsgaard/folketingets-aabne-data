@@ -56,3 +56,12 @@ func TestAktørNotFoundError(t *testing.T){
 	_, err := NewAktør(args)
 	assert.ErrorContains(t, err, "unable to resolve")
 }
+
+func TestSearchAktørByName(t *testing.T) {
+	name := "An"
+	args := AktørQueryArgs{Navn:&name}
+	_, err := NewAktørResultList(args)
+	assert.NoError(t, err)
+	// Hard to do any additional asserts here.
+}
+

@@ -1,6 +1,7 @@
 package resolvers
 
 import (
+	"fmt"
 	"errors"
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
 	"time"
@@ -12,6 +13,11 @@ type AktørQueryArgs struct {
 	QueryArgs
 	Type *string
 	Navn *string
+}
+
+type AktørSearchArgs struct {
+	QueryArgs
+	Navn string
 }
 
 type AktørResolver struct {
@@ -83,6 +89,23 @@ func NewAktør(args AktørQueryArgs) (resolver *AktørResolver, err error) {
 	
 	return
 } 
+
+func NewAktørResultList(args AktørSearchArgs) (resolvers []*AktørResolver, err error) {
+	
+	aktører, err := ftoda.SearchAktørByName(100,args.Navn)
+	fmt.Println(args.Navn)
+	if err != nil {
+		err = errors.New("unable to resolve Aktør search by name")
+	}
+	fmt.Println(len(aktører))
+	for _, aktør := range aktører {
+		aktørResolver := AktørResolver{aktør}
+		resolvers = append(resolvers, &aktørResolver)
+	}
+	fmt.Println(len(resolvers))
+
+	return
+}
 
 func (a *AktørResolver) Id() int32 {
 	return int32(a.aktør.Id)

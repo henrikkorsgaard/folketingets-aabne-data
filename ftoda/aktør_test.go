@@ -71,3 +71,18 @@ func TestAktørFoundThenNotFoundError(t *testing.T){
 	_, err = LoadAktørById(idError)
 	assert.ErrorContains(t, err, "record not found")
 }
+
+func TestSearchAktørByName(t *testing.T) {
+	name := "An"
+	_, err := SearchAktørByName(100,name)
+	assert.NoError(t, err)
+	// Hard to do any additional asserts here.
+}
+
+func TestSearchAktørByNamePrivateIndividual(t *testing.T) {
+	name := "Anja Lund"
+	aktører, err := SearchAktørByName(100,name)
+	
+	assert.NoError(t, err)
+	assert.Len(t, aktører, 1)
+}
