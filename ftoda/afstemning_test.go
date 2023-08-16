@@ -20,6 +20,8 @@ func TestAfstemningLoaderAll(t *testing.T) {
 	afstemninger, err := LoadAfstemninger(100, 0)
 	assert.NoError(t, err)
 	assert.Len(t, afstemninger, 100)
+	assert.NotEmpty(t, afstemninger[0].Type, "Testing Afstemning.Type not empty")
+	assert.NotEmpty(t, afstemninger[0].Vedtaget, "Testing Afstemning.Vedtaget not empty")
 }
 
 func TestAfstemningTypeJoin(t *testing.T) {

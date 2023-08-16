@@ -16,20 +16,28 @@ func init(){
 	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }
 
-func TestAfstemning(t *testing.T){
+func TestAfstemningAll(t *testing.T){
 	args :=AfstemningQueryArgs{}
 	afstemninger, err := NewAfstemningList(args)
 	assert.NoError(t, err)
 	assert.Len(t, afstemninger, 100)
+	// Want to make sure not null types are in the data
+	assert.NotEmpty(t, afstemninger[0].Type(), "Testing Afstemning.Type not empty")
+	assert.NotEmpty(t, afstemninger[0].Vedtaget(), "Testing Afstemning.Vedtaget not empty")
+	assert.NotEmpty(t, afstemninger[0].Møde(), "Testing Afstemning.Vedtaget not empty")
 }
 
 func TestAfstemningById(t *testing.T){
-	var id int32 = 8357
+	var id int32 = 1
 	args := AfstemningQueryArgs{QueryArgs:QueryArgs{Id:&id}}
 	afstemning, err := NewAfstemning(args)
 
 	assert.NoError(t, err)
 	assert.Equal(t, id, afstemning.Id())
+	// Want to make sure not null types are in the data
+	assert.NotEmpty(t, afstemning.Type(), "Testing Afstemning.Type not empty")
+	assert.NotEmpty(t, afstemning.Vedtaget(), "Testing Afstemning.Vedtaget not empty")
+	assert.NotEmpty(t, afstemning.Møde(), "Testing Afstemning.Møde not empty")
 }
 
 
