@@ -20,9 +20,7 @@ I have added a small http server that will serve the GraphQL endpoint (/graphql)
 Pull and run and explore the data on localhost:8080/
 
 ## Notes
-
 ### TODO
-
 - [ ] Integrate Sag 
 - [ ] Design and implement the relationship between Sag and Afstemning
 - [ ] Design and implement the relationship between Sag and Stemme

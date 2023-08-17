@@ -61,7 +61,6 @@ type Aktør struct {
 	Opdateringsdato string
 	Startdato string
 	Slutdato string 
-	SearchRank int `gorm:"column:search_rank"`
 }
 
 func (Aktør) TableName() string {

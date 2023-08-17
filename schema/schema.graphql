@@ -18,7 +18,7 @@ type Query {
     # I want to seperate the search query on aktør because this entry point has a different usecase.
     # Use case is auto-complete search starting with first match
     search_aktør(navn:String!): [Aktør]!
-    #sag(id:Int):[Sag]!
+    sag(id:Int):[Sag]!
 }
 
 type Afstemning {
