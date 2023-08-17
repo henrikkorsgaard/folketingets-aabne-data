@@ -3,7 +3,31 @@ package ftoda
 
 type Sag struct {
 	Id int `gorm:"primaryKey"`
-	
+	Titel string
+	TitelKort string `gorm:"column:titelkort"`
+	Offentlighedskode string `gorm:"column:offentlighedskode"`
+	Nummer string 
+	NummerPrefix string `gorm:"column:nummerprefix"`
+	NummerNumerisk string `gorm:"column:nummernumerisk"`
+	NummerPostfix string `gorm:"column:nummerpostfix"`
+	Resume string
+	Afstemingskonklusion string `gorm:"column:afstemningskonklusion"`
+	PeriodeId int 
+	AfgørelsesResultatKode string `gorm:"column:afgørelsesresultatkode"`
+	Baggrundsmateriale string 
+	Opdateringsdato string
+	StatsbudgetSag int 
+	Begrundelse string
+	Paragrafnummer int
+	AfgørelsesDato string 
+	Afgørelse string 
+	RådsmødeDato string 
+	Lovnummer string 
+	LovnummerDato string
+	Retsinformationsurl string 
+	FremsatUnderSagId int 
+	DeltUnderSagId int 
+
 	// Foreign types
 	Type string //Table Sagtype 
 	Kategori string //Table Sagkategori
@@ -11,7 +35,7 @@ type Sag struct {
 }
 
 func (Sag) TableName() string {
-	return "Aktør"
+	return "Sag"
 }
 
 func LoadSager(limit, offset int) (sager []Sag, err error) {
