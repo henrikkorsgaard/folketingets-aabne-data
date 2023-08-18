@@ -19,7 +19,8 @@ type Repository struct {
 }
 
 func newRepository() *Repository {
-
+	// I'm using the singleton pattern here because we only do reads
+	// and GORM chain methods get a new DB object anyways
 	dbOnce.Do(func() {
 		config := gorm.Config{}
 		if withlog {
