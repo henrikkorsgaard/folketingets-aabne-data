@@ -1,7 +1,6 @@
 package resolvers
 
 import (
-	"fmt"
 	"os"
 	"testing"
 	

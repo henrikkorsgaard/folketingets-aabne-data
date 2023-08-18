@@ -31,6 +31,7 @@ type Afstemning {
     type: String!
     opdateringsdato: Time!
     stemmer: [Stemme!]!
+    sag:Sag
 }
 
 # Sag is a rather large entity with a lot of fields that
@@ -53,6 +54,7 @@ type Sag {
     kategori: String
     status:String
     opdateringsdato: Time!
+    afstemning:Afstemning
 }
 
 type Stemme {
