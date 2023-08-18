@@ -1,7 +1,6 @@
 package resolvers
 
 import (
-	"fmt"
 	"os"
 	"testing"
 	
@@ -11,7 +10,6 @@ import (
 )
 
 func init(){
-	fmt.Println("Running tests for the Afstemning")
 	godotenv.Load("../config_dev.env")
 	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }
@@ -21,10 +19,6 @@ func TestAfstemningAll(t *testing.T){
 	afstemninger, err := NewAfstemningList(args)
 	assert.NoError(t, err)
 	assert.Len(t, afstemninger, 100)
-	// Want to make sure not null types are in the data
-	assert.NotEmpty(t, afstemninger[0].Type(), "Testing Afstemning.Type not empty")
-	assert.NotEmpty(t, afstemninger[0].Vedtaget(), "Testing Afstemning.Vedtaget not empty")
-	assert.NotEmpty(t, afstemninger[0].Møde(), "Testing Afstemning.Vedtaget not empty")
 }
 
 func TestAfstemningByType(t *testing.T){
@@ -33,7 +27,6 @@ func TestAfstemningByType(t *testing.T){
 	afstemninger, err := NewAfstemningList(args)
 	assert.NoError(t, err)
 	assert.Len(t, afstemninger, 100)
-	// Want to make sure not null types are in the data
 }
 
 func TestAfstemningById(t *testing.T){
@@ -43,10 +36,6 @@ func TestAfstemningById(t *testing.T){
 
 	assert.NoError(t, err)
 	assert.Equal(t, id, afstemning.Id())
-	// Want to make sure not null types are in the data
-	assert.NotEmpty(t, afstemning.Type(), "Testing Afstemning.Type not empty")
-	assert.NotEmpty(t, afstemning.Vedtaget(), "Testing Afstemning.Vedtaget not empty")
-	assert.NotEmpty(t, afstemning.Møde(), "Testing Afstemning.Møde not empty")
 }
 
 

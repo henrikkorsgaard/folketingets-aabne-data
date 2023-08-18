@@ -18,7 +18,7 @@ type Query {
     # I want to seperate the search query on aktør because this entry point has a different usecase.
     # Use case is auto-complete search starting with first match
     search_aktør(navn:String!): [Aktør]!
-    sag(id:Int):[Sag]!
+    sag(id:Int, type: String):[Sag]!
 }
 
 type Afstemning {
@@ -33,8 +33,26 @@ type Afstemning {
     stemmer: [Stemme!]!
 }
 
+# Sag is a rather large entity with a lot of fields that
+# fit special cases and can be regarded as views
+# I have included those who seem most useful right now
+# Will expand the object when I know more about the fields
 type Sag {
     id:Int!
+    titel: String
+    titelkort: String
+    resume: String
+    afstemningskonklusion: String 
+    baggrundsmateriale: String
+    begrundelse: String
+    lovnummer: String
+    paragrafnummer: Int
+    paragraf:String
+    retsinformationsurl: String 
+    type: String
+    kategori: String
+    status:String
+    opdateringsdato: Time!
 }
 
 type Stemme {

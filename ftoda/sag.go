@@ -59,7 +59,7 @@ type Sag struct {
 	NummerNumerisk string `gorm:"column:nummernumerisk"`
 	NummerPostfix string `gorm:"column:nummerpostfix"`
 	Resume string
-	Afstemingskonklusion string `gorm:"column:afstemningskonklusion"`
+	Afstemningskonklusion string `gorm:"column:afstemningskonklusion"`
 	PeriodeId int 
 	AfgørelsesResultatKode string `gorm:"column:afgørelsesresultatkode"`
 	Baggrundsmateriale string 
@@ -67,6 +67,7 @@ type Sag struct {
 	StatsbudgetSag int 
 	Begrundelse string
 	Paragrafnummer int
+	Paragraf string
 	AfgørelsesDato string 
 	Afgørelse string 
 	RådsmødeDato string 
@@ -99,6 +100,11 @@ func LoadSag(id int) (sag Sag, err error) {
 	return	
 }
 
+func LoadSagerByType(limit, offset int, sagType string) (sager []Sag, err error ){
+	repo := newRepository()
+	return repo.getSagerByType(limit, offset, sagType)
+}
+
 func (r *Repository) getSager(limit, offset int) (sager []Sag, err error){
 	result := r.db.Table("Sag").Limit(limit).Offset(offset).Select("Sag.*, Sagstype.type, Sagskategori.kategori, Sagsstatus.status").Joins("left join Sagstype on Sag.typeid = Sagstype.id").Joins("left join Sagskategori on Sag.kategoriid = Sagskategori.id").Joins("left join Sagsstatus on Sag.statusid = Sagsstatus.id").Find(&sager)
 	err = result.Error
@@ -110,4 +116,10 @@ func (r *Repository) getSagerByIds(ids []int) (sager []Sag, err error){
 	err = result.Error
 
 	return
+}
+
+func (r *Repository) getSagerByType(limit, offset int, sagType string) (sager []Sag, err error){
+	result := r.db.Table("Sag").Select("Sag.*, Sagstype.type, Sagskategori.kategori, Sagsstatus.status").Joins("left join Sagstype on Sag.typeid = Sagstype.id").Joins("left join Sagskategori on Sag.kategoriid = Sagskategori.id").Joins("left join Sagsstatus on Sag.statusid = Sagsstatus.id").Where("Sagstype.type = ?", sagType).Find(&sager)
+	err = result.Error
+	return 
 }

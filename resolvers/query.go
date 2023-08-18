@@ -12,6 +12,11 @@ func (qr *QueryResolver) Afstemning(args AfstemningQueryArgs) ([]*AfstemningReso
 	return NewAfstemningList(args)
 }
 
+func (qr *QueryResolver) Sag(args SagQueryArgs) ([]*SagResolver, error) {
+	return NewSagList(args)
+}
+
+
 func (qr *QueryResolver) Aktør(args AktørQueryArgs) ([]*AktørResolver, error) {
 	return NewAktørList(args)
 }

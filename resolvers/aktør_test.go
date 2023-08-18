@@ -1,7 +1,7 @@
 package resolvers
 
 import (
-	"fmt"
+	
 	"os"
 	"testing"
 	
@@ -11,7 +11,6 @@ import (
 )
 
 func init(){
-	fmt.Println("Running tests for the Aktør")
 	godotenv.Load("../config_dev.env")
 	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }

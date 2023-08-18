@@ -1,7 +1,6 @@
 package resolvers
 
 import (
-	"fmt"
 	"testing"
 	"io/ioutil"
 
@@ -12,7 +11,7 @@ import (
 )
 
 func init(){
-	fmt.Println("Running tests for the query resolver")
+	
 	godotenv.Load("../config_dev.env")
 }
 
