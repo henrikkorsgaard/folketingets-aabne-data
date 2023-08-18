@@ -26,6 +26,7 @@ Pull and run and explore the data on localhost:8080/
 - [ ] Design and implement the relationship between Sag and Stemme
 - [ ] Integrate Emneord with Sag
 - [ ] Integrate search_sag by Emneord
+- [ ] Set "" to NULL on strings in database ingestion
 - [ ] Implement a Docker deployment option that integrates:
     - [ ] Sqlite database
     - [ ] Daily updates via the Python update script

@@ -28,7 +28,7 @@ func TestAfstamningAllWithKommentar(t *testing.T){
 	afstemninger, err := NewAfstemningList(args)
 	assert.NoError(t, err)
 	for _, a := range afstemninger {
-		assert.NotEmpty(t, a.Kommentar())
+		assert.NotEmpty(t, *a.Kommentar())
 	}
 }
 

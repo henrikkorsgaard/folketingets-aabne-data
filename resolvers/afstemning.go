@@ -20,7 +20,7 @@ type AfstemningResolver struct {
 
 // This is the pattern to follow.
 func NewAfstemningList(args AfstemningQueryArgs) (resolvers []*AfstemningResolver, err error) {
-	
+
 	if args.Id != nil {
 		var afstemningResolver *AfstemningResolver
 		afstemningResolver, err = NewAfstemning(args)
@@ -40,12 +40,12 @@ func NewAfstemningList(args AfstemningQueryArgs) (resolvers []*AfstemningResolve
 
 	if args.Type != nil {
 		afstemninger, err = ftoda.LoadAfstemningerByType(100, int(*args.Offset), *args.Type) 
+	} else if args.Kommentar != nil && *args.Kommentar {
+		afstemninger, err = ftoda.LoadAfstemningerWithKommentar(100, int(*args.Offset)) 
 	} else {
 		//load all i guess
 		afstemninger, err = ftoda.LoadAfstemninger(100, int(*args.Offset)) 
 	}
-
-	
 
 	for _, afstemning := range afstemninger {
 		afstemingResolver := AfstemningResolver{afstemning}

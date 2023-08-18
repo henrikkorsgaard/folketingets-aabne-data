@@ -20,7 +20,15 @@ func TestAfstemningAll(t *testing.T) {
 	assert.Len(t, afstemninger, 100)
 	assert.NotEmpty(t, afstemninger[0].Type, "Testing Afstemning.Type not empty")
 	assert.NotEmpty(t, afstemninger[0].Vedtaget, "Testing Afstemning.Vedtaget not empty")
-	assert.NotEmpty(t, afstemninger[0].Møde, "Testing Afstemning.Møde not empty")
+	assert.NotEmpty(t, afstemninger[0].MødeId, "Testing Afstemning.Møde not empty")
+}
+
+func TestAfstemningHasKommentar(t *testing.T) {
+	afstemninger, err := LoadAfstemningerWithKommentar(100, 0)
+	assert.NoError(t, err)
+	for _, a := range afstemninger {
+		assert.NotEmpty(t, a.Kommentar)
+	}
 }
 
 func TestAfstemningByType(t *testing.T) {

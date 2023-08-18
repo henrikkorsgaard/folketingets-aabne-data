@@ -81,26 +81,37 @@ func LoadAfstemning(id int) (afstemning Afstemning, err error) {
 	return
 }
 
-func LoadAfstemninger(limit int, offset int) (afstemninger []Afstemning, err error) {
+func LoadAfstemninger(limit, offset int) (afstemninger []Afstemning, err error) {
 	//This should just load from the database directly
 	repo := newRepository()
 	return repo.getAfstemninger(limit, offset)
 }
 
-func LoadAfstemningerByType(limit int, offset int, afstemningsType string) (afstemninger []Afstemning, err error) {
+func LoadAfstemningerWithKommentar(limit, offset int) (afstemninger []Afstemning, err error) {
+	repo := newRepository()
+	return repo.getAfstemningerWhereFieldNotNull(limit, offset, "kommentar")
+}
+
+func LoadAfstemningerByType(limit, offset int, afstemningsType string) (afstemninger []Afstemning, err error) {
 	//This should just load from the database directly
 	repo := newRepository()
 	return repo.getAfstemningerByType(limit, offset, afstemningsType)
 }
 
-func (r *Repository) getAfstemninger(limit int, offset int) (afstemninger []Afstemning, err error) {
+func (r *Repository) getAfstemninger(limit, offset int) (afstemninger []Afstemning, err error) {
 	result := r.db.Table("Afstemning").Limit(limit).Offset(offset).Select("Afstemning.*, Afstemningstype.type").Joins("left join Afstemningstype on Afstemning.typeid = Afstemningstype.id").Find(&afstemninger)
 	err = result.Error
 	return
 }
 
-func (r *Repository) getAfstemningerByType(limit int, offset int, afstemningsType string) (afstemninger []Afstemning, err error) {
+func (r *Repository) getAfstemningerByType(limit, offset int, afstemningsType string) (afstemninger []Afstemning, err error) {
 	result := r.db.Table("Afstemning").Limit(limit).Offset(offset).Select("Afstemning.*, Afstemningstype.type").Joins("left join Afstemningstype on Afstemning.typeid = Afstemningstype.id").Where("Afstemningstype.type = ?", afstemningsType).Find(&afstemninger)
+	err = result.Error
+	return
+}
+
+func (r *Repository) getAfstemningerWhereFieldNotNull(limit, offset int, field string) (afstemninger []Afstemning, err error) {
+	result := r.db.Table("Afstemning").Limit(limit).Offset(offset).Select("Afstemning.*, Afstemningstype.type").Joins("left join Afstemningstype on Afstemning.typeid = Afstemningstype.id").Where("Afstemning." + field + " IS NOT NULL AND Afstemning." + field + " != ''").Find(&afstemninger)
 	err = result.Error
 	return
 }
