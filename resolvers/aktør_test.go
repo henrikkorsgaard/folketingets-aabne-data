@@ -59,7 +59,7 @@ func TestAktørNotFoundError(t *testing.T){
 
 func TestSearchAktørByName(t *testing.T) {
 	name := "An"
-	args := AktørQueryArgs{Navn:&name}
+	args := AktørSearchArgs{Navn:name}
 	_, err := NewAktørResultList(args)
 	assert.NoError(t, err)
 	// Hard to do any additional asserts here.
