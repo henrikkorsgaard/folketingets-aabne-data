@@ -1,6 +1,7 @@
 package resolvers
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	
@@ -21,6 +22,16 @@ func TestAfstemningAll(t *testing.T){
 	assert.Len(t, afstemninger, 100)
 }
 
+func TestAfstamningAllWithKommentar(t *testing.T){
+	hasComments := true
+	args := AfstemningQueryArgs{Kommentar:&hasComments}
+	afstemninger, err := NewAfstemningList(args)
+	assert.NoError(t, err)
+	for _, a := range afstemninger {
+		assert.NotEmpty(t, a.Kommentar())
+	}
+}
+
 func TestAfstemningByType(t *testing.T){
 	afstemningsType := "Endelig vedtagelse"
 	args :=AfstemningQueryArgs{Type:&afstemningsType}
@@ -37,7 +48,6 @@ func TestAfstemningById(t *testing.T){
 	assert.NoError(t, err)
 	assert.Equal(t, id, afstemning.Id())
 }
-
 
 func TestAfstemningNotFoundError(t *testing.T){
 	var id int32 = 20000

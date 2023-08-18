@@ -22,7 +22,6 @@ func afstemningBatchFunction(ctx context.Context, keys []int) (results []*datalo
 		panic(err)
 	}
 
-
 	//Two error cases:
 	// 1: Len(keys) == 1; len(afstemninger) == 0
 	// We never iterate through the afstemninger and never find out we have an error

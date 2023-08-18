@@ -11,6 +11,7 @@ import (
 type AfstemningQueryArgs struct {
 	QueryArgs
 	Type *string
+	Kommentar *bool
 }
 
 type AfstemningResolver struct {
@@ -19,7 +20,7 @@ type AfstemningResolver struct {
 
 // This is the pattern to follow.
 func NewAfstemningList(args AfstemningQueryArgs) (resolvers []*AfstemningResolver, err error) {
-
+	
 	if args.Id != nil {
 		var afstemningResolver *AfstemningResolver
 		afstemningResolver, err = NewAfstemning(args)

@@ -13,7 +13,7 @@ schema {
 }
 
 type Query {
-    afstemning(id:Int, type:String): [Afstemning]!
+    afstemning(id:Int, type:String, kommentar: Boolean): [Afstemning]!
     aktør(id:Int, type:String, navn:String): [Aktør]!
     # I want to seperate the search query on aktør because this entry point has a different usecase.
     # Use case is auto-complete search starting with first match
