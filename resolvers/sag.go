@@ -143,3 +143,9 @@ func (s *SagResolver)Kategori() *string {
 func (s *SagResolver)Status() *string {
 	return &s.sag.Status 
 }
+
+func (s *SagResolver)Afstemninger() ([]*AfstemningResolver, error) {
+	id := int32(s.sag.Id)
+	args := AfstemningQueryArgs{SagId:&id}
+	return NewAfstemningList(args)
+}
