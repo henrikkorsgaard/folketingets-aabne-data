@@ -12,6 +12,7 @@ type AfstemningQueryArgs struct {
 	QueryArgs
 	Type *string
 	Kommentar *bool
+	SagId *int32
 }
 
 type AfstemningResolver struct {
@@ -42,6 +43,8 @@ func NewAfstemningList(args AfstemningQueryArgs) (resolvers []*AfstemningResolve
 		afstemninger, err = ftoda.LoadAfstemningerByType(100, int(*args.Offset), *args.Type) 
 	} else if args.Kommentar != nil && *args.Kommentar {
 		afstemninger, err = ftoda.LoadAfstemningerWithKommentar(100, int(*args.Offset)) 
+	} else if args.SagId != nil {
+		afstemninger, err = ftoda.LoadAfstemningerBySag(int(*args.SagId))
 	} else {
 		//load all i guess
 		afstemninger, err = ftoda.LoadAfstemninger(100, int(*args.Offset)) 
@@ -119,7 +122,7 @@ func (a *AfstemningResolver) Stemmer() ([]*StemmeResolver, error) {
 }
 
 func (a *AfstemningResolver) Sag() (*SagResolver, error) {
-	id := int32(a.afstemning.SagstrinId)
-	args := SagQueryArgs{SagstrinId:&id}
+	id := int32(a.afstemning.SagId)
+	args := SagQueryArgs{QueryArgs: QueryArgs{Id:&id}}
 	return NewSag(args)
 }

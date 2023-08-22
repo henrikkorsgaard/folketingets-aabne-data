@@ -3,10 +3,8 @@ package resolvers
 import (
 	"os"
 	"testing"
-	
 	"github.com/stretchr/testify/assert"
 	"github.com/joho/godotenv"
-	
 )
 
 func init(){
@@ -46,6 +44,17 @@ func TestAfstemningById(t *testing.T){
 
 	assert.NoError(t, err)
 	assert.Equal(t, id, afstemning.Id())
+}
+
+func TestAfstemningerBySag(t *testing.T){
+	var id int32 = 1143
+	args := AfstemningQueryArgs{SagId:&id}
+	afstemninger, err := NewAfstemningList(args)
+	assert.NoError(t, err)
+	sag,err := afstemninger[0].Sag()
+	assert.NoError(t, err)
+	
+	assert.Equal(t, id,sag.Id())
 }
 
 func TestAfstemningNotFoundError(t *testing.T){
