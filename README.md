@@ -23,7 +23,7 @@ Pull and run and explore the data on localhost:8080/
 ### TODO
 - [x] Integrate Sag 
 - [x] Design and implement the relationship between Afstemning and Sag
-- [ ] Design and implement the relationship between Sag and Afstemning
+- [x] Design and implement the relationship between Sag and Afstemning
 - [ ] Integrate Emneord with Sag
 - [ ] Integrate search_sag by Emneord
 - [ ] Set "" to NULL on strings in database ingestion
