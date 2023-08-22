@@ -1,7 +1,6 @@
 package ftoda
 
 import (
-
 	"os"
 
 	"testing"
@@ -34,6 +33,8 @@ func TestSagLoadByIds(t *testing.T){
 }
 
 func TestSagLoadBySagstrin(t *testing.T) {
-	sag, err := LoadSagBySagstrin(99)
+	id := 99
+	sag, err := LoadSagBySagstrin(id)
 	assert.NoError(t, err)
+	assert.Equal(t, id, sag.SagstrinId)
 }

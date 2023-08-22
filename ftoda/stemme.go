@@ -42,6 +42,7 @@ func stemmeBatchFunction(ctx context.Context, keys []int) (results []*dataloader
 		}
 	}
 
+	// this does not handle errors atm.
 	for _, key := range keys {
 		stmr := stemmerByKey[key]
 		results = append(results, &dataloader.Result[*[]Stemme]{Data: &stmr})

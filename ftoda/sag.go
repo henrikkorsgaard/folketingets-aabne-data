@@ -17,7 +17,17 @@ var (
 func sagBatchFunction(ctx context.Context, keys[]int) (results []*dataloader.Result[*Sag]) {
 
 	repo := newRepository()
-	sager, err := repo.getSagerByIds(keys)
+
+	var sager []Sag
+	var err error 
+	if ctx.Value("idtype") == "sagid" {
+		sager, err = repo.getSagerByIds(keys)
+	}
+
+	if ctx.Value("idtype") == "sagstrinid" {
+		sager, err = repo.getSagerBySagstrinIds(keys)
+	}
+
 	if err != nil {
 		panic(err)
 	}
@@ -25,11 +35,20 @@ func sagBatchFunction(ctx context.Context, keys[]int) (results []*dataloader.Res
 	// See note on afsteming.go
 	for _, key := range keys {
 		i := slices.IndexFunc(sager, func(sag Sag) bool {
-			return sag.Id == key
+			// this is where we need to handle the key match
+			if ctx.Value("idtype") == "sagid" {
+				return sag.Id == key
+			}
+
+			if ctx.Value("idtype") == "sagstrinid" {
+				return sag.SagstrinId == key
+			}
+
+			return false
 		})
 
 		if i == -1 {
-			e := fmt.Errorf("record not found: Sag with id %d not found", key)
+			e := fmt.Errorf("record not found: Sag with %s %d not found",ctx.Value("idtype"), key)
 			results = append(results, &dataloader.Result[*Sag]{Data: &Sag{},Error: e})
 		} else {
 			results = append(results, &dataloader.Result[*Sag]{Data: &sager[i]})
@@ -81,6 +100,7 @@ type Sag struct {
 	Type string //Table Sagtype 
 	Kategori string //Table Sagkategori
 	Status string  //Table Sagsstatus
+	SagstrinId int //Table Sagstrin, use-case when identifying sag by sagstrin (relation Afstemning)
 }
 
 func (Sag) TableName() string {
@@ -94,7 +114,8 @@ func LoadSager(limit, offset int) (sager []Sag, err error) {
 
 func LoadSag(id int) (sag Sag, err error) {
 	loader := newSagLoader()
-	thunk := loader.Load(context.Background(), id)
+	ctx := context.WithValue(context.Background(), "idtype", "sagid")
+	thunk := loader.Load(ctx, id)
 	result, err := thunk()
 	sag = *result
 	return	
@@ -107,12 +128,16 @@ func LoadSagerByType(limit, offset int, sagType string) (sager []Sag, err error 
 
 //if this is part of a list of afstemninger we need this to be accommodated in the loader
 func LoadSagBySagstrin(id int) (sag Sag, err error) {
-	repo := newRepository()
-	return repo.getSagBySagstrinId(id)
+	loader := newSagLoader()
+	ctx := context.WithValue(context.Background(), "idtype", "sagstrinid")
+	thunk := loader.Load(ctx, id)
+	result, err := thunk()
+	sag = *result
+	return	
 }
 
-func (r *Repository) getSagBySagstrinId(id int) (sag Sag, err error) {
-	result := r.db.Table("Sag").Select("Sag.*").Joins("left join Sagstrin on Sagstrin.sagid = Sag.id").Where("Sagstrin.id = ?",id).Find(&sag)
+func (r *Repository) getSagerBySagstrinIds(ids []int) (sager []Sag, err error) {
+	result := r.db.Table("Sag").Select("Sag.*, Sagstrin.id AS SagstrinId").Joins("left join Sagstrin on Sagstrin.sagid = Sag.id").Where("Sagstrin.id IN ?",ids).Find(&sager)
 	err = result.Error
 
 	return
