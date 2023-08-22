@@ -30,8 +30,11 @@ type Afstemning {
     møde: Int! 
     type: String!
     opdateringsdato: Time!
+    # Relations
     stemmer: [Stemme!]!
-    sag:Sag
+    sagstrin: Sagstrin
+    sag:Sag # Hvordan får vi etableret den? Gennem sagstrin
+
 }
 
 # Sag is a rather large entity with a lot of fields that
@@ -51,18 +54,22 @@ type Sag {
     paragraf:String
     retsinformationsurl: String 
     type: String
-    kategori: String
+    kategori: String 
     status:String
     opdateringsdato: Time!
+    
+    # Relations
     afstemning:Afstemning
+    sagstrin: [Sagstrin]!
 }
 
 type Stemme {
     id:Int!
     type:String
+    opdateringsdato: Time!
+    # Relations
     afstemning:Afstemning!
     aktør:Aktør!
-    opdateringsdato: Time!
 }
 
 type Aktør {
@@ -77,5 +84,21 @@ type Aktør {
     startdato: Time 
     slutdato: Time
     opdateringsdato: Time!
+    # Relationer
     stemmer: [Stemme]
+}
+
+type Sagstrin {
+    id:Int!
+    folketingstidende:String
+    folketingstidendenummer:String 
+    folketingstidendeurl:String
+    titel:String 
+    dato:Time
+    status:String
+    type:String
+    opdateringsdato: Time!
+    
+    # Relations
+    sag: Sag
 }

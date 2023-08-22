@@ -105,6 +105,19 @@ func LoadSagerByType(limit, offset int, sagType string) (sager []Sag, err error 
 	return repo.getSagerByType(limit, offset, sagType)
 }
 
+//if this is part of a list of afstemninger we need this to be accommodated in the loader
+func LoadSagBySagstrin(id int) (sag Sag, err error) {
+	repo := newRepository()
+	return repo.getSagBySagstrinId(id)
+}
+
+func (r *Repository) getSagBySagstrinId(id int) (sag Sag, err error) {
+	result := r.db.Table("Sag").Select("Sag.*").Joins("left join Sagstrin on Sagstrin.sagid = Sag.id").Where("Sagstrin.id = ?",id).Find(&sag)
+	err = result.Error
+
+	return
+}
+
 func (r *Repository) getSager(limit, offset int) (sager []Sag, err error){
 	result := r.db.Table("Sag").Limit(limit).Offset(offset).Select("Sag.*, Sagstype.type, Sagskategori.kategori, Sagsstatus.status").Joins("left join Sagstype on Sag.typeid = Sagstype.id").Joins("left join Sagskategori on Sag.kategoriid = Sagskategori.id").Joins("left join Sagsstatus on Sag.statusid = Sagsstatus.id").Find(&sager)
 	err = result.Error
