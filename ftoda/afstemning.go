@@ -63,7 +63,8 @@ type Afstemning struct {
 	Kommentar       string
 	MødeId          int `gorm:"column:mødeid"`
 	Type            string
-	SagstrinId     int
+	SagstrinId     	int
+	SagId			int
 	Opdateringsdato string
 }
 
@@ -81,25 +82,36 @@ func LoadAfstemning(id int) (afstemning Afstemning, err error) {
 	return
 }
 
-func LoadAfstemninger(limit, offset int) (afstemninger []Afstemning, err error) {
+func LoadAfstemninger(limit, offset int) ([]Afstemning, error) {
 	//This should just load from the database directly
 	repo := newRepository()
 	return repo.getAfstemninger(limit, offset)
 }
 
-func LoadAfstemningerWithKommentar(limit, offset int) (afstemninger []Afstemning, err error) {
+func LoadAfstemningerWithKommentar(limit, offset int) ([]Afstemning, error) {
 	repo := newRepository()
 	return repo.getAfstemningerWhereFieldNotNull(limit, offset, "kommentar")
 }
 
-func LoadAfstemningerByType(limit, offset int, afstemningsType string) (afstemninger []Afstemning, err error) {
+func LoadAfstemningerByType(limit, offset int, afstemningsType string) ([]Afstemning, error) {
 	//This should just load from the database directly
 	repo := newRepository()
 	return repo.getAfstemningerByType(limit, offset, afstemningsType)
 }
 
+func LoadAfstemningerBySag(id int) ([]Afstemning, error) {
+	repo := newRepository()
+	return repo.getAfstemningerBySag(id)
+}
+
+func (r *Repository) getAfstemningerBySag(id int) (afstemninger []Afstemning, err error) {
+	result := r.db.Table("Afstemning").Select("Afstemning.*, Sagstrin.sagid AS SagId").Joins("left join Sagstrin ON Afstemning.sagstrinid = Sagstrin.id").Where("Sagstrin.sagid = ?", id).Find(&afstemninger)
+	err = result.Error
+	return
+}
+
 func (r *Repository) getAfstemninger(limit, offset int) (afstemninger []Afstemning, err error) {
-	result := r.db.Table("Afstemning").Limit(limit).Offset(offset).Select("Afstemning.*, Afstemningstype.type").Joins("left join Afstemningstype on Afstemning.typeid = Afstemningstype.id").Find(&afstemninger)
+	result := r.db.Table("Afstemning").Limit(limit).Offset(offset).Select("Afstemning.*, Afstemningstype.type, Sagstrin.sagid AS SagId").Joins("left join Afstemningstype on Afstemning.typeid = Afstemningstype.id").Joins("left join Sagstrin on Afstemning.sagstrinid = Sagstrin.id").Find(&afstemninger)
 	err = result.Error
 	return
 }

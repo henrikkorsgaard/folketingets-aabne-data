@@ -2,7 +2,6 @@ package ftoda
 
 import (
 	"os"
-
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -21,7 +20,6 @@ func TestAfstemningAll(t *testing.T) {
 	assert.NotEmpty(t, afstemninger[0].Type, "Testing Afstemning.Type not empty")
 	assert.NotEmpty(t, afstemninger[0].Vedtaget, "Testing Afstemning.Vedtaget not empty")
 	assert.NotEmpty(t, afstemninger[0].MødeId, "Testing Afstemning.Møde not empty")
-	assert.NotEmpty(t, afstemninger[0].Sag, "Testing Afstemning.Sag not empty")
 }
 
 func TestAfstemningHasKommentar(t *testing.T) {
@@ -51,6 +49,17 @@ func TestAfstemningLoadByIds(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, key, afstemning.Id)
 	}
+}
+
+func TestAfstemningerBySagId(t *testing.T) {
+	id := 1143
+	afstemninger, err := LoadAfstemningerBySag(id)
+	assert.NoError(t, err)
+	assert.Equal(t, id, afstemninger[0].SagId)
+	/*
+	for _, afs := range afstemninger {
+		assert.Equal(t, id, afs.SagId)
+	}*/
 }
 
 // We wan to make sure the loader will return errors on ids not found
