@@ -118,10 +118,8 @@ func (a *AfstemningResolver) Stemmer() ([]*StemmeResolver, error) {
 	return NewStemmeList(args)
 }
 
-func (a *AfstemningResolver) Sag() ([]*SagResolver, error) {
-
-	
-	// vi har sagtrinid
-	// kan v
-	// sagstrinid -> sag
+func (a *AfstemningResolver) Sag() (*SagResolver, error) {
+	id := int32(a.afstemning.SagstrinId)
+	args := SagQueryArgs{SagstrinId:&id}
+	return NewSag(args)
 }

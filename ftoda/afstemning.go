@@ -63,7 +63,7 @@ type Afstemning struct {
 	Kommentar       string
 	MødeId          int `gorm:"column:mødeid"`
 	Type            string
-	SagstringId     int
+	SagstrinId     int
 	Opdateringsdato string
 }
 

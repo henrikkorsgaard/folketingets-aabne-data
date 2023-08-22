@@ -32,8 +32,7 @@ type Afstemning {
     opdateringsdato: Time!
     # Relations
     stemmer: [Stemme!]!
-    sagstrin: Sagstrin
-    sag:Sag # Hvordan får vi etableret den? Gennem sagstrin
+    sag:Sag
 
 }
 
@@ -59,8 +58,8 @@ type Sag {
     opdateringsdato: Time!
     
     # Relations
-    afstemning:Afstemning
-    sagstrin: [Sagstrin]!
+    #afstemning:[Afstemning]!
+    #sagstrin: [Sagstrin]!
 }
 
 type Stemme {

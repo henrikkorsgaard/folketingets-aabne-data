@@ -11,6 +11,7 @@ import (
 type SagQueryArgs struct {
 	QueryArgs
 	Type *string
+	SagstrinId *int32
 }
 
 type SagResolver struct {
@@ -54,6 +55,18 @@ func NewSag(args SagQueryArgs) (resolver *SagResolver, err error) {
 
 		var sag ftoda.Sag 
 		sag, err = ftoda.LoadSag(id)
+		if err != nil {
+			err = errors.New("Unable to resolve Sag: " + err.Error())
+		}
+
+		resolver = &SagResolver{sag}
+		return
+	}
+
+	if args.SagstrinId != nil {
+		id := int(*args.SagstrinId)
+		var sag ftoda.Sag 
+		sag, err = ftoda.LoadSagBySagstrin(id)
 		if err != nil {
 			err = errors.New("Unable to resolve Sag: " + err.Error())
 		}

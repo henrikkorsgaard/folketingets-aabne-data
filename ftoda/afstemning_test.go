@@ -21,6 +21,7 @@ func TestAfstemningAll(t *testing.T) {
 	assert.NotEmpty(t, afstemninger[0].Type, "Testing Afstemning.Type not empty")
 	assert.NotEmpty(t, afstemninger[0].Vedtaget, "Testing Afstemning.Vedtaget not empty")
 	assert.NotEmpty(t, afstemninger[0].MødeId, "Testing Afstemning.Møde not empty")
+	assert.NotEmpty(t, afstemninger[0].Sag, "Testing Afstemning.Sag not empty")
 }
 
 func TestAfstemningHasKommentar(t *testing.T) {
