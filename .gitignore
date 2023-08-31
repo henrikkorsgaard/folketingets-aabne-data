@@ -1,3 +1,2 @@
 *.db 
 !ingest/data/oda.test.sqlite.db
-*.zip
