@@ -75,6 +75,7 @@ type Aktor {
     id:Int!
     type: String!
     gruppenavnkort: String
+    fodselsdato: Time
     navn: String
     fornavn: String
     efternavn: String

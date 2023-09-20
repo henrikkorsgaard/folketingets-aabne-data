@@ -4,7 +4,7 @@ import (
 	"errors"
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
 	"time"
-
+	"fmt"
 	graphql "github.com/graph-gophers/graphql-go"
 )
 
@@ -129,6 +129,8 @@ func (a *AktorResolver) Efternavn() *string {
 }
 
 func (a *AktorResolver) Biografi() *string {
+	// technically we could format it here and send it along unless empty?
+
 	return &a.aktor.Biografi
 }
 
@@ -144,6 +146,17 @@ func (a *AktorResolver) Startdato() *graphql.Time {
 func (a *AktorResolver) Slutdato() *graphql.Time {
 	return nil
 }
+
+func (a *AktorResolver) Fodselsdato() *graphql.Time {
+	fmt.Println("here?")
+	fmt.Println(a.aktor.Fodselsdato)
+	t, err := time.Parse("02-01-2006", a.aktor.Fodselsdato)
+	if err != nil {
+		return nil 
+	}
+	return &graphql.Time{t}
+}
+
 
 func (a *AktorResolver) Opdateringsdato() graphql.Time {
 	t, err := time.Parse(time.DateTime, a.aktor.Opdateringsdato)

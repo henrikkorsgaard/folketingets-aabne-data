@@ -5,6 +5,7 @@ import (
 	"slices"
 	"context"
 	"sync"
+	"encoding/xml"
 	dataloader "github.com/graph-gophers/dataloader/v7"
 )
 
@@ -49,6 +50,15 @@ func newAktorLoader() *dataloader.Loader[int, *Aktor] {
 	return aktorLoader
 }
 
+type AktorBio struct {
+	Kon string `gorm:"-" xml:"sex"`  
+	Fodselsdato string `gorm:"-" xml:"born"` 
+	Dodsdato string `gorm:"-" xml:"died"` 
+	NuvaerendeValgkreds string `gorm:"-"` 
+	Parti string `gorm:"-" xml:"party"` 
+	BilledLink string `gorm:"-" xml:"pictureMiRes"`
+}
+
 type Aktor struct {
 	Id int `gorm:"primaryKey"`
 	Type string
@@ -60,11 +70,26 @@ type Aktor struct {
 	Periode int 
 	Opdateringsdato string
 	Startdato string
-	Slutdato string 
+	Slutdato string
+	// Extracted from biografi
+	AktorBio
 }
 
 func (Aktor) TableName() string {
 	return "Aktør"
+}
+
+func (a *Aktor) parseBio() {
+
+	if a.Biografi == "" {
+		return
+	}
+
+	err := xml.Unmarshal([]byte(a.Biografi), &a.AktorBio)
+	if err != nil {
+		return
+	}
+	fmt.Println(a.Fodselsdato)
 }
 
 func LoadAktorById(id int) (aktor Aktor, err error) {
@@ -75,29 +100,58 @@ func LoadAktorById(id int) (aktor Aktor, err error) {
 
 	aktor = *result
 
+	aktor.parseBio()
 	return
 }
 
 func LoadAktorByName(name string) (aktor Aktor, err error) {
 	repo := newRepository()
-	return repo.getAktorByName(name)
-
-	return
+	aktor, err = repo.getAktorByName(name)
+	if err != nil {
+		return aktor, err
+	}
+	aktor.parseBio()
+	return aktor, err
 }
 
 func LoadAktorer(limit int, offset int) (aktorer []Aktor, err error) {
 	repo := newRepository()
-	return repo.getAktorer(limit, offset)
+	aktorer, err = repo.getAktorer(limit, offset)
+	if err != nil {
+		return
+	}
+	for i := 0; i < len(aktorer); i++ {
+		aktorer[i].parseBio()
+	}
+
+	return 
 }
 
 func LoadAktorerByType(limit int, offset int, aktorType string) (aktorer []Aktor, err error) {
 	repo := newRepository()
-	return repo.getAktorerByType(limit, offset, aktorType)
+	aktorer, err = repo.getAktorerByType(limit, offset, aktorType)
+	if err != nil {
+		return
+	}
+	
+	for i := 0; i < len(aktorer); i++ {
+		aktorer[i].parseBio()
+	}
+
+	return
 }
 
 func SearchAktorByName(limit int, aktorName string) (aktorer []Aktor, err error) {
 	repo := newRepository()
-	return repo.searchAktorByName(limit, aktorName)
+	aktorer, err = repo.searchAktorByName(limit, aktorName)
+	if err != nil {
+		return
+	}
+
+	for i := 0; i < len(aktorer); i++ {
+		aktorer[i].parseBio()
+	}
+	return 
 }
 
 func (r *Repository) getAktorer(limit int, offset int) (aktorer []Aktor, err error) {
