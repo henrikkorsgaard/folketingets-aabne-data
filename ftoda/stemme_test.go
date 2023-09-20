@@ -23,12 +23,12 @@ func TestStemmeLoaderByAfstemningIds(t *testing.T) {
 	}
 }
 
-func TestStemmeLoaderByAktørIds(t *testing.T) {
+func TestStemmeLoaderByAktorIds(t *testing.T) {
 	ids := []int{213,214,215,216}
 	for _, key := range ids {
-		stemmer, err := LoadStemmerFromAktør(key)
+		stemmer, err := LoadStemmerFromAktor(key)
 		assert.NoError(t, err)
-		assert.Equal(t, key, stemmer[0].AktørId) //Aktør votes n times in career
+		assert.Equal(t, key, stemmer[0].AktorId) //Aktor votes n times in career
 		assert.NotEmpty(t, stemmer[0].Type, "Testing that Stemme type is not empty")
 	}
 }

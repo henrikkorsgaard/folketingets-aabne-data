@@ -21,8 +21,8 @@ func stemmeBatchFunction(ctx context.Context, keys []int) (results []*dataloader
 		stemmer, err = repo.getStemmerByAfstemningIds(keys)
 	}
 	
-	if ctx.Value("parent") == "aktør" {
-		stemmer, err = repo.getStemmerByAktørIds(keys)
+	if ctx.Value("parent") == "aktor" {
+		stemmer, err = repo.getStemmerByAktorIds(keys)
 	}
 
 
@@ -37,8 +37,8 @@ func stemmeBatchFunction(ctx context.Context, keys []int) (results []*dataloader
 			stemmerByKey[stemme.AfstemningId] = append(stemmerByKey[stemme.AfstemningId], stemme)
 		} 
 
-		if ctx.Value("parent") == "aktør" {
-			stemmerByKey[stemme.AktørId] = append(stemmerByKey[stemme.AktørId], stemme)
+		if ctx.Value("parent") == "aktor" {
+			stemmerByKey[stemme.AktorId] = append(stemmerByKey[stemme.AktorId], stemme)
 		}
 	}
 
@@ -64,7 +64,7 @@ type Stemme struct {
 	Id              int `gorm:"primaryKey"`
 	Type            string
 	AfstemningId    int `gorm:"column:afstemningid"`
-	AktørId         int `gorm:"column:aktørid"`
+	AktorId         int `gorm:"column:aktørid"`
 	Opdateringsdato string
 }
 
@@ -72,10 +72,10 @@ func (Stemme) TableName() string {
 	return "Stemme"
 }
 
-func LoadStemmerFromAktør(id int) (stemmer []Stemme, err error) {
+func LoadStemmerFromAktor(id int) (stemmer []Stemme, err error) {
 	loader := newStemmeLoader()
 
-	ctx := context.WithValue(context.Background(), "parent", "aktør")
+	ctx := context.WithValue(context.Background(), "parent", "aktor")
 	thunk := loader.Load(ctx, id)
 
 	result, err := thunk()
@@ -102,7 +102,7 @@ func (r *Repository) getStemmerByAfstemningIds(ids []int) (stemmer []Stemme, err
 	return
 }
 
-func (r *Repository) getStemmerByAktørIds(ids []int) (stemmer []Stemme, err error) {
+func (r *Repository) getStemmerByAktorIds(ids []int) (stemmer []Stemme, err error) {
 	result := r.db.Select("Stemme.*, Stemmetype.type").Joins("left join Stemmetype on Stemme.typeid = Stemmetype.id").Where("aktørid IN ?", ids).Find(&stemmer)
 	err = result.Error
 	return

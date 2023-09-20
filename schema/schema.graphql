@@ -14,10 +14,10 @@ schema {
 
 type Query {
     afstemning(id:Int, type:String, kommentar: Boolean): [Afstemning]!
-    aktør(id:Int, type:String, navn:String): [Aktør]!
+    aktor(id:Int, type:String, navn:String): [Aktor]!
     # I want to seperate the search query on aktør because this entry point has a different usecase.
     # Use case is auto-complete search starting with first match
-    search_aktør(navn:String!): [Aktør]!
+    search_aktor(navn:String!): [Aktor]!
     sag(id:Int, type: String):[Sag]!
 }
 
@@ -27,7 +27,7 @@ type Afstemning {
     konklusion:String
     vedtaget:Int!
     kommentar:String
-    møde: Int! 
+    mode: Int! 
     type: String!
     opdateringsdato: Time!
     # Relations
@@ -68,10 +68,10 @@ type Stemme {
     opdateringsdato: Time!
     # Relations
     afstemning:Afstemning!
-    aktør:Aktør!
+    aktor:Aktor!
 }
 
-type Aktør {
+type Aktor {
     id:Int!
     type: String!
     gruppenavnkort: String
