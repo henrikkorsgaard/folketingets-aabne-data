@@ -87,6 +87,7 @@ type Aktør {
     stemmer: [Stemme]
 }
 
+## We need resolvers for this
 type Sagstrin {
     id:Int!
     folketingstidende:String
