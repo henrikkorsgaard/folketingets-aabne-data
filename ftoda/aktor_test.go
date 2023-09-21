@@ -2,7 +2,7 @@ package ftoda
 
 import (
 	"os"
-
+	
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -39,6 +39,17 @@ func TestAktorLoadByName(t *testing.T) {
 	aktor, err := LoadAktorByName(name)
 	assert.NoError(t, err)
 	assert.Equal(t, name, aktor.Navn)
+}
+
+func TestAktorBioDetails(t *testing.T) {
+	aktorer, err := LoadAktorerByType(10, 0, "Person")
+	assert.NoError(t, err)
+	for _, a := range aktorer {
+		assert.NotEmpty(t, a.Kon)
+		assert.NotEmpty(t, a.Fodselsdato)
+		assert.NotEmpty(t, a.Parti)
+		assert.NotEmpty(t, a.Billede)
+	}
 }
 
 func TestAktorLoadByIds(t *testing.T) {

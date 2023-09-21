@@ -6,6 +6,7 @@ import (
 	"context"
 	"sync"
 	"encoding/xml"
+	"html"
 	dataloader "github.com/graph-gophers/dataloader/v7"
 )
 
@@ -56,7 +57,16 @@ type AktorBio struct {
 	Dodsdato string `gorm:"-" xml:"died"` 
 	NuvaerendeValgkreds string `gorm:"-"` 
 	Parti string `gorm:"-" xml:"party"` 
-	BilledLink string `gorm:"-" xml:"pictureMiRes"`
+	Billede string `gorm:"-" xml:"pictureMiRes"`
+	Personligt string `gorm:"-" xml:"personalInformation>memberData>p"`
+	Uddannelsesniveau string `gorm:"-" xml:"educationStatistic"`
+	Uddannelser []string `gorm:"-" xml:"educations>education"` 
+	Beskaeftigelse []string `gorm:"-" xml:"occupations>occupation"`
+	Ministerposter []string `gorm:"-" xml:"career>minister"`
+	Nomineringer []string `gorm:"-" xml:"career>nominations"`
+	Embede []string `gorm:"-" xml:"career>parliamentaryPositionsOfTrust>parliamentaryPositionOfTrust"`
+	Positioner []string `gorm:"-" xml:"positionsOfTrust>positionOfTrust"`
+	Valgkredse []string `gorm:"-" xml:"career>constituencies>constituency"`
 }
 
 type Aktor struct {
@@ -89,7 +99,7 @@ func (a *Aktor) parseBio() {
 	if err != nil {
 		return
 	}
-	fmt.Println(a.Fodselsdato)
+	a.Personligt = html.UnescapeString(a.Personligt)
 }
 
 func LoadAktorById(id int) (aktor Aktor, err error) {
