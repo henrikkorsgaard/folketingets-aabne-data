@@ -75,17 +75,27 @@ type Aktor {
     id:Int!
     type: String!
     gruppenavnkort: String
-    fodselsdato: Time
     navn: String
     fornavn: String
     efternavn: String
-    biografi: String 
     periode: Int # We need to make this a categorical maybe
     startdato: Time 
     slutdato: Time
     opdateringsdato: Time!
     # Relationer
     stemmer: [Stemme]
+    # Udtrukket fra biografi
+    personligt:String 
+    fodselsdato:Time
+    dodsdato: Time 
+    parti: String 
+    billede: String 
+    kon: String 
+    uddannelse: [String]
+    beskaftigelse: [String]
+    ministerposter: [String]
+    valgkredse: [String]
+    uddannelsesniveau: String 
 }
 
 ## We need resolvers for this

@@ -55,13 +55,12 @@ type AktorBio struct {
 	Kon string `gorm:"-" xml:"sex"`  
 	Fodselsdato string `gorm:"-" xml:"born"` 
 	Dodsdato string `gorm:"-" xml:"died"` 
-	NuvaerendeValgkreds string `gorm:"-"` 
 	Parti string `gorm:"-" xml:"party"` 
 	Billede string `gorm:"-" xml:"pictureMiRes"`
 	Personligt string `gorm:"-" xml:"personalInformation>memberData>p"`
 	Uddannelsesniveau string `gorm:"-" xml:"educationStatistic"`
-	Uddannelser []string `gorm:"-" xml:"educations>education"` 
-	Beskaeftigelse []string `gorm:"-" xml:"occupations>occupation"`
+	Uddannelse []string `gorm:"-" xml:"educations>education"` 
+	Beskaftigelse []string `gorm:"-" xml:"occupations>occupation"`
 	Ministerposter []string `gorm:"-" xml:"career>minister"`
 	Nomineringer []string `gorm:"-" xml:"career>nominations"`
 	Embede []string `gorm:"-" xml:"career>parliamentaryPositionsOfTrust>parliamentaryPositionOfTrust"`

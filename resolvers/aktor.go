@@ -4,7 +4,7 @@ import (
 	"errors"
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
 	"time"
-	"fmt"
+	
 	graphql "github.com/graph-gophers/graphql-go"
 )
 
@@ -129,8 +129,6 @@ func (a *AktorResolver) Efternavn() *string {
 }
 
 func (a *AktorResolver) Biografi() *string {
-	// technically we could format it here and send it along unless empty?
-
 	return &a.aktor.Biografi
 }
 
@@ -147,17 +145,6 @@ func (a *AktorResolver) Slutdato() *graphql.Time {
 	return nil
 }
 
-func (a *AktorResolver) Fodselsdato() *graphql.Time {
-	fmt.Println("here?")
-	fmt.Println(a.aktor.Fodselsdato)
-	t, err := time.Parse("02-01-2006", a.aktor.Fodselsdato)
-	if err != nil {
-		return nil 
-	}
-	return &graphql.Time{t}
-}
-
-
 func (a *AktorResolver) Opdateringsdato() graphql.Time {
 	t, err := time.Parse(time.DateTime, a.aktor.Opdateringsdato)
 	if err != nil {
@@ -166,11 +153,81 @@ func (a *AktorResolver) Opdateringsdato() graphql.Time {
 	return graphql.Time{t}
 }
 
+
+// Comined or extracted fields 
 func (a *AktorResolver) Stemmer() (*[]*StemmeResolver, error) {
 	id := int32(a.aktor.Id)
 	args := StemmeQueryArgs{AktorId: &id}
 	stemmeResolvers, err := NewStemmeList(args)
 	return &stemmeResolvers, err
+}
+
+func (a *AktorResolver) Fodselsdato() *graphql.Time {
+	t, err := time.Parse("02-01-2006", a.aktor.Fodselsdato)
+	if err != nil {
+		return nil 
+	}
+	return &graphql.Time{t}
+}
+
+func (a *AktorResolver) Dodsdato() *graphql.Time {
+	t, err := time.Parse("02-01-2006", a.aktor.Dodsdato)
+	if err != nil {
+		return nil 
+	}
+	return &graphql.Time{t}
+}
+
+func (a *AktorResolver) Personligt() *string {
+	return &a.aktor.Personligt
+}
+
+func (a *AktorResolver) Parti() *string {
+	return &a.aktor.Parti
+}
+
+func (a *AktorResolver) Billede() *string {
+	return &a.aktor.Billede
+}
+
+func (a *AktorResolver) Kon() *string {
+	return &a.aktor.Kon
+}
+
+func (a *AktorResolver) Uddannelsesniveau() *string {
+	return &a.aktor.Uddannelsesniveau
+}
+
+func (a *AktorResolver) Uddannelse() *[]*string {
+	var ref []*string 
+	for i := range a.aktor.Uddannelse {
+		ref = append(ref, &a.aktor.Uddannelse[i])
+	}
+	return &ref
+}
+
+func (a *AktorResolver) Beskaftigelse() *[]*string {
+	var ref []*string 
+	for i := range a.aktor.Beskaftigelse {
+		ref = append(ref, &a.aktor.Beskaftigelse[i])
+	}
+	return &ref
+}
+
+func (a *AktorResolver) Ministerposter() *[]*string {
+	var ref []*string 
+	for i := range a.aktor.Ministerposter {
+		ref = append(ref, &a.aktor.Ministerposter[i])
+	}
+	return &ref
+}
+
+func (a *AktorResolver) Valgkredse() *[]*string {
+	var ref []*string 
+	for i := range a.aktor.Valgkredse {
+		ref = append(ref, &a.aktor.Valgkredse[i])
+	}
+	return &ref
 }
 
 
