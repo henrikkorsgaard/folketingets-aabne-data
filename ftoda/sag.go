@@ -80,16 +80,16 @@ type Sag struct {
 	Resume string
 	Afstemningskonklusion string `gorm:"column:afstemningskonklusion"`
 	PeriodeId int 
-	AfgørelsesResultatKode string `gorm:"column:afgørelsesresultatkode"`
+	AfgorelsesResultatKode string `gorm:"column:afgorelsesresultatkode"`
 	Baggrundsmateriale string 
 	Opdateringsdato string
 	StatsbudgetSag int 
 	Begrundelse string
 	Paragrafnummer int
 	Paragraf string
-	AfgørelsesDato string 
-	Afgørelse string 
-	RådsmødeDato string 
+	AfgorelsesDato string 
+	Afgorelse string 
+	RådsmodeDato string 
 	Lovnummer string 
 	LovnummerDato string
 	Retsinformationsurl string 

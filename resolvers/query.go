@@ -17,10 +17,10 @@ func (qr *QueryResolver) Sag(args SagQueryArgs) ([]*SagResolver, error) {
 }
 
 
-func (qr *QueryResolver) Aktør(args AktørQueryArgs) ([]*AktørResolver, error) {
-	return NewAktørList(args)
+func (qr *QueryResolver) Aktor(args AktorQueryArgs) ([]*AktorResolver, error) {
+	return NewAktorList(args)
 }
 
-func (qr *QueryResolver) SearchAktør(args AktørSearchArgs) ([]*AktørResolver, error) {
-	return NewAktørResultList(args)
+func (qr *QueryResolver) SearchAktor(args AktorSearchArgs) ([]*AktorResolver, error) {
+	return NewAktorResultList(args)
 }

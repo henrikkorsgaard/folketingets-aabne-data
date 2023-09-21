@@ -111,8 +111,8 @@ func (a *AfstemningResolver) Opdateringsdato() graphql.Time {
 	return graphql.Time{t}
 }
 
-func (a *AfstemningResolver) Møde() int32 {
-	return int32(a.afstemning.MødeId)
+func (a *AfstemningResolver) Mode() int32 {
+	return int32(a.afstemning.ModeId)
 }
 
 func (a *AfstemningResolver) Stemmer() ([]*StemmeResolver, error) {

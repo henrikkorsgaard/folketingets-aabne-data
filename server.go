@@ -1,7 +1,6 @@
 package main
 
 import (
-	
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -35,7 +34,23 @@ func main() {
 
 	schema := graphql.MustParseSchema(string(b), &qr, graphql.MaxDepth(5))
 	http.Handle("/", graphiqlHandler)
-	http.Handle("/graphql", &relay.Handler{Schema: schema})
+	http.Handle("/graphql", cors(&relay.Handler{Schema: schema}))
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func cors(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if origin := r.Header.Get("Origin"); origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Methods", "GET")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Accept-Language, Content-Type, YourOwnHeader")
+		}
+		// Stop here if its Preflighted OPTIONS request
+		if r.Method == "OPTIONS" {
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

@@ -55,6 +55,9 @@ The ingest directory contains a README.md and a series of utilities for ingestin
 - Ingest the data from the MS SQL Server into a SQLite database file (around 750mb)
 - Ingest the data from the MS SQL Server into a Postgres DB (around 960mb), see config_dev.env for hints about configuration (or change to match local psql setup)
 
+#### Use GIT-LFS to get a sqlite database as a zip
+I'm using [GIT-LFS](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage) to link to a zip of the sqlite database file as a zip.
+
 ### Alternative approches [Why not?]
 
 There are several ways I could generate GraphQL schemas and/or use a service like PostGraphile to make a GraphQl service on to of the database. 

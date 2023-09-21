@@ -10,7 +10,7 @@ import (
 type StemmeQueryArgs struct {
 	QueryArgs
 	AfstemningId *int32
-	AktørId *int32
+	AktorId *int32
 }
 
 type StemmeResolver struct {
@@ -30,10 +30,10 @@ func NewStemmeList(args StemmeQueryArgs) (resolvers []*StemmeResolver, err error
 		}
 	}
 
-	if args.AktørId != nil {
-		id := int(*args.AktørId)
+	if args.AktorId != nil {
+		id := int(*args.AktorId)
 		var stemmer []ftoda.Stemme
-		stemmer, err = ftoda.LoadStemmerFromAktør(id)
+		stemmer, err = ftoda.LoadStemmerFromAktor(id)
 
 		for _, stemme := range stemmer {
 			stemmeResolver := StemmeResolver{stemme}
@@ -61,10 +61,10 @@ func (s *StemmeResolver) Opdateringsdato() graphql.Time {
 	return graphql.Time{t}
 }
 
-func (s *StemmeResolver) Aktør() (*AktørResolver, error) {
-	id := int32(s.stemme.AktørId)
-	args := AktørQueryArgs{QueryArgs: QueryArgs{Id: &id}}
-	return NewAktør(args)
+func (s *StemmeResolver) Aktor() (*AktorResolver, error) {
+	id := int32(s.stemme.AktorId)
+	args := AktorQueryArgs{QueryArgs: QueryArgs{Id: &id}}
+	return NewAktor(args)
 }
 
 func (s *StemmeResolver) Afstemning() (*AfstemningResolver, error) {
