@@ -15,9 +15,9 @@ func init() {
 }
 
 func TestAktorLoaderAll(t *testing.T) {
-	aktorer, err := LoadAktorer(100, 0)
+	aktorer, err := LoadAktorer(215, 0)
 	assert.NoError(t, err)
-	assert.Len(t, aktorer, 100)
+	assert.Len(t, aktorer, 215)
 	assert.NotEmpty(t, aktorer[0].Type, "Testing that Aktor.Type is not empty")
 }
 

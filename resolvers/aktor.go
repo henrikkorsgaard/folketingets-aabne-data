@@ -37,11 +37,16 @@ func NewAktorList(args AktorQueryArgs) (resolvers []*AktorResolver, err error) {
 		args.Offset = &offset
 	} 
 
+	if args.Limit == nil {
+		var limit int32 = 100
+		args.Limit = &limit
+	} 
+
 	var aktorer []ftoda.Aktor
 	if args.Type != nil {
-		aktorer, err = ftoda.LoadAktorerByType(100, int(*args.Offset), *args.Type)
+		aktorer, err = ftoda.LoadAktorerByType(int(*args.Limit), int(*args.Offset), *args.Type)
 	} else {
-		aktorer, err = ftoda.LoadAktorer(100, int(*args.Offset))
+		aktorer, err = ftoda.LoadAktorer(int(*args.Limit), int(*args.Offset))
 	}
 
 	for _, aktor := range aktorer {
@@ -90,8 +95,14 @@ func NewAktor(args AktorQueryArgs) (resolver *AktorResolver, err error) {
 } 
 
 func NewAktorResultList(args AktorSearchArgs) (resolvers []*AktorResolver, err error) {
-	
-	aktorer, err := ftoda.SearchAktorByName(100,args.Navn)
+
+	if args.Limit == nil {
+		var limit int32 = 100
+		args.Limit = &limit
+	}
+
+
+	aktorer, err := ftoda.SearchAktorByName(int(*args.Limit),args.Navn)
 	if err != nil {
 		err = errors.New("unable to resolve Aktor search by name")
 	}

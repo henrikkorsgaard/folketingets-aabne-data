@@ -3,6 +3,7 @@ package resolvers
 type QueryArgs struct {
 	Id     *int32
 	Offset *int32
+	Limit *int32
 }
 
 type QueryResolver struct{}

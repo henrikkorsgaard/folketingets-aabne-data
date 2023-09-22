@@ -1,7 +1,6 @@
 package resolvers
 
 import (
-	
 	"os"
 	"testing"
 	
@@ -46,6 +45,23 @@ func TestAktorByName(t *testing.T){
 
 	assert.NoError(t, err)
 	assert.Equal(t, name, *aktor.Navn())
+}
+
+func TestAktorOffset(t *testing.T){
+	var offset int32 = 215
+	args := AktorQueryArgs{QueryArgs:QueryArgs{Offset:&offset}}
+	aktorer, err := NewAktorList(args)
+	assert.NoError(t, err)
+	assert.Equal(t, aktorer[0].Id(), int32(216))
+}
+
+func TestAktorLimit(t *testing.T){
+	var limit int32 = 215
+	args := AktorQueryArgs{QueryArgs:QueryArgs{Limit:&limit}}
+	aktorer, err := NewAktorList(args)
+
+	assert.NoError(t, err)
+	assert.Len(t, aktorer, 215)
 }
 
 
