@@ -21,9 +21,7 @@ Pull and run and explore the data on localhost:8080/
 
 ## Notes
 ### TODO
-- [x] Integrate Sag 
-- [x] Design and implement the relationship between Afstemning and Sag
-- [x] Design and implement the relationship between Sag and Afstemning
+- [ ] Implement relation between Aktør (to identify aktor who have been members of parliament at some time)
 - [ ] Integrate Emneord with Sag
 - [ ] Integrate search_sag by Emneord
 - [ ] Set "" to NULL on strings in database ingestion
