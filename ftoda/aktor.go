@@ -66,6 +66,7 @@ type AktorBio struct {
 	Embede []string `gorm:"-" xml:"career>parliamentaryPositionsOfTrust>parliamentaryPositionOfTrust"`
 	Positioner []string `gorm:"-" xml:"positionsOfTrust>positionOfTrust"`
 	Valgkredse []string `gorm:"-" xml:"career>constituencies>constituency"`
+	Titel string `gorm:"-" xml:"personalInformation>function>formattedTitles"`
 }
 
 type Aktor struct {

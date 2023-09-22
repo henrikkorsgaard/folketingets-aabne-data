@@ -198,6 +198,10 @@ func (a *AktorResolver) Uddannelsesniveau() *string {
 	return &a.aktor.Uddannelsesniveau
 }
 
+func (a *AktorResolver) Titel() *string {
+	return &a.aktor.Titel
+}
+
 func (a *AktorResolver) Uddannelse() *[]*string {
 	var ref []*string 
 	for i := range a.aktor.Uddannelse {

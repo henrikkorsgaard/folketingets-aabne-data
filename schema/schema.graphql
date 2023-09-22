@@ -91,6 +91,7 @@ type Aktor {
     parti: String 
     billede: String 
     kon: String 
+    titel: String
     uddannelse: [String]
     beskaftigelse: [String]
     ministerposter: [String]
