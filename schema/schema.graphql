@@ -84,6 +84,7 @@ type Aktor {
     opdateringsdato: Time!
     # Relationer
     stemmer: [Stemme]
+    relationer: [AktorRelation]
     # Udtrukket fra biografi
     personligt:String 
     fodselsdato:Time
@@ -113,4 +114,9 @@ type Sagstrin {
     
     # Relations
     sag: Sag
+}
+
+type AktorRelation {
+    relation:String
+    aktorer: [Aktor]
 }

@@ -85,6 +85,8 @@ type Aktor struct {
 	AktorBio
 }
 
+
+
 func (Aktor) TableName() string {
 	return "Aktør"
 }
@@ -135,6 +137,15 @@ func LoadAktorer(limit int, offset int) (aktorer []Aktor, err error) {
 	}
 
 	return 
+}
+
+func LoadAktorByRelation(limit int, offset int) (aktorer []Aktor, err error) {
+	/*
+		Hvad har jeg brug for? 
+		- På den enkelte aktør vil jeg gerne hente relationer (custom resolver) "Hent mig alle medlemmets relationer"
+		- Liste af aktør ud fra medlemmer () "hent mig alle medlemmer af folketinget"
+	*/
+	return
 }
 
 func LoadAktorerByType(limit int, offset int, aktorType string) (aktorer []Aktor, err error) {

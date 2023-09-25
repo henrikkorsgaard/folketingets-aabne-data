@@ -23,6 +23,35 @@ type AktorResolver struct {
 	aktor ftoda.Aktor
 }
 
+type AktorRelationResolver struct {
+	relation string 
+	aktorer []ftoda.Aktor
+}
+
+func NewRelationList(parentId int) (resolvers *[]*AktorRelationResolver, err error) {
+	// we just need id, eh
+	
+	//
+
+	return
+}
+
+func (ar *AktorRelationResolver) Relation() *string {
+	return &ar.relation
+}
+
+func (ar *AktorRelationResolver) Aktorer() *[]*AktorResolver {
+
+	resolvers := []*AktorResolver{}
+
+	for i := 0; i < len(ar.aktorer); i++ {
+		a := ar.aktorer[i]
+		resolvers = append(resolvers, &AktorResolver{a})
+	}
+
+	return &resolvers
+}
+
 func NewAktorList(args AktorQueryArgs) (resolvers []*AktorResolver, err error) {
 	if args.Id != nil || args.Navn != nil {
 		var aktorResolver *AktorResolver
@@ -245,4 +274,6 @@ func (a *AktorResolver) Valgkredse() *[]*string {
 	return &ref
 }
 
-
+func (a *AktorResolver) Relationer() (*[]*AktorRelationResolver, error) {
+	return NewRelationList(a.aktor.Id)
+}

@@ -34,6 +34,7 @@ func TestAktorLoaderByAktorType(t *testing.T) {
 	assert.Equal(t, aktortype, aktorer[0].Type)
 }
 
+
 func TestAktorLoadByName(t *testing.T) {
 	name := "Karen Ellemann"
 	aktor, err := LoadAktorByName(name)

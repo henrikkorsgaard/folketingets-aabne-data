@@ -11,7 +11,7 @@ import (
 var (
 	repo   *Repository
 	dbOnce sync.Once
-	withlog bool = false
+	withlog bool = true
 )
 
 type Repository struct {
