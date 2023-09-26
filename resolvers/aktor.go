@@ -2,7 +2,7 @@ package resolvers
 
 import (
 	"errors"
-	"fmt"
+
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
 	"time"
 	
