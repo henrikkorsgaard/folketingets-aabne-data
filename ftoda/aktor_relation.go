@@ -50,6 +50,7 @@ type AktorRelation struct {
 	FraAktorId int `gorm:"column:fraaktørid"`
 	TilAktorId int `gorm:"column:tilaktørid"`
 	Rolle string 
+	TilAktorType string
 	TilAktorNavn string
 }
 
@@ -70,7 +71,7 @@ func LoadAktorRelations(id int) (aktorRelations []AktorRelation, err error) {
 }
 
 func (r *Repository) getRelations(ids []int) (aktorRelations []AktorRelation, err error) {
-	result := r.db.Table("AktørAktør").Select("AktørAktør.id, AktørAktør.fraaktørid, AktørAktør.tilaktørid, AktørAktørRolle.rolle AS rolle, Aktør.navn AS TilAktorNavn").Joins("left join AktørAktørRolle on AktørAktørRolle.id = AktørAktør.rolleid").Joins("left join Aktør on AktørAktør.tilaktørid = Aktør.id").Where("fraaktørid IN ?", ids).Find(&aktorRelations)
+	result := r.db.Table("AktørAktør").Select("AktørAktør.id, AktørAktør.fraaktørid, AktørAktør.tilaktørid, AktørAktørRolle.rolle AS rolle, Aktør.navn AS TilAktorNavn, Aktør.typeid, AktørType.type AS TilAktorType").Joins("left join AktørAktørRolle on AktørAktørRolle.id = AktørAktør.rolleid").Joins("left join Aktør on AktørAktør.tilaktørid = Aktør.id").Joins("left join AktørType on AktørType.id = Aktør.typeid").Where("fraaktørid IN ?", ids).Find(&aktorRelations)
 	err = result.Error
 	return 
 }

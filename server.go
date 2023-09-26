@@ -18,7 +18,7 @@ import (
 func main() {
 
 	godotenv.Load("config_dev.env")
-	os.Setenv("SQLITE_DATABASE_PATH", "ingest/data/oda.test.sqlite.db")
+	os.Setenv("SQLITE_DATABASE_PATH", "ingest/data/oda.api.sqlite.db")
 
 	b, err := ioutil.ReadFile("./schema/schema.graphql")
 	if err != nil {

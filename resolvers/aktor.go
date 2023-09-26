@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"errors"
+	"fmt"
 	"henrikkorsgaard/folketingets-aabne-data/ftoda"
 	"time"
 	
@@ -25,31 +26,35 @@ type AktorResolver struct {
 
 type AktorRelationResolver struct {
 	relation string 
-	aktorer []ftoda.Aktor
+	aktor ftoda.Aktor
 }
 
-func NewRelationList(parentId int) (resolvers *[]*AktorRelationResolver, err error) {
+func NewRelationList(parentId int) (resolvers []*AktorRelationResolver, err error) {
 	// we just need id, eh
 	
-	//
+	// What do I return regarding 
+	var relations []ftoda.AktorRelation
+	relations, err = ftoda.LoadAktorRelations(parentId)
+	if err != nil {
+		return 
+	}
 
-	return
+	for _, rel := range relations {
+		a := ftoda.Aktor{Id:rel.TilAktorId, Type: rel.TilAktorType, Navn:rel.TilAktorNavn}
+		ar := AktorRelationResolver{relation:rel.Rolle, aktor:a}
+		
+		resolvers = append(resolvers, &ar)		
+	}
+
+	return 
 }
 
 func (ar *AktorRelationResolver) Relation() *string {
 	return &ar.relation
 }
 
-func (ar *AktorRelationResolver) Aktorer() *[]*AktorResolver {
-
-	resolvers := []*AktorResolver{}
-
-	for i := 0; i < len(ar.aktorer); i++ {
-		a := ar.aktorer[i]
-		resolvers = append(resolvers, &AktorResolver{a})
-	}
-
-	return &resolvers
+func (ar *AktorRelationResolver) Aktor() *AktorResolver {
+	return &AktorResolver{ar.aktor}
 }
 
 func NewAktorList(args AktorQueryArgs) (resolvers []*AktorResolver, err error) {
@@ -275,5 +280,7 @@ func (a *AktorResolver) Valgkredse() *[]*string {
 }
 
 func (a *AktorResolver) Relationer() (*[]*AktorRelationResolver, error) {
-	return NewRelationList(a.aktor.Id)
+	resolvers, err := NewRelationList(a.aktor.Id)
+	
+	return &resolvers, err
 }

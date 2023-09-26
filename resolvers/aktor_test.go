@@ -3,7 +3,7 @@ package resolvers
 import (
 	"os"
 	"testing"
-	
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/joho/godotenv"
 	
@@ -80,3 +80,16 @@ func TestSearchAktorByName(t *testing.T) {
 	// Hard to do any additional asserts here.
 }
 
+func TestAktorRelation(t *testing.T) {
+	name := "Eva Esmarch"
+	args := AktorQueryArgs{Navn:&name}
+	aktor, err := NewAktor(args)
+	rels, err := aktor.Relationer()
+	
+	for _, r := range *rels {
+		fmt.Printf("%+v\n", *r.Relation())
+	}
+	fmt.Printf("%+v\n", rels)
+	assert.NoError(t, err)
+	assert.Equal(t, name, *aktor.Navn())
+}

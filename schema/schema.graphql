@@ -118,5 +118,5 @@ type Sagstrin {
 
 type AktorRelation {
     relation:String
-    aktorer: [Aktor]
+    aktor:Aktor
 }
