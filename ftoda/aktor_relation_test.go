@@ -2,7 +2,6 @@ package ftoda
 
 import (
 	"os"
-	
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -14,7 +13,22 @@ func init() {
 	os.Setenv("SQLITE_DATABASE_PATH", "../ingest/data/oda.test.sqlite.db")
 }
 
-func TestAktorLoadAktorRelations(t *testing.T) {
-	_, err := LoadAktorRelations(914)
+func TestLoadRelationsFromAktor(t *testing.T) {
+	rels, err := LoadAktorRelations(914)
 	assert.NoError(t, err)
+	for _, rel := range rels {
+		assert.Equal(t, 914, rel.FraAktorId)
+	}
+	
+}
+
+func TestLoadRelationsFromAktorer(t *testing.T){
+	ids := []int{1,6,20,146,914}
+	for _, id := range ids {
+		rels, err := LoadAktorRelations(id)
+		assert.NoError(t, err)
+		for _, rel := range rels {
+			assert.Equal(t, id, rel.FraAktorId)
+		}
+	}
 }

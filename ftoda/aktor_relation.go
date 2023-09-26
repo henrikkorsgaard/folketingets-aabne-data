@@ -1,6 +1,49 @@
 package ftoda
 
-import "fmt"
+import (
+	"context"
+	"sync"
+
+	dataloader "github.com/graph-gophers/dataloader/v7"
+)
+
+var (
+	aktorRelationLoader *dataloader.Loader[int, *[]AktorRelation]
+	aktorRelationLoaderOnce sync.Once
+)
+
+func aktorRelationBatchFunction(ctx context.Context, keys []int)(results []*dataloader.Result[*[]AktorRelation]) {
+	repo := newRepository()
+	
+	aktorRelationer, err :=  repo.getRelations(keys)
+	
+	if err != nil {
+		panic(err)
+	}
+
+	aktorRelationsByKey := make(map[int][]AktorRelation)
+
+	for _, ar := range aktorRelationer {
+		aktorRelationsByKey[ar.FraAktorId] = append(aktorRelationsByKey[ar.FraAktorId], ar)
+	}
+
+	for _, key := range keys {
+		relationer := aktorRelationsByKey[key]
+		results = append(results, &dataloader.Result[*[]AktorRelation]{Data:&relationer})
+	}
+
+	return
+
+}
+
+func newAktorRelationLoader() *dataloader.Loader[int, *[]AktorRelation] {
+	aktorRelationLoaderOnce.Do(func(){
+		cache := &dataloader.NoCache[int, *[]AktorRelation]{}
+		aktorRelationLoader = dataloader.NewBatchedLoader(aktorRelationBatchFunction, dataloader.WithCache[int, *[]AktorRelation](cache))
+	})
+
+	return aktorRelationLoader
+}
 
 type AktorRelation struct {
 	Id int `gorm:"primaryKey"`
@@ -15,15 +58,19 @@ func (AktorRelation) TableName() string {
 }
 
 func LoadAktorRelations(id int) (aktorRelations []AktorRelation, err error) {
-	repo = newRepository()
-	return repo.getRelations(id)
+
+	loader := newAktorRelationLoader()
+	thunk := loader.Load(context.Background(), id)
+
+	result, err := thunk()
+
+	aktorRelations = *result 
+
+	return 
 }
 
-func (r *Repository) getRelations(id int) (aktorRelations []AktorRelation, err error) {
-
-	//result := r.db.Where("fraaktørid = ?", id).Find(&aktorRelations)
-	result := r.db.Table("AktørAktør").Select("AktørAktør.id, AktørAktør.fraaktørid, AktørAktør.tilaktørid, AktørAktørRolle.rolle AS rolle, Aktør.navn AS TilAktorNavn").Joins("left join AktørAktørRolle on AktørAktørRolle.id = AktørAktør.rolleid").Joins("left join Aktør on AktørAktør.tilaktørid = Aktør.id").Where("fraaktørid = ?", id).Find(&aktorRelations)
+func (r *Repository) getRelations(ids []int) (aktorRelations []AktorRelation, err error) {
+	result := r.db.Table("AktørAktør").Select("AktørAktør.id, AktørAktør.fraaktørid, AktørAktør.tilaktørid, AktørAktørRolle.rolle AS rolle, Aktør.navn AS TilAktorNavn").Joins("left join AktørAktørRolle on AktørAktørRolle.id = AktørAktør.rolleid").Joins("left join Aktør on AktørAktør.tilaktørid = Aktør.id").Where("fraaktørid IN ?", ids).Find(&aktorRelations)
 	err = result.Error
-	fmt.Printf("%+v\n", aktorRelations)
 	return 
 }
