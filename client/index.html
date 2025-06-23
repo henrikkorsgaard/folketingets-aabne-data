@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.5/dist/htmx.min.js"></script>
+    <meta name="htmx-config" content='{"selfRequestsOnly":false}'>
+</head>
+
+<body>
+    <h1>Lovforslag</h1>
+    <div hx-get="http://localhost:3000/lovforslag" hx-trigger="load" hx-request='{"noHeaders": true}'>
+
+    </div>
+</body>
+
+</html>

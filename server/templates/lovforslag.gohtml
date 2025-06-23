@@ -1,0 +1,26 @@
+{{define "lovforslag"}}
+
+<h1>{{.Titel}}</h1>
+<h2>{{.Lovnummer}}</h2>
+<p>{{.Resume}}</p>
+
+{{end}}
+
+{{define "list"}}
+
+{{range .}}
+<h1>{{.Titel}}</h1>
+<h2>{{.Lovnummer}}</h2>
+<p>{{.Resume}}</p>
+{{end}}
+
+{{end}}
+
+{{define "update"}} 
+
+<h1>Updated database successfully</h1>
+<ul>
+ <li>Inserted {{.Count}} new Lovforslag</li>
+ <li>Database contains {{.Total}} Lovforslag</li>
+</ul>
+{{end}}
