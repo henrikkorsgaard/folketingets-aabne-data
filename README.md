@@ -1,6 +1,6 @@
 # Folketingets Åbne Data
 
-Just checking commits
+Just checking commits -- this is not a good way to do this
 
 ## User stories
 
