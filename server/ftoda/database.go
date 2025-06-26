@@ -12,8 +12,8 @@ type dbRepository struct {
 	db *gorm.DB
 }
 
-func newDBRepository() *dbRepository {
-	db, err := gorm.Open(sqlite.Open("ftoda.db"), &gorm.Config{})
+func newDBRepository(dbfile string) *dbRepository {
+	db, err := gorm.Open(sqlite.Open(dbfile), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
