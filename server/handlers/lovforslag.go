@@ -52,6 +52,7 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService) http.Handler {
 			idString := r.PathValue("id")
 			//we need to check for zero and return
 			fmt.Println(idString)
+			fmt.Println("does this even hit")
 
 			id, err := strconv.Atoi(idString)
 			if err != nil {
@@ -98,7 +99,7 @@ func UpdateLovforslag(ftodaService *ftoda.FTODAService) http.Handler {
 
 			total := ftodaService.GetLovforslagCount()
 
-			tmpl, err := template.ParseFiles(templateDirPath + "/lovforslag.gohtml")
+			tmpl, err := template.ParseFiles(templateDirPath + "lovforslag.gohtml")
 			if err != nil {
 				panic(err)
 			}

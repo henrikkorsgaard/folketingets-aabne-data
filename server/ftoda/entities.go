@@ -1,9 +1,9 @@
 package ftoda
 
 type Sag struct {
-	Id    int    `gorm:"primaryKey" json:"id"`
-	Titel string `json:"titel"`
-	//TitelKort         string `gorm:"column:titelkort" json:"titelkort"`
+	Id                int    `gorm:"primaryKey" json:"id"`
+	Titel             string `json:"titel"`
+	TitelKort         string `gorm:"column:titelkort" json:"titelkort"`
 	Offentlighedskode string `gorm:"column:offentlighedskode"`
 	//Nummer                 string
 	//NummerPrefix           string `gorm:"column:nummerprefix"`

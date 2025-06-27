@@ -9,9 +9,7 @@
 {{define "list"}}
 
 {{range .}}
-<h1>{{.Titel}}</h1>
-<h2>{{.Lovnummer}}</h2>
-<p>{{.Resume}}</p>
+<h1><a href="/lovforslag/{{.Id}}">{{.Lovnummer}}: {{.TitelKort}}</a></h1>
 {{end}}
 
 {{end}}

@@ -25,7 +25,7 @@ func NewServer(ftodaService *ftoda.FTODAService) http.Handler {
 
 func addRoutes(mux *http.ServeMux, ftodaService *ftoda.FTODAService) {
 	mux.Handle("/lovforslag", GetLovforslag(ftodaService))
-	mux.Handle("/lovforslag/{id}", GetLovforslag(ftodaService))
+	mux.Handle("/lovforslag/{id}", GetLovforslagById(ftodaService))
 	mux.Handle("/lovforslag/update", UpdateLovforslag(ftodaService))
 }
 
