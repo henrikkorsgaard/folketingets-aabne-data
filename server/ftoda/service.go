@@ -12,11 +12,11 @@ type FTODAService struct {
 	db  *dbRepository
 }
 
-func NewFTODAService(host string, dbfile string) FTODAService {
+func NewFTODAService(odaHost string, dbHost string) FTODAService {
 
 	// Host should come from either a factory or .env
-	repo := newAPIRepository(host)
-	db := newDBRepository(dbfile)
+	repo := newAPIRepository(odaHost)
+	db := newDBRepository(dbHost)
 	return FTODAService{
 		api: repo,
 		db:  db,

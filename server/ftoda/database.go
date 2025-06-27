@@ -12,10 +12,10 @@ type dbRepository struct {
 	db *gorm.DB
 }
 
-func newDBRepository(dbfile string) *dbRepository {
-	db, err := gorm.Open(sqlite.Open(dbfile), &gorm.Config{})
+func newDBRepository(dbHost string) *dbRepository {
+	db, err := gorm.Open(sqlite.Open(dbHost), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		panic("failed to connect database: " + err.Error())
 	}
 
 	db.AutoMigrate(&Sag{})

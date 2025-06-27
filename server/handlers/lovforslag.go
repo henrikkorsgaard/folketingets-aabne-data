@@ -4,16 +4,30 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
 )
 
+var templateDirPath = ""
+
+func init() {
+
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	templateDirPath = wd + "/templates/"
+	fmt.Println("Serving templates from " + templateDirPath)
+}
+
 func GetLovforslag(ftodaService *ftoda.FTODAService) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			// use thing to handle request
-			tmpl, err := template.ParseFiles("./templates/lovforslag.gohtml")
+			tmpl, err := template.ParseFiles(templateDirPath + "lovforslag.gohtml")
 			if err != nil {
 				panic(err)
 			}
@@ -44,7 +58,7 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService) http.Handler {
 				panic(err)
 			}
 
-			tmpl, err := template.ParseFiles("./templates/lovforslag.gohtml")
+			tmpl, err := template.ParseFiles(templateDirPath + "lovforslag.gohtml")
 			if err != nil {
 				panic(err)
 			}
@@ -84,7 +98,7 @@ func UpdateLovforslag(ftodaService *ftoda.FTODAService) http.Handler {
 
 			total := ftodaService.GetLovforslagCount()
 
-			tmpl, err := template.ParseFiles("./templates/lovforslag.gohtml")
+			tmpl, err := template.ParseFiles(templateDirPath + "/lovforslag.gohtml")
 			if err != nil {
 				panic(err)
 			}

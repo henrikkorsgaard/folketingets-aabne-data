@@ -12,9 +12,9 @@ import (
 )
 
 func main() {
-	dbFile := os.Getenv("DB_FILE")
+	dbHost := os.Getenv("DB_HOST")
 	odataHost := os.Getenv("ODATA_HOST")
-	ftodaService := ftoda.NewFTODAService(odataHost, dbFile)
+	ftodaService := ftoda.NewFTODAService(odataHost, dbHost)
 	fmt.Println("Server is running on port 3000...")
 	log.Fatal(http.ListenAndServe(":3000", handlers.NewServer(&ftodaService)))
 }

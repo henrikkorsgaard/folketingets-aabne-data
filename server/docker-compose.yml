@@ -1,5 +1,10 @@
 services:
-  frontend:
+  ftoda:
     image: ftoda
     ports:
       - "3000:3000"
+    environment:
+      - ODATA_HOST=oda.ft.dk
+      - DB_HOST=ftoda.db
+
+  
