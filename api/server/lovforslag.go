@@ -10,21 +10,21 @@ import (
 )
 
 func GetLovforslag(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
-	/*
-		- how do we handle pagination?
-		- I can add a limit and a skip as parameters and control the page like that
-
-	*/
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 
 			limit, err := strconv.Atoi(r.PathValue("limit"))
 			if err != nil {
-				fmt.Println(err)
 				limit = 0
 			}
 			fmt.Println(limit)
-			sager, err := ftodaService.GetLovforslag(limit, 0)
+			fmt.Println(r.PathValue("limit"))
+			offset, err := strconv.Atoi(r.PathValue("offset"))
+			if err != nil {
+				offset = 0
+			}
+
+			sager, err := ftodaService.GetLovforslag(limit, offset)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("500 - Something bad happened!"))
@@ -41,12 +41,8 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService, templateEngine *templat
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			idString := r.PathValue("id")
-			//we need to check for zero and return
-			fmt.Println(idString)
-			fmt.Println("does this even hit")
 
-			id, err := strconv.Atoi(idString)
+			id, err := strconv.Atoi(r.PathValue("id"))
 			if err != nil {
 				panic(err)
 			}

@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
+
 	"github.com/henrikkorsgaard/folketingets-aabne-data/server"
 	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 	_ "github.com/joho/godotenv/autoload"

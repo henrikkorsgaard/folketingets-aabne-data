@@ -6,12 +6,18 @@ import (
 	"os"
 )
 
+// See: https://kilb.tech/golang-templates - embed files solution
 type TemplateEngine struct {
 	tmpl *template.Template
 }
 
 func NewTemplateEngine() TemplateEngine {
-	tmpl, err := template.ParseFiles("templates/lovforslag.gohtml")
+	//check if the working dir is api
+	//tmpl, err := template.ParseFiles("templates/lovforslag.gohtml")
+
+	//check if the working dir is server
+	tmpl, err := template.ParseFiles("../templates/lovforslag.gohtml")
+
 	if err != nil {
 		panic(err)
 	}

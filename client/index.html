@@ -7,9 +7,13 @@
 
 <body>
     <h1>Lovforslag</h1>
-    <div hx-get="http://localhost:3000/lovforslag" hx-trigger="load" hx-request='{"noHeaders": true}'>
-
-    </div>
+    <table>
+        <thead>
+            <tr><th>Lovnummer</th><th>Titel</th></tr>
+        </thead>
+        <tbody hx-get="http://localhost:3000/lovforslag?limit=10" hx-trigger="load" hx-request='{"noHeaders": true}'>
+        </tbody>
+    </table>
 </body>
 
 </html>
