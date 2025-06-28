@@ -51,12 +51,13 @@ func (s *FTODAService) GetLovforslagById(id int) (sag Sag, err error) {
 }
 
 // offset map into skip next for now
-func (s *FTODAService) GetLovforslag(offset int) ([]Sag, error) {
+func (s *FTODAService) GetLovforslag(limit int, offset int) ([]Sag, error) {
 
 	q := odataQuery{
 		entity: "Sag",
 		filter: "typeid eq 3",
 		skip:   offset,
+		top:    limit,
 	}
 
 	odata, err := s.api.getData(q)

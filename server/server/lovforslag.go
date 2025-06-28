@@ -1,38 +1,30 @@
-package handlers
+package server
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
+	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 )
 
-var templateDirPath = ""
+func GetLovforslag(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+	/*
+		- how do we handle pagination?
+		- I can add a limit and a skip as parameters and control the page like that
 
-func init() {
-
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-
-	templateDirPath = wd + "/templates/"
-	fmt.Println("Serving templates from " + templateDirPath)
-}
-
-func GetLovforslag(ftodaService *ftoda.FTODAService) http.Handler {
+	*/
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			// use thing to handle request
-			tmpl, err := template.ParseFiles(templateDirPath + "lovforslag.gohtml")
-			if err != nil {
-				panic(err)
-			}
 
-			sager, err := ftodaService.GetLovforslag(0)
+			limit, err := strconv.Atoi(r.PathValue("limit"))
+			if err != nil {
+				fmt.Println(err)
+				limit = 0
+			}
+			fmt.Println(limit)
+			sager, err := ftodaService.GetLovforslag(limit, 0)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("500 - Something bad happened!"))
@@ -40,12 +32,12 @@ func GetLovforslag(ftodaService *ftoda.FTODAService) http.Handler {
 			}
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-			tmpl.ExecuteTemplate(w, "list", sager)
+			templateEngine.ExecuteTemplate(w, "list", sager)
 		},
 	)
 }
 
-func GetLovforslagById(ftodaService *ftoda.FTODAService) http.Handler {
+func GetLovforslagById(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -55,11 +47,6 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService) http.Handler {
 			fmt.Println("does this even hit")
 
 			id, err := strconv.Atoi(idString)
-			if err != nil {
-				panic(err)
-			}
-
-			tmpl, err := template.ParseFiles(templateDirPath + "lovforslag.gohtml")
 			if err != nil {
 				panic(err)
 			}
@@ -76,7 +63,7 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService) http.Handler {
 			//TODO: Set headers globally with a proxy handler
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-			tmpl.ExecuteTemplate(w, "lovforslag", sag)
+			templateEngine.ExecuteTemplate(w, "lovforslag", sag)
 		},
 	)
 }
@@ -86,7 +73,7 @@ type SagsUpdate struct {
 	Total int64
 }
 
-func UpdateLovforslag(ftodaService *ftoda.FTODAService) http.Handler {
+func UpdateLovforslag(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, updated, err := ftodaService.UpdateLovforslag()
@@ -99,15 +86,10 @@ func UpdateLovforslag(ftodaService *ftoda.FTODAService) http.Handler {
 
 			total := ftodaService.GetLovforslagCount()
 
-			tmpl, err := template.ParseFiles(templateDirPath + "lovforslag.gohtml")
-			if err != nil {
-				panic(err)
-			}
-
 			//TODO: Set headers globally with a proxy handler
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-			tmpl.ExecuteTemplate(w, "update", SagsUpdate{updated, total})
+			templateEngine.ExecuteTemplate(w, "update", SagsUpdate{updated, total})
 		},
 	)
 }

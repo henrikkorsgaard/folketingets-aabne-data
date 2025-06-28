@@ -1,10 +1,11 @@
-package handlers
+package server
 
 import (
 	"net/http"
 	"slices"
 
 	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
+	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 )
 
 // Should be put in .env
@@ -14,19 +15,19 @@ var originAllowlist = []string{
 }
 
 // Pattern adopted from https://grafana.com/blog/2024/02/09/how-i-write-http-services-in-go-after-13-years/
-func NewServer(ftodaService *ftoda.FTODAService) http.Handler {
+func NewServer(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 	mux := http.NewServeMux()
-	addRoutes(mux, ftodaService)
+	addRoutes(mux, ftodaService, templateEngine)
 	var handler http.Handler = mux
 	handler = checkCORS(handler)
 
 	return handler
 }
 
-func addRoutes(mux *http.ServeMux, ftodaService *ftoda.FTODAService) {
-	mux.Handle("/lovforslag", GetLovforslag(ftodaService))
-	mux.Handle("/lovforslag/{id}", GetLovforslagById(ftodaService))
-	mux.Handle("/lovforslag/update", UpdateLovforslag(ftodaService))
+func addRoutes(mux *http.ServeMux, ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) {
+	mux.Handle("/lovforslag", GetLovforslag(ftodaService, templateEngine))
+	mux.Handle("/lovforslag/{id}", GetLovforslagById(ftodaService, templateEngine))
+	mux.Handle("/lovforslag/update", UpdateLovforslag(ftodaService, templateEngine))
 }
 
 func checkCORS(next http.Handler) http.Handler {
