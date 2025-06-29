@@ -1,10 +1,15 @@
 package templates
 
 import (
+	"embed"
+	"fmt"
 	"html/template"
 	"net/http"
 	"os"
 )
+
+//go:embed *.gohtml
+var filesystem embed.FS
 
 // See: https://kilb.tech/golang-templates - embed files solution
 type TemplateEngine struct {
@@ -13,10 +18,11 @@ type TemplateEngine struct {
 
 func NewTemplateEngine() TemplateEngine {
 	//check if the working dir is api
-	//tmpl, err := template.ParseFiles("templates/lovforslag.gohtml")
+	tmpl, err := template.ParseFS(filesystem, "lovforslag.gohtml")
 
 	//check if the working dir is server
-	tmpl, err := template.ParseFiles("../templates/lovforslag.gohtml")
+
+	//tmpl, err := template.ParseFiles("../templates/lovforslag.gohtml")
 
 	if err != nil {
 		panic(err)
@@ -27,9 +33,15 @@ func NewTemplateEngine() TemplateEngine {
 	return engine
 }
 
+/**
+Proxy function that allow us to load templates dynamically
+on dev environment.
+*/
+
 func (te *TemplateEngine) ExecuteTemplate(w http.ResponseWriter, name string, data any) error {
 	// we want to make sure that the templates are loaded on each request when we are developing
-	if environment := os.Getenv("ENVIRONMENT"); environment == "test" {
+	if environment := os.Getenv("ENVIRONMENT"); environment == "dev" {
+		fmt.Println("Dev environment: Parsing temlate on every load")
 		tmpl, err := template.ParseFiles("templates/lovforslag.gohtml")
 		if err != nil {
 			return err

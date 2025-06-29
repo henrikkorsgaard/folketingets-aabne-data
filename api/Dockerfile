@@ -19,6 +19,6 @@ FROM golang:latest
 WORKDIR /build
 
 COPY --from=builder /build/app /build/ftoda
-COPY --from=builder /build/templates /build/templates
+
 EXPOSE 3000
 CMD ["/build/ftoda"]
