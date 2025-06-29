@@ -17,13 +17,8 @@ type TemplateEngine struct {
 }
 
 func NewTemplateEngine() TemplateEngine {
-	//check if the working dir is api
+
 	tmpl, err := template.ParseFS(filesystem, "lovforslag.gohtml")
-
-	//check if the working dir is server
-
-	//tmpl, err := template.ParseFiles("../templates/lovforslag.gohtml")
-
 	if err != nil {
 		panic(err)
 	}
