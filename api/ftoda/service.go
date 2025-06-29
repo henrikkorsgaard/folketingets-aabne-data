@@ -98,8 +98,6 @@ func (s *FTODAService) UpdateLovforslag() ([]Sag, int64, error) {
 	}
 
 	affectedRows := s.db.insertBulk(sager)
-	fmt.Println(affectedRows)
-	//Now we insert these as one transaction into the database
 
 	return sager, affectedRows, nil
 }

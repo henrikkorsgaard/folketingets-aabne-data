@@ -113,7 +113,6 @@ type odataResult struct {
 
 func (repo *apiRepository) getData(q odataQuery) (odata odataResult, err error) {
 
-	fmt.Println(q.PrettyUrl(repo.host))
 	queryUrl, err := q.GetEncodedUrl(repo.host)
 	if err != nil {
 		return odata, err

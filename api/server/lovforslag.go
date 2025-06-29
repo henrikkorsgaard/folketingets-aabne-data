@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -13,13 +12,14 @@ func GetLovforslag(ftodaService *ftoda.FTODAService, templateEngine *templates.T
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 
-			limit, err := strconv.Atoi(r.PathValue("limit"))
+			q := r.URL.Query()
+
+			limit, err := strconv.Atoi(q.Get("limit"))
 			if err != nil {
 				limit = 0
 			}
-			fmt.Println(limit)
-			fmt.Println(r.PathValue("limit"))
-			offset, err := strconv.Atoi(r.PathValue("offset"))
+
+			offset, err := strconv.Atoi(q.Get("offset"))
 			if err != nil {
 				offset = 0
 			}
@@ -41,8 +41,8 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService, templateEngine *templat
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-
-			id, err := strconv.Atoi(r.PathValue("id"))
+			q := r.URL.Query()
+			id, err := strconv.Atoi(q.Get("id"))
 			if err != nil {
 				panic(err)
 			}
