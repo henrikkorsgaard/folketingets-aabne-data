@@ -11,7 +11,6 @@ import (
 //go:embed *.gohtml
 var filesystem embed.FS
 
-// See: https://kilb.tech/golang-templates - embed files solution
 type TemplateEngine struct {
 	tmpl *template.Template
 }
@@ -28,11 +27,10 @@ func NewTemplateEngine() TemplateEngine {
 	return engine
 }
 
-/**
+/*
 Proxy function that allow us to load templates dynamically
 on dev environment.
 */
-
 func (te *TemplateEngine) ExecuteTemplate(w http.ResponseWriter, name string, data any) error {
 	// we want to make sure that the templates are loaded on each request when we are developing
 	if environment := os.Getenv("ENVIRONMENT"); environment == "dev" {

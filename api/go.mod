@@ -13,5 +13,6 @@ require (
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/matryer/is v1.4.1 // indirect
 	github.com/mattn/go-sqlite3 v1.14.28 // indirect
+	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/text v0.26.0 // indirect
 )
