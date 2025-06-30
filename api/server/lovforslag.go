@@ -37,6 +37,10 @@ func GetLovforslag(ftodaService *ftoda.FTODAService, templateEngine *templates.T
 	)
 }
 
+/*
+We should include sagstin for lovforslag. This includes the history of the legislation
+//https://oda.ft.dk/api/Sagstrin?$format=json&$filter=sagid%20eq%20102266
+*/
 func GetLovforslagById(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 
 	return http.HandlerFunc(

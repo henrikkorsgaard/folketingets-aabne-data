@@ -39,7 +39,7 @@ type Afstemning struct {
 	Id              int `gorm:"primaryKey" json:"id"`
 	Nummer          int
 	Konklusion      string `gorm:"column:konklusion" json:"konklusion"`
-	Vedtaget        int
+	Vedtaget        bool   `gorm:"column:vedtaget" json:"vedtaget"`
 	Kommentar       string `gorm:"column:kommentar" json:"kommentar"`
 	ModeId          int    `gorm:"column:mødeid"`
 	Type            string `gorm:"column:type" json:"type"`

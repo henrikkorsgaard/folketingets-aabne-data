@@ -17,7 +17,7 @@ type TemplateEngine struct {
 
 func NewTemplateEngine() TemplateEngine {
 
-	tmpl, err := template.ParseFS(filesystem, "lovforslag.gohtml")
+	tmpl, err := template.ParseFS(filesystem, "lovforslag.gohtml", "afstemning.gohtml")
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +35,7 @@ func (te *TemplateEngine) ExecuteTemplate(w http.ResponseWriter, name string, da
 	// we want to make sure that the templates are loaded on each request when we are developing
 	if environment := os.Getenv("ENVIRONMENT"); environment == "dev" {
 		fmt.Println("Dev environment: Parsing temlate on every load")
-		tmpl, err := template.ParseFiles("templates/lovforslag.gohtml")
+		tmpl, err := template.ParseFiles("templates/lovforslag.gohtml", "templates/afstemning.gohtml")
 		if err != nil {
 			return err
 		}

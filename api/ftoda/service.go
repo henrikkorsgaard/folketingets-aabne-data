@@ -27,25 +27,24 @@ func NewFTODAService(odaHost string, dbHost string) FTODAService {
 	Afstemning
 */
 
-func (s *FTODAService) GetAfstemningBySagId(sagid int) (afstemning Afstemning, err error) {
+func (s *FTODAService) GetAfstemningBySagstrinId(sagstrinid int) (afstemning Afstemning, err error) {
 
 	q := odataQuery{
-		entity: "afstemning",
-		filter: "sagid eq " + strconv.Itoa(sagid),
+		entity: "Afstemning",
+		filter: "sagstrinid eq " + strconv.Itoa(sagstrinid),
 	}
 
 	fmt.Println(q.PrettyUrl(s.api.host))
 	odata, err := s.api.getData(q)
 	if err != nil {
-		fmt.Printf("error from getLovforslag: %s\n", err)
+		fmt.Printf("error from afstemning: %s\n", err)
 		return afstemning, err
 	}
 
-	// Do we know if the result is array or single object
 	var afstemninger []Afstemning
 	err = json.Unmarshal(odata.Result, &afstemninger)
 	if err != nil {
-		fmt.Printf("error from getLovforslag: %s\n", err)
+		fmt.Printf("error from afstemning: %s\n", err)
 		return afstemning, err
 	}
 
