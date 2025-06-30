@@ -23,6 +23,39 @@ func NewFTODAService(odaHost string, dbHost string) FTODAService {
 	}
 }
 
+/*
+	Afstemning
+*/
+
+func (s *FTODAService) GetAfstemningBySagId(sagid int) (afstemning Afstemning, err error) {
+
+	q := odataQuery{
+		entity: "afstemning",
+		filter: "sagid eq " + strconv.Itoa(sagid),
+	}
+
+	fmt.Println(q.PrettyUrl(s.api.host))
+	odata, err := s.api.getData(q)
+	if err != nil {
+		fmt.Printf("error from getLovforslag: %s\n", err)
+		return afstemning, err
+	}
+
+	// Do we know if the result is array or single object
+	var afstemninger []Afstemning
+	err = json.Unmarshal(odata.Result, &afstemninger)
+	if err != nil {
+		fmt.Printf("error from getLovforslag: %s\n", err)
+		return afstemning, err
+	}
+
+	return afstemninger[0], nil
+}
+
+/*
+	Lovforslag
+*/
+
 func (s *FTODAService) GetLovforslagById(id int) (sag Sag, err error) {
 	//First we should check a database, but that is not created yet
 	//If not found in database, then we get it from the api

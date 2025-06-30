@@ -41,8 +41,8 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService, templateEngine *templat
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			q := r.URL.Query()
-			id, err := strconv.Atoi(q.Get("id"))
+			id, err := strconv.Atoi(r.PathValue("id"))
+
 			if err != nil {
 				panic(err)
 			}

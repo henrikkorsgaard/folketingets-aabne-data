@@ -34,3 +34,39 @@ type Sag struct {
 	//Status     string //Table Sagsstatus
 	//SagstrinId int    //Table Sagstrin, use-case when identifying sag by sagstrin (relation Afstemning)
 }
+
+type Afstemning struct {
+	Id              int `gorm:"primaryKey" json:"id"`
+	Nummer          int
+	Konklusion      string `gorm:"column:konklusion" json:"konklusion"`
+	Vedtaget        int
+	Kommentar       string `gorm:"column:kommentar" json:"kommentar"`
+	ModeId          int    `gorm:"column:mødeid"`
+	Type            string `gorm:"column:type" json:"type"`
+	SagstrinId      int
+	SagId           int `gorm:"column:sagid" json:"sagid"`
+	Opdateringsdato string
+}
+
+// This is the relationship between Stemme and actor
+type Stemme struct {
+	Id              int    `gorm:"primaryKey" json:"id"`
+	Type            string `gorm:"type" json:"type"`
+	AfstemningId    int    `gorm:"column:afstemningid"`
+	AktorId         int    `gorm:"column:aktørid"`
+	Opdateringsdato string
+}
+
+type Aktor struct {
+	Id             int    `gorm:"primaryKey" json:"id"`
+	Type           string `gorm:"type" json:"type"`
+	GruppeNavnKort string `gorm:"column:gruppenavnkort" json:"gruppenavnkort"`
+	Navn           string `gorm:"navn" json:"navn"`
+	//Fornavn         string
+	//Efternavn       string
+	//Biografi        string
+	//Periode         int
+	//Opdateringsdato string
+	//Startdato       string
+	//Slutdato        string
+}
