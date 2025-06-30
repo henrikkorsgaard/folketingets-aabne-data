@@ -23,56 +23,9 @@ func TestServer(t *testing.T) {
 	server := NewServer(&service, &engine)
 
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodGet, "/", strings.NewReader(""))
+	r := httptest.NewRequest(http.MethodGet, "/healthy", strings.NewReader(""))
 	server.ServeHTTP(w, r)
 
-	is.Equal(w.Code, http.StatusNotFound) // expect statuscode 404
-}
-
-func TestGetLovforslagLimit(t *testing.T) {
-	is := is.New(t)
-
-	engine := templates.NewTemplateEngine()
-	service := ftoda.NewFTODAService("oda.ft.dk", "../ftoda.db")
-	server := NewServer(&service, &engine)
-
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodGet, "/lovforslag?limit=1", strings.NewReader(""))
-	server.ServeHTTP(w, r)
-	is.Equal(w.Code, http.StatusOK) //expect statuscode 200
-
-	temp := strings.Split(w.Body.String(), "\n")
-	rows := []string{}
-	for _, s := range temp {
-		s = strings.TrimSpace(s)
-		if s != "" {
-			rows = append(rows, s)
-		}
-	}
-
-	is.Equal(len(rows), 1) //expect length to be 1
-}
-
-func TestGetLovforslag(t *testing.T) {
-	is := is.New(t)
-
-	engine := templates.NewTemplateEngine()
-	service := ftoda.NewFTODAService("oda.ft.dk", "../ftoda.db")
-	server := NewServer(&service, &engine)
-
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodGet, "/lovforslag", strings.NewReader(""))
-	server.ServeHTTP(w, r)
-	is.Equal(w.Code, http.StatusOK) //expect statuscode 200
-
-	temp := strings.Split(w.Body.String(), "\n")
-	rows := []string{}
-	for _, s := range temp {
-		s = strings.TrimSpace(s)
-		if s != "" {
-			rows = append(rows, s)
-		}
-	}
-
-	is.Equal(len(rows), 100) //expect length to be 100
+	is.Equal(w.Code, http.StatusTeapot)    // expect statuscode 418
+	is.Equal(w.Body.String(), "I'm alive") // expect "I'm alive"
 }

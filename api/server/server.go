@@ -25,9 +25,18 @@ func NewServer(ftodaService *ftoda.FTODAService, templateEngine *templates.Templ
 }
 
 func addRoutes(mux *http.ServeMux, ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) {
+	mux.Handle("/healthy", healthy())
 	mux.Handle("/lovforslag", GetLovforslag(ftodaService, templateEngine))
 	mux.Handle("/lovforslag/{id}", GetLovforslagById(ftodaService, templateEngine))
 	mux.Handle("/lovforslag/update", UpdateLovforslag(ftodaService, templateEngine))
+}
+
+func healthy() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusTeapot)
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Write([]byte("I'm alive"))
+	})
 }
 
 func checkCORS(next http.Handler) http.Handler {
