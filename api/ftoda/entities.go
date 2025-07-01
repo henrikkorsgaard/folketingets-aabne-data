@@ -28,11 +28,7 @@ type Sag struct {
 	//FremsatUnderSagId   int
 	//DeltUnderSagId      int
 
-	// Foreign types
-	//Type string `json:"sagstype"` //Table Sagtype
-	//Kategori string `json:"sagkategori"` //Table Sagkategori
-	//Status     string //Table Sagsstatus
-	//SagstrinId int    //Table Sagstrin, use-case when identifying sag by sagstrin (relation Afstemning)
+	//Sagstrin []Sagstrin `gorm:"column:sagstrin" json:"sagstrin"`
 }
 
 type Afstemning struct {
@@ -70,3 +66,27 @@ type Aktor struct {
 	//Startdato       string
 	//Slutdato        string
 }
+
+type Sagstrin struct {
+	Id              int    `gorm:"primaryKey" json:"id"`
+	Titel           string `gorm:"titel" json:"titel"`
+	Sagid           int    `gorm:"sagid" json:"sagid"`
+	Type            string `gorm:"type" json:"type"`
+	Typeid          int    `gorm:"column:typeid" json:"typeid"`
+	Statusid        int    `gorm:"column:statusid" json:"statusid"`
+	Dato            string
+	Opdateringsdato string
+}
+
+/*
+id	264599
+titel	"Fremsættelse"
+dato	"2025-03-28T00:00:00"
+sagid	101403
+typeid	31
+folketingstidendeurl	null
+folketingstidende	""
+folketingstidendesidenummer	""
+statusid	32
+opdateringsdato	"2025-03-28T12:04:07.183"
+*/

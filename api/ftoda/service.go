@@ -59,13 +59,14 @@ func (s *FTODAService) GetLovforslagById(id int) (sag Sag, err error) {
 	//First we should check a database, but that is not created yet
 	//If not found in database, then we get it from the api
 
-	query := odataQuery{
+	q := odataQuery{
 		entity: "Sag",
 		filter: "typeid eq 3 and id eq " + strconv.Itoa(id),
+		expand: "Sagstrin",
 	}
-
+	fmt.Println(q.PrettyUrl(s.api.host))
 	// this need to be moved into a different repo service
-	odata, err := s.api.getData(query)
+	odata, err := s.api.getData(q)
 	if err != nil {
 		fmt.Printf("error from getLovforslag: %s\n", err)
 		return sag, err

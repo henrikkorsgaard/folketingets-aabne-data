@@ -8,11 +8,6 @@ import (
 	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 )
 
-/*
-	Because the Afstemning is connect to Lov by Sagstrin id, then we need the Sagstrin id instead of SagId
-	We need to include the vote for this as well
-*/
-
 func GetAfstemningBySagstrinId(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 
 	return http.HandlerFunc(

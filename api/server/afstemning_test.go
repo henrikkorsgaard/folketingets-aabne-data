@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
-
 	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 	"github.com/matryer/is"
 )
