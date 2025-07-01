@@ -28,7 +28,7 @@ type Sag struct {
 	//FremsatUnderSagId   int
 	//DeltUnderSagId      int
 
-	//Sagstrin []Sagstrin `gorm:"column:sagstrin" json:"sagstrin"`
+	Sagstrin []Sagstrin `gorm:"foreignKey:id" json:"sagstrin"`
 }
 
 type Afstemning struct {
@@ -77,16 +77,3 @@ type Sagstrin struct {
 	Dato            string
 	Opdateringsdato string
 }
-
-/*
-id	264599
-titel	"Fremsættelse"
-dato	"2025-03-28T00:00:00"
-sagid	101403
-typeid	31
-folketingstidendeurl	null
-folketingstidende	""
-folketingstidendesidenummer	""
-statusid	32
-opdateringsdato	"2025-03-28T12:04:07.183"
-*/
