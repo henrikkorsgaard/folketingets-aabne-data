@@ -17,7 +17,7 @@ type TemplateEngine struct {
 
 func NewTemplateEngine() TemplateEngine {
 
-	tmpl, err := template.ParseFS(filesystem, "lovforslag.gohtml", "afstemning.gohtml")
+	tmpl, err := template.ParseFS(filesystem, "lovforslag.gohtml", "afstemning.gohtml", "sagstrin.gohtml")
 	if err != nil {
 		panic(err)
 	}

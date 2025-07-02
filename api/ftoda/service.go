@@ -52,6 +52,37 @@ func (s *FTODAService) GetAfstemningBySagstrinId(sagstrinid int) (afstemning Afs
 }
 
 /*
+	Sagstrin
+*/
+
+func (s *FTODAService) GetSagstrinBySagsId(sagid int) (sagstrin []Sagstrin, err error) {
+	//First we should check a database, but that is not created yet
+	//If not found in database, then we get it from the api
+
+	q := odataQuery{
+		entity: "Sagstrin",
+		filter: "sagid eq " + strconv.Itoa(sagid),
+	}
+
+	fmt.Println(q.PrettyUrl(s.api.host))
+	// this need to be moved into a different repo service
+	odata, err := s.api.getData(q)
+	if err != nil {
+		fmt.Printf("error from GetSagstrinBySagsId: %s\n", err)
+		return sagstrin, err
+	}
+
+	// this need to be moved into a different repo service
+	err = json.Unmarshal(odata.Result, &sagstrin)
+	if err != nil {
+		fmt.Printf("error from  GetSagstrinBySagsId: %s\n", err)
+		return sagstrin, err
+	}
+
+	return sagstrin, nil
+}
+
+/*
 	Lovforslag
 */
 
@@ -62,9 +93,7 @@ func (s *FTODAService) GetLovforslagById(id int) (sag Sag, err error) {
 	q := odataQuery{
 		entity: "Sag",
 		filter: "typeid eq 3 and id eq " + strconv.Itoa(id),
-		expand: "Sagstrin",
 	}
-	fmt.Println(q.PrettyUrl(s.api.host))
 	// this need to be moved into a different repo service
 	odata, err := s.api.getData(q)
 	if err != nil {

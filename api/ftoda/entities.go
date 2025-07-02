@@ -27,8 +27,6 @@ type Sag struct {
 	//Retsinformationsurl string
 	//FremsatUnderSagId   int
 	//DeltUnderSagId      int
-
-	Sagstrin []Sagstrin `gorm:"foreignKey:id" json:"sagstrin"`
 }
 
 type Afstemning struct {

@@ -11,7 +11,7 @@ import (
 	"github.com/matryer/is"
 )
 
-func TestAfstemningFromSagstrinId(t *testing.T) {
+func TestGetSagstrinBySagId(t *testing.T) {
 	is := is.New(t)
 
 	engine := templates.NewTemplateEngine()
@@ -19,9 +19,18 @@ func TestAfstemningFromSagstrinId(t *testing.T) {
 	server := NewServer(&service, &engine)
 
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodGet, "/afstemning?sagstrinid=266904", strings.NewReader(""))
+	r := httptest.NewRequest(http.MethodGet, "/sagstrin?sagid=101403", strings.NewReader(""))
 	server.ServeHTTP(w, r)
-
 	is.Equal(w.Code, http.StatusOK) //expect statuscode 200
-	is.True(strings.Contains(w.Body.String(), "<h1>10353</h1>"))
+
+	temp := strings.Split(w.Body.String(), "\n")
+	rows := []string{}
+	for _, s := range temp {
+		s = strings.TrimSpace(s)
+		if s != "" {
+			rows = append(rows, s)
+		}
+	}
+	//Not the best test, but hey - it's what we got!
+	is.True(strings.Contains(rows[0], "Åbent samråd med forsvarsministeren"))
 }
