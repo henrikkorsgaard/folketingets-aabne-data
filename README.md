@@ -44,3 +44,14 @@ https://oda.ft.dk/api/Sag?$filter=typeid%20eq%203%20and%20substringof(%27forsvar
 - Minister pension
 - Buskørselsloven
 - 
+
+# Design considerations
+
+I can either let the API pattern follow through /lovforslag/{id} and try to let the HTML pages solve this OR let the HTMl pattern follow through, e.g. /lovforslag?id={id} and adopt the server.
+
+I would rather do the former without having to do significant dynamic routing on the pure static frontend.
+
+If I use HTMX boost, then I have a very thin frontend application and everything is served by the backend. That creates tighter coupling:
+
+- This backend can only serve this particular frontend
+- I cannot mix and match the frontend components.
