@@ -47,6 +47,15 @@ https://oda.ft.dk/api/Sag?$filter=typeid%20eq%203%20and%20substringof(%27forsvar
 
 # Design considerations
 
+A HTMX BFF cannot be designed to deliver html as a client agnostic service in the same way as a JSON based API. 
+
+In my opinion, JSON-based APIs cannot be in the back-end-for-the-frontend layer, because then a lot of work is pushed to the client. JSON-based APIs either need a BFF server in the middle or result in thick frontend clients. I don't like thick frontend clients for just binding data to HTML and rendering. They may be useful for interactive islands, when the Model-View-Controller is entirely in a frontend interface. 
+
+Why did I like thick clients in the first place? Because, I could build interactive applications fast without needing to deal with the server _when_ I had an JSON-based API.
+
+That means that this project should either be separated into an API server and a BFF server. 
+
+
 I can either let the API pattern follow through /lovforslag/{id} and try to let the HTML pages solve this OR let the HTMl pattern follow through, e.g. /lovforslag?id={id} and adopt the server.
 
 I would rather do the former without having to do significant dynamic routing on the pure static frontend.
@@ -55,3 +64,4 @@ If I use HTMX boost, then I have a very thin frontend application and everything
 
 - This backend can only serve this particular frontend
 - I cannot mix and match the frontend components.
+
