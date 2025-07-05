@@ -27,7 +27,6 @@ func GetSagstrinBySagsId(ftodaService *ftoda.FTODAService, templateEngine *templ
 
 			//TODO: Set headers globally with a proxy handler
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
 			templateEngine.ExecuteTemplate(w, "sagstrin", sagstrin)
 		},
 	)

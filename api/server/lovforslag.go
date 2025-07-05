@@ -27,12 +27,15 @@ func GetLovforslag(ftodaService *ftoda.FTODAService, templateEngine *templates.T
 			sager, err := ftodaService.GetLovforslag(limit, offset)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte("500 - Something bad happened!"))
 				w.Write([]byte(err.Error()))
 			}
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-			templateEngine.ExecuteTemplate(w, "list", sager)
+			err = templateEngine.ExecuteTemplate(w, "list", sager)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte(err.Error()))
+			}
 		},
 	)
 }
@@ -63,7 +66,11 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService, templateEngine *templat
 			//TODO: Set headers globally with a proxy handler
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-			templateEngine.ExecuteTemplate(w, "lovforslag", sag)
+			err = templateEngine.ExecuteTemplate(w, "lovforslag", sag)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte(err.Error()))
+			}
 		},
 	)
 }
@@ -89,7 +96,11 @@ func UpdateLovforslag(ftodaService *ftoda.FTODAService, templateEngine *template
 			//TODO: Set headers globally with a proxy handler
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-			templateEngine.ExecuteTemplate(w, "update", SagsUpdate{updated, total})
+			err = templateEngine.ExecuteTemplate(w, "update", SagsUpdate{updated, total})
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte(err.Error()))
+			}
 		},
 	)
 }
