@@ -45,7 +45,17 @@ https://oda.ft.dk/api/Sag?$filter=typeid%20eq%203%20and%20substringof(%27forsvar
 - Buskørselsloven
 - Klima love?
 
-# Design considerations
+# UI design considerations
+
+Pivoting away from this application being a BFF for a static client hosted elsewhere, means that I need to reconsider the design, e.g. moving from bare components to pages that consume the components. There are 3 interesting entities for dashboard and/or entity analysis:
+
+- Lovforslag
+- Actors
+- Votes 
+
+Each can have a filtering dimension (search, facets, similarities) and detailed view. They likely overlap, so a Lovforslag has a votes and an Actor has a vote. I wonder if the Votes in itself is interesting?
+
+# Application Design considerations
 In terms of the design, I've hit a forking path: 
 
 I can either design this services as a client agnostic API that coincidently sends HTML instead of JSON. This decouples style and context, but not structure. Relations are not decoupled (links) and there is a snatch around the API design. The service _should_ follow a RESTful design, e.g. /lovforslag returns a list and /lovforslag/:id returns a specific lovforslag. However, this creates an issue for clients. They would need some sort of routing intermediary, e.g. translating /lovforslag/:id to lovforslag?id=:id to avoid mirroring the file structure in the client layer, e.g. `<a href="/lovforslag/:id.html">Link</a>` or a thick client that handle this. If needing an intermediary or thick client, then the API might as well be JSON-based RPC-like API. 
@@ -54,8 +64,11 @@ Or I can design the service as an [HATEOAS](https://htmx.org/essays/hateoas/) ap
 
 In my opinion, JSON-based APIs cannot be in the back-end-for-the-frontend layer, because then a lot of work is pushed to the client. JSON-based APIs either need a BFF server in the middle or result in thick frontend clients. I don't like thick frontend clients for just binding data to HTML and rendering. They may be useful for interactive islands, when the Model-View-Controller is entirely in a frontend interface. 
 
-Going for a tight coupling with a BFF HOATEOAS design have two downsides:
+Going for a tight coupling with a BFF HOATEOAS design have a couple downsides:
 
 - I cannot do a full static HTML client without a server or HTMX without static site generation (That sounds like a fun challenge).
 - I cannot use the BFF API from other services without transclusion, which might be hard in terms of handling relations and links (Another fun challenge). 
+- Hosting might increase. That is a decision I defer to later.
+
+
 
