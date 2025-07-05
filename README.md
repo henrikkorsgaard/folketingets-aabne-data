@@ -46,22 +46,15 @@ https://oda.ft.dk/api/Sag?$filter=typeid%20eq%203%20and%20substringof(%27forsvar
 - 
 
 # Design considerations
+In terms of the design, I've hit a forking path: 
 
-A HTMX BFF cannot be designed to deliver html as a client agnostic service in the same way as a JSON based API. 
+I can either design this services as a client agnostic API that coincidently sends HTML instead of JSON. This decouples style and context, but not structure. Relations are not decoupled (links) and there is a snatch around the API design. The service _should_ follow a RESTful design, e.g. /lovforslag returns a list and /lovforslag/:id returns a specific lovforslag. However, this creates an issue for clients. They would need some sort of routing intermediary, e.g. translating /lovforslag/:id to lovforslag?id=:id to avoid mirroring the file structure in the client layer, e.g. `<a href="/lovforslag/:id.html">Link</a>` or a thick client that handle this. If needing an intermediary or thick client, then the API might as well be JSON-based RPC-like API. 
+
+Or I can design the service as an [HATEOAS](https://htmx.org/essays/hateoas/) application. This means that this server serves the application. If needing a decoupled service, I can add JSON return on selected endpoints if needed _or_ refactor the API into its own service. Then this application become the intermediary backend-for-the-frontend. A HTMX BFF cannot be designed to deliver html as a client agnostic service in the same way as a JSON based API. 
 
 In my opinion, JSON-based APIs cannot be in the back-end-for-the-frontend layer, because then a lot of work is pushed to the client. JSON-based APIs either need a BFF server in the middle or result in thick frontend clients. I don't like thick frontend clients for just binding data to HTML and rendering. They may be useful for interactive islands, when the Model-View-Controller is entirely in a frontend interface. 
 
-Why did I like thick clients in the first place? Because, I could build interactive applications fast without needing to deal with the server _when_ I had an JSON-based API.
+Going for a tight coupling with a BFF HOATEOAS design have two downsides:
 
-That means that this project should either be separated into an API server and a BFF server. 
-
-
-I can either let the API pattern follow through /lovforslag/{id} and try to let the HTML pages solve this OR let the HTMl pattern follow through, e.g. /lovforslag?id={id} and adopt the server.
-
-I would rather do the former without having to do significant dynamic routing on the pure static frontend.
-
-If I use HTMX boost, then I have a very thin frontend application and everything is served by the backend. That creates tighter coupling:
-
-- This backend can only serve this particular frontend
-- I cannot mix and match the frontend components.
-
+- I cannot do a full static HTML client without a server or HTMX without static site generation (That sounds like a fun challenge).
+- I cannot use the BFF API from other services without transclusion, which might be hard in terms of handling relations and links (Another fun challenge). 
