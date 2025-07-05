@@ -43,7 +43,7 @@ https://oda.ft.dk/api/Sag?$filter=typeid%20eq%203%20and%20substringof(%27forsvar
 - L 188: Om forsvarssamarbejde mellem Danmark og Amerikas Forenede Stater m.v
 - Minister pension
 - Buskørselsloven
-- 
+- Klima love?
 
 # Design considerations
 In terms of the design, I've hit a forking path: 
@@ -58,3 +58,4 @@ Going for a tight coupling with a BFF HOATEOAS design have two downsides:
 
 - I cannot do a full static HTML client without a server or HTMX without static site generation (That sounds like a fun challenge).
 - I cannot use the BFF API from other services without transclusion, which might be hard in terms of handling relations and links (Another fun challenge). 
+
