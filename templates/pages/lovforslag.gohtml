@@ -1,10 +1,13 @@
 {{define "lovforslag"}}
     {{ template "header" }}
-    <h1>{{.Titel}}</h1>
-    <h2>{{.Lovnummer}}</h2>
-    <p>{{.Resume}}</p>
+    <div class="lovforslag">
+        <h1>{{.Nummer}}: {{.TitelKort}}</h1>
+        <p>{{.Resume}}</p>
+        <h3>Afstemningskonklusion</h3>
+        <p>{{.Afstemningskonklusion}}</p>
+    <div>
 
-    <div hx-get="/sagstrin?sagid={{.Id}}" hx-trigger="load" hx-request='{"noHeaders": true}'></div>
+    <div class="timeline" hx-get="/sagstrin?sagid={{.Id}}" hx-trigger="load" hx-request='{"noHeaders": true}'></div>
     
     {{ template "footer" }}
 {{end}}

@@ -48,31 +48,31 @@ func (d FtodaDate) MarshalJSON() ([]byte, error) {
 }
 
 type Sag struct {
-	Id                int    `gorm:"primaryKey" json:"id"`
-	Titel             string `json:"titel"`
-	TitelKort         string `gorm:"column:titelkort" json:"titelkort"`
-	Offentlighedskode string `gorm:"column:offentlighedskode"`
-	//Nummer                 string
+	Id        int    `gorm:"primaryKey" json:"id"`
+	Titel     string `json:"titel"`
+	TitelKort string `gorm:"column:titelkort" json:"titelkort"`
+	//Offentlighedskode string `gorm:"column:offentlighedskode"` //Only public cases are public
+	Nummer string `gorm:"column:nummer" json:"nummer"` //e.g. L 105
 	//NummerPrefix           string `gorm:"column:nummerprefix"`
 	//NummerNumerisk         string `gorm:"column:nummernumerisk"`
 	//NummerPostfix          string `gorm:"column:nummerpostfix"`
 	Resume                string `json:"resume"`
 	Afstemningskonklusion string `gorm:"column:afstemningskonklusion" json:"afstemningskonklusion"`
-	//PeriodeId              int
+	PeriodeId             int    //maps onto
 	//AfgorelsesResultatKode string `gorm:"column:afgorelsesresultatkode"`
 	//Baggrundsmateriale     string
 	//Opdateringsdato        string
 	//StatsbudgetSag         int
-	//Begrundelse         string
-	//Paragrafnummer      int
-	//Paragraf            string
-	//AfgorelsesDato      string
-	//Afgorelse           string
+	Begrundelse    string `gorm:"column:begrundelse" json:"begrundelse"`
+	Paragrafnummer int    `gorm:"column:paragrafnummer" json:"paragrafnummer"`
+	Paragraf       string `gorm:"column:paragraf" json:"paragraf"`
+	//AfgorelsesDato FtodaDate `gorm:"column:afgorelsesDato" json:"afgorelsesDato"`
+	//Afgorelse      string    `gorm:"column:afgorelse" json:"afgorelse"`
 	//RådsmodeDato        string
 	Lovnummer string `gorm:"column:lovnummer" json:"lovnummer"`
-	//LovnummerDato       string
+	//LovnummerDato FtodaDate `gorm:"column:lovnummerDato" json:"lovnummerDato,omitempty"`
 	//Retsinformationsurl string
-	//FremsatUnderSagId   int
+	//FremsatUnderSagId int
 	//DeltUnderSagId      int
 }
 
@@ -98,6 +98,10 @@ type Stemme struct {
 	//Opdateringsdato datatypes.Date
 }
 
+/*
+	We need to consider SagAktørRolle as a relationship to e.g. Lovforslag
+*/
+
 type Aktor struct {
 	Id             int    `gorm:"primaryKey" json:"id"`
 	Type           string `gorm:"type" json:"type"`
@@ -113,12 +117,14 @@ type Aktor struct {
 }
 
 type Sagstrin struct {
-	Id       int       `gorm:"primaryKey" json:"id"`
-	Titel    string    `gorm:"titel" json:"titel"`
-	Sagid    int       `gorm:"sagid" json:"sagid"`
-	Type     string    `gorm:"type" json:"type"`
-	Typeid   int       `gorm:"column:typeid" json:"typeid"`
-	Statusid int       `gorm:"column:statusid" json:"statusid"`
-	Dato     FtodaDate `gorm:"column:dato" json:"dato"`
+	Id    int    `gorm:"primaryKey" json:"id"`
+	Titel string `gorm:"titel" json:"titel"`
+	Sagid int    `gorm:"sagid" json:"sagid"`
+	Type  string `gorm:"type" json:"type"`
+	//Typeid   int       `gorm:"column:typeid" json:"typeid"`
+	//Statusid int       `gorm:"column:statusid" json:"statusid"`
+	Status string `gorm:"status" json:"status"`
+
+	Dato FtodaDate `gorm:"column:dato" json:"dato"`
 	//Opdateringsdato datatypes.Date
 }

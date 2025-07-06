@@ -17,7 +17,6 @@ type apiRepository struct {
 // This should be internal
 // And the API should be Public with a private db and api
 func newAPIRepository(host string) *apiRepository {
-
 	return &apiRepository{
 		host: host,
 	}
