@@ -17,9 +17,6 @@ type TemplateEngine struct {
 
 func NewTemplateEngine() TemplateEngine {
 
-	//need to add the file structure from in here.
-	//components
-	//pages
 	tmpl, err := template.ParseFS(folder, "*/*.gohtml")
 	if err != nil {
 		panic(err)
@@ -37,13 +34,11 @@ on dev environment.
 func (te *TemplateEngine) ExecuteTemplate(w http.ResponseWriter, name string, data any) error {
 	// we want to make sure that the templates are loaded on each request when we are developing
 	if environment := os.Getenv("ENVIRONMENT"); environment == "dev" {
-		fmt.Println("Dev environment: Parsing temlate on every load")
 		tmpl, err := template.ParseGlob("templates/*/*.gohtml")
 		if err != nil {
 			fmt.Println(err)
 			return err
 		}
-		fmt.Printf("%+v", tmpl)
 		te.tmpl = tmpl
 	}
 

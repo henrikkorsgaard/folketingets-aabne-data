@@ -1,5 +1,11 @@
 {{define "sagstrin"}}
+    <div class="sagstrin-timeline">
     {{range .}}
-        <tr><td>?</td><td>{{.Titel}}</td></tr>
+        <div class="sagstrin">
+            <h1>{{.Titel}}</h1>
+            {{/* TODO: Implement language localization over the date string. Alternative, is to just keep it as a string and format it. */}}
+            <h2>{{.Dato.Format "01-01-2006" }}</h2>
+        </div>
     {{end}}
+    </div>
 {{end}} 
