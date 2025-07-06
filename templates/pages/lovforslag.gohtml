@@ -1,14 +1,15 @@
 {{define "lovforslag"}}
     {{ template "header" }}
-    <div class="lovforslag">
-        <h1>{{.Nummer}}: {{.TitelKort}}</h1>
+    <div class="card title">
+        <h1 >{{.Nummer}}: {{.TitelKort}}</h1>
+    </div>
+    <div class="card lovforslag">
+        <h3>{{.Titel}}</h3>
         <p>{{.Resume}}</p>
         <h3>Afstemningskonklusion</h3>
         <p>{{.Afstemningskonklusion}}</p>
-    <div>
-
+    </div>
     <div class="timeline" hx-get="/sagstrin?sagid={{.Id}}" hx-trigger="load" hx-request='{"noHeaders": true}'></div>
-    
     {{ template "footer" }}
 {{end}}
 
