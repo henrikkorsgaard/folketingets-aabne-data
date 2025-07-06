@@ -39,21 +39,6 @@ func (d *FtodaDate) UnmarshalJSON(b []byte) error {
 	}
 	d.Time = t
 	return nil
-	/*
-		switch len(s) {
-		case 10:
-			theTime, err = time.Parse("2006-01-02", s)
-		case 16:
-			theTime, err = time.Parse("2006-01-02T15:04", s)
-		case 19:
-			theTime, err = time.Parse("2006-01-02T15:04:05", s)
-		default:
-			err = json.Unmarshal(b, &theTime)
-			if err != nil {
-				err = fmt.Errorf("layout must: 2006-01-02T15:04:05-07:00 | %w", err)
-			}
-		}*/
-
 }
 
 func (d FtodaDate) MarshalJSON() ([]byte, error) {

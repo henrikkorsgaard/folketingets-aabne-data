@@ -26,12 +26,13 @@ func newAPIRepository(host string) *apiRepository {
 // TODO: add select as option. This allow us to filter have minimal and full service
 // This will happen when we start consuming the bff with the frontend elements.
 type odataQuery struct {
-	entity string
-	filter string
-	expand string
-	order  string
-	top    int
-	skip   int
+	entity  string
+	filter  string
+	expand  string
+	orderBy string
+	order   string
+	top     int
+	skip    int
 }
 
 // For debugging odata url oddities
@@ -59,10 +60,16 @@ func (q *odataQuery) PrettyUrl(host string) string {
 	sb.WriteString(strconv.Itoa(q.skip))
 
 	if q.order == "" {
-		sb.WriteString("&orderby=id desc")
+		q.order = "desc"
+	}
 
+	if q.orderBy == "" {
+		sb.WriteString("&orderby=id ")
+		sb.WriteString(q.orderBy)
 	} else {
 		sb.WriteString("&orderby=")
+		sb.WriteString(q.orderBy)
+		sb.WriteString(" ")
 		sb.WriteString(q.order)
 	}
 
@@ -93,9 +100,13 @@ func (q *odataQuery) GetEncodedUrl(host string) (string, error) {
 	params.Add("$skip", strconv.Itoa(q.skip)) //Defaults to zero
 
 	if q.order == "" {
-		params.Add("$orderby", "id desc")
+		q.order = "desc"
+	}
+
+	if q.orderBy == "" {
+		params.Add("$orderby", "id "+q.order)
 	} else {
-		params.Add("$orderby", q.order)
+		params.Add("$orderby", q.orderBy+" "+q.order)
 	}
 	params.Add("$format", "json")
 
