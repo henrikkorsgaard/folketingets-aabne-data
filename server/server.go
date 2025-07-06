@@ -18,6 +18,7 @@ var originAllowlist = []string{
 func NewServer(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 	mux := http.NewServeMux()
 	addRoutes(mux, ftodaService, templateEngine)
+
 	var handler http.Handler = mux
 	handler = checkCORS(handler)
 
@@ -26,6 +27,7 @@ func NewServer(ftodaService *ftoda.FTODAService, templateEngine *templates.Templ
 
 func addRoutes(mux *http.ServeMux, ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) {
 	mux.Handle("/healthy", healthy())
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	mux.Handle("/lovforslag", GetLovforslag(ftodaService, templateEngine))
 	mux.Handle("/lovforslag/{id}", GetLovforslagById(ftodaService, templateEngine))
 	mux.Handle("/lovforslag/update", UpdateLovforslag(ftodaService, templateEngine))
