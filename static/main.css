@@ -1,17 +1,18 @@
 html {
     height: 100%;
-    margin:0px;
-    overflow-x:scroll;
+    margin: 0px;
+    overflow-x: scroll;
 }
 
 body {
     background-color: #ffdb58;
-    min-height: calc(1vh - 40px); /* calc height minus margin*/
+    min-height: calc(1vh - 40px);
+    /* calc height minus margin*/
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 100px auto 1fr;
     column-gap: 25px;
-    margin:20px 25px;
+    margin: 20px 25px;
     row-gap: 20px;
     justify-items: stretch;
     justify-content: stretch;
@@ -26,129 +27,103 @@ body {
 }
 
 .title {
-    grid-row:1;
+    grid-row: 1;
     grid-column: 1 / span 3;
     overflow: hidden;
 }
 
 .lovforslag {
-    grid-row: 2 ;
+    grid-row: 2;
     grid-column: 1 / span 2;
 }
 
-/**
-    Timeline logic for desktop
-*/
-
-.timeline {
-    max-height: 200px;
-    grid-row: 3; /* why should this care about the context? */
-    grid-column: 1 / span 2;
+.tmln {
+    grid-row: 2;
+    grid-column: 3;
+    position: relative;
     justify-self: stretch;
-
     display: grid;
-    grid-template-columns: auto;
+    grid-template-columns: 120px 120px 120px;
     grid-template-rows: 1fr;
 }
 
-
-.timeline .sagstrin  {
-    height: 100%;
-    grid-column: var(--index) ;
-    display: grid;
-    row-gap: 20px;
-    grid-template-columns: 1;
-    grid-template-rows: 80px 10px 80px;
+.tmln .sagstrin.left {
+    grid-column: 1;
 }
 
-.timeline .sagstrin .content {
+.tmln .sagstrin.right {
+    grid-column: 3;
+}
+
+.tmln .sagstrin.left::after {
+    content: '';
+    position: absolute;
+    top:calc(50% - 1px);
+    left:100%;
+    width: 64px;
+    height: 2px;
+    background: black;
+    z-index: -1;
+}
+
+.tmln .sagstrin.right::before {
+    content: '';
+    position: absolute;
+    top:calc(50% - 1px);
+    left:-64px;
+    width: 64px;
+    height: 2px;
+    background: black;
+    z-index: -1;
+}
+
+.tmln .sagstrin {
+    position: relative;
+    justify-self: center;
+    grid-row: var(--index);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     padding: 5px;
-    padding-top: 8px;
     border: 2px solid black;
     box-shadow: 2px 2px black;
-    position: relative;
     background: white;
-    text-align: center; 
-    justify-self: center;
-    width:100px;
+    text-align: center;
+    width: 120px;
     font-size: 85%;
+    height:60px;
 }
 
-.timeline .sagstrin .content p {
+.tmln .sagstrin p {
     margin: 1px;
+    padding: 0px;
+    font-size:80%;
 }
 
-.timeline .sagstrin:nth-child(even) .content {
-    grid-row:1;
-}
-
-.timeline .sagstrin:nth-child(odd) .content {
-    grid-row:3;
-}
-
-.timeline .sagstrin .content::before,
-.timeline .sagstrin .content::after {
-  content: '';
-  position: absolute;
-  border: 13px solid transparent;
-}
-
-.timeline .sagstrin .content::after {
-  border: 10px solid transparent;
-}
-
-.timeline .sagstrin:nth-child(odd) .content::before,
-.timeline .sagstrin:nth-child(odd) .content::after {
-  bottom: 100%;
-  left: 42px;
-  border-bottom-color: black;
-}
-
-.timeline .sagstrin:nth-child(odd) .content::after {
-  left: 44px;
-  border-bottom-color: white;
-}
-
-.timeline .sagstrin:nth-child(even) .content::before,
-.timeline .sagstrin:nth-child(even) .content::after {
-  top: 100%;
-  right: 40px;
-  border-top-color: black;
-}
-
-.timeline .sagstrin:nth-child(even) .content::after {
-  right: 44px;
-  border-top-color: white;
-}
-
-.timeline .sagstrin .dot {
-    background-color: white;
-    grid-row: 2;
-    position:absolute;
-    transform: translateY(-4px);
-    width: 10px;
-    height: 10px;
-    justify-self: center;
-    align-self: center;
-    border-radius: 10px;
-    border: 4px solid red;
-}
-
-.timeline .sagstrin .line {
-    border: 2px solid red;
-    height: 0px;
-    grid-row:2;
-}
-
-.timeline .sagstrin:last-child .line {
-    width: 50%;
-}
-
-.timeline .sagstrin:first-child .line {
+.tmln .dot {
     position: relative;
-    width: 50%;
-    left:50%;
+    grid-column:2;
+    grid-row: var(--index);
+    width:16px;
+    place-self: center center;
+    height: 16px;
+    border-radius:16px;
+    border: 2px solid black;
+    background-color: white;
 }
 
+.tmln .dot::after {
+    content: '';
+    position: absolute;
+    top:16px;
+    width: 2px;
+    height: 60px;
+    background: black;
+    z-index: -1;
+    left:7px;
+}
 
-
+.tmln .dot:last-of-type::after {
+    display: none;
+}

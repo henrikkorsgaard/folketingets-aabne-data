@@ -9,7 +9,8 @@
         <h3>Afstemningskonklusion</h3>
         <p>{{.Afstemningskonklusion}}</p>
     </div>
-    <div class="timeline" hx-get="/sagstrin?sagid={{.Id}}" hx-trigger="load" hx-request='{"noHeaders": true}'></div>
+    <div class="tmln" hx-get="/sagstrin?sagid={{.Id}}" hx-trigger="load" hx-request='{"noHeaders": true}'></div>
+    <!--<div class="timeline" hx-get="/sagstrin?sagid={{.Id}}" hx-trigger="load" hx-request='{"noHeaders": true}'></div>-->
     {{ template "footer" }}
 {{end}}
 
