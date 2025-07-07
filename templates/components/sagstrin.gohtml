@@ -1,11 +1,10 @@
 {{define "sagstrin"}}
-    
-    {{range .}}
-        <div class="sagstrin">
-            
-            <div class="dot"></div>
-            
+    {{ $length := len . }}
+    {{range $index, $el := .}}
+        {{/* see: https://stackoverflow.com/a/72465098 */}}
+        <div class="sagstrin" style="--count:{{ $length }}; --index: {{ len (printf "a%*s" $index "") }};">
             <div class="line"></div>
+            <div class="dot"></div>            
             <div class="content">
                 <b>{{.Dato.Format "01-01-2006" }}</b>
                 <p>{{.Titel}}</p>
