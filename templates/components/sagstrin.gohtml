@@ -1,19 +1,20 @@
 {{define "sagstrin"}}
 {{/* TODO: Implement language localization over the date string. Alternative, is to just keep it as a string and format it. */}}
+{{/* TODO: Change title to sagstrinstype.type https://oda.ft.dk/api/Sagstrin?$expand=Sagstrinstype&$format=json&$filter=sagid eq 102024&$skip=0&orderby=id}}
     {{ $length := len . }}
     {{- $odd := false}}
     {{range $index, $el := .}}
         {{/* see: https://stackoverflow.com/a/72465098 */}}
         {{$odd = not $odd}}
         {{if $odd}} 
-        <div class="sagstrin left" style="--index:{{ len (printf "a%*s" $index "") }};" >   
+        <div class="sagstrin left" style="--index:{{ len (printf "a%*s" $index "") }};--i: {{ $index }};" >   
             <b>{{.Titel}}</b><p>{{.Dato.Format "02-01-2006" }}</p>
         </div>
         {{else}}
-        <div class="sagstrin right" style="--index:{{ len (printf "a%*s" $index "") }};" >   
+        <div class="sagstrin right" style="--index:{{ len (printf "a%*s" $index "") }};--i: {{ $index }};" >   
             <b>{{.Titel}}</b><p>{{.Dato.Format "02-01-2006" }}</p>
         </div>
         {{end}}
-        <div class="dot" style="--index:{{ len (printf "a%*s" $index "") }};"></div>
+        <div class="dot" id="i_{{ $index }}" style="--index:{{ len (printf "a%*s" $index "") }};"></div>
     {{end}}
 {{end}} 
