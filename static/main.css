@@ -1,14 +1,14 @@
 html {
     height: 100%;
     margin:0px;
-    overflow:hidden;
+    overflow-x:scroll;
 }
 
 body {
     min-height: calc(1vh - 40px); /* calc height minus margin*/
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 100px 2fr 1fr;
+    grid-template-rows: 100px auto 1fr;
     column-gap: 25px;
     margin:20px 25px;
     row-gap: 20px;
@@ -26,13 +26,13 @@ body {
 .title {
     grid-row:1;
     grid-column: 1 / span 3;
+    overflow: hidden;
 }
 
 .lovforslag {
     grid-row: 2 ;
     grid-column: 1 / span 2;
 }
-
 
 /**
     Timeline logic for desktop
@@ -43,6 +43,7 @@ body {
     grid-row: 3; /* why should this care about the context? */
     grid-column: 1 / span 2;
     justify-self: stretch;
+
     display: grid;
     grid-template-columns: auto;
     grid-template-rows: 1fr;
@@ -67,7 +68,6 @@ body {
     background: white;
     text-align: center; 
     justify-self: center;
-    height: 60px;
     width:100px;
     font-size: 85%;
 }
@@ -122,7 +122,7 @@ body {
 .timeline .sagstrin .dot {
     background-color: white;
     grid-row: 2;
-    position:fixed;
+    position:absolute;
     transform: translateY(-4px);
     width: 10px;
     height: 10px;
