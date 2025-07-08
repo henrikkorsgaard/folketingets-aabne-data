@@ -44,7 +44,7 @@ body {
     justify-self: start;
     align-self: self-start;
     display: grid;
-    grid-template-columns: 120px 120px 120px;
+    grid-template-columns: 160px 140px 160px;
     grid-template-rows: 1fr;
 }
 
@@ -91,9 +91,9 @@ body {
     box-shadow: 2px 2px black;
     background: white;
     text-align: center;
-    width: 120px;
+    width: 160px;
     font-size: 85%;
-    height:50px;
+    height:60px;
     margin-top:-20px;
 }
 

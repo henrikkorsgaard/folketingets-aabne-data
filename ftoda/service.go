@@ -63,6 +63,7 @@ func (s *FTODAService) GetSagstrinBySagsId(sagid int) (sagstrin []Sagstrin, err 
 		entity: "Sagstrin",
 		filter: "sagid eq " + strconv.Itoa(sagid),
 		order:  "asc",
+		expand: "Sagstrinstype",
 	}
 
 	fmt.Println(q.PrettyUrl(s.api.host))
