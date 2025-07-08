@@ -1,14 +1,10 @@
 package ftoda
 
 import (
-	"fmt"
+	"encoding/json"
 	"strings"
 	"time"
 )
-
-type FtodaDate struct {
-	time.Time //make a gorm data alias instead?
-}
 
 // See https://stackoverflow.com/questions/45303326/how-to-parse-non-standard-time-format-from-json
 
@@ -30,9 +26,12 @@ type FtodaDate struct {
 
 */
 
+type FtodaDate struct {
+	time.Time //make a gorm data alias instead?
+}
+
 func (d *FtodaDate) UnmarshalJSON(b []byte) error {
 	s := strings.Trim(string(b), `"`)
-
 	t, err := time.Parse("2006-01-02T15:04:05", s)
 	if err != nil {
 		return err
@@ -41,10 +40,16 @@ func (d *FtodaDate) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (d FtodaDate) MarshalJSON() ([]byte, error) {
-	fmt.Println("called")
-	t := fmt.Sprintf("\"%s\"", time.Time(d.Time).Format("2006-01-02"))
-	return []byte(t), nil
+type FtodaSagstype string
+
+func (st *FtodaSagstype) UnmarshalJSON(b []byte) error {
+	var s string
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+	parts := strings.Split(s, "/til")
+	*st = FtodaSagstype(parts[0])
+	return nil
 }
 
 type Sag struct {
@@ -129,8 +134,8 @@ type Sagstrin struct {
 }
 
 type Sagstrinstype struct {
-	Id   int       `gorm:"primaryKey" json:"id"`
-	Type string    `gorm:"type" json:"type"`
-	Dato FtodaDate `gorm:"column:dato" json:"dato"`
+	Id   int           `gorm:"primaryKey" json:"id"`
+	Type FtodaSagstype `gorm:"type" json:"type"`
+	Dato FtodaDate     `gorm:"column:dato" json:"dato"`
 	//Opdateringsdato datatypes.Date
 }
