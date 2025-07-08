@@ -8,7 +8,7 @@ body {
     background-color: #ffdb58;
     min-height: calc(1vh - 40px);
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 3fr 2fr 3fr;
     grid-template-rows: 100px auto 1fr;
     column-gap: 25px;
     margin: 20px 25px;
@@ -33,12 +33,12 @@ body {
 
 .lovforslag {
     grid-row: 2;
-    grid-column: 1 / span 2;
+    grid-column: 1;
 }
 
 .tmln {
     grid-row: 2;
-    grid-column: 3;
+    grid-column: 2;
     /*
     padding-top maps to the 
     vertical "compression" of 
@@ -101,6 +101,10 @@ body {
     font-size: 85%;
     height:55px;
     margin-top:-20px;
+}
+
+.tmln .sagstrin.afstemning {
+    background-color:#c4a1ff;
 }
 
 .tmln .sagstrin p {

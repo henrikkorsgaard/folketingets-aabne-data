@@ -24,6 +24,13 @@ func GetSagstrinBySagsId(ftodaService *ftoda.FTODAService, templateEngine *templ
 				w.Write([]byte("500 - Something bad happened!"))
 				w.Write([]byte(err.Error()))
 			}
+
+			for i := range sagstrin {
+				if len(sagstrin[i].Afstemning) > 0 {
+					sagstrin[i].HasAfstemning = true
+				}
+			}
+
 			//TODO: Set headers globally with a proxy handler
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			templateEngine.ExecuteTemplate(w, "sagstrin", sagstrin)

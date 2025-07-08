@@ -130,6 +130,8 @@ type Sagstrin struct {
 	//Statusid int       `gorm:"column:statusid" json:"statusid"`
 	Sagstrinstype Sagstrinstype `gorm:"sagstrinstype" json:"sagstrinstype"`
 	Dato          FtodaDate     `gorm:"column:dato" json:"dato"`
+	Afstemning    []Afstemning  `gorm:"column:afstemning" json:"afstemning"`
+	HasAfstemning bool          //we don't need to persist this
 	//Opdateringsdato datatypes.Date
 }
 
