@@ -91,6 +91,7 @@ func (s *FTODAService) GetSagstrinById(id int) (sag Sagstrin, err error) {
 	q := odataQuery{
 		entity: "Sagstrin",
 		filter: "id eq " + strconv.Itoa(id),
+		expand: "Sagstrinstype,Afstemning",
 	}
 	// this need to be moved into a different repo service
 	odata, err := s.api.getData(q)

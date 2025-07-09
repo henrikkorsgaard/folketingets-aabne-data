@@ -54,6 +54,10 @@ func GetSagstrinById(ftodaService *ftoda.FTODAService, templateEngine *templates
 				w.Write([]byte(err.Error()))
 			}
 
+			if len(sagstrin.Afstemning) > 0 {
+				sagstrin.HasAfstemning = true
+			}
+
 			//TODO: Set headers globally with a proxy handler
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			templateEngine.ExecuteTemplate(w, "sagstrin-details", sagstrin)
