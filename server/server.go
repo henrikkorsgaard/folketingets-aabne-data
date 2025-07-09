@@ -33,6 +33,7 @@ func addRoutes(mux *http.ServeMux, ftodaService *ftoda.FTODAService, templateEng
 	mux.Handle("/lovforslag/update", UpdateLovforslag(ftodaService, templateEngine))
 	mux.Handle("/afstemning", GetAfstemningBySagstrinId(ftodaService, templateEngine))
 	mux.Handle("/sagstrin", GetSagstrinBySagsId(ftodaService, templateEngine))
+	mux.Handle("/sagstrin/{id}", GetSagstrinById(ftodaService, templateEngine))
 }
 
 func healthy() http.Handler {

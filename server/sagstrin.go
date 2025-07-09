@@ -37,3 +37,26 @@ func GetSagstrinBySagsId(ftodaService *ftoda.FTODAService, templateEngine *templ
 		},
 	)
 }
+
+func GetSagstrinById(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			id, err := strconv.Atoi(r.PathValue("id"))
+			if err != nil {
+				panic(err)
+			}
+
+			sagstrin, err := ftodaService.GetSagstrinById(id)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte("500 - Something bad happened!"))
+				w.Write([]byte(err.Error()))
+			}
+
+			//TODO: Set headers globally with a proxy handler
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			templateEngine.ExecuteTemplate(w, "sagstrin-details", sagstrin)
+		},
+	)
+}

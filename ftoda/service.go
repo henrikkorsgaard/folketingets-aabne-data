@@ -84,6 +84,32 @@ func (s *FTODAService) GetSagstrinBySagsId(sagid int) (sagstrin []Sagstrin, err 
 	return sagstrin, nil
 }
 
+func (s *FTODAService) GetSagstrinById(id int) (sag Sagstrin, err error) {
+	//First we should check a database, but that is not created yet
+	//If not found in database, then we get it from the api
+
+	q := odataQuery{
+		entity: "Sagstrin",
+		filter: "id eq " + strconv.Itoa(id),
+	}
+	// this need to be moved into a different repo service
+	odata, err := s.api.getData(q)
+	if err != nil {
+		fmt.Printf("error from GetSagstrinById: %s\n", err)
+		return sag, err
+	}
+
+	// this need to be moved into a different repo service
+	var sagstrin []Sagstrin
+	err = json.Unmarshal(odata.Result, &sagstrin)
+	if err != nil {
+		fmt.Printf("error from GetSagstrinById: %s\n", err)
+		return sag, err
+	}
+
+	return sagstrin[0], nil
+}
+
 /*
 	Lovforslag
 */
