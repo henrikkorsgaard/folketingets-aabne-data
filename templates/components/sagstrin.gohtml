@@ -22,7 +22,7 @@
             {{ $classlist = print $classlist " afstemning"}}
         {{ end }}
 
-        <div class="{{ $classlist }}" style="--index:{{ len (printf "a%*s" $index "") }};" >   
+        <div class="{{ $classlist }}" style="--index:{{ len (printf "a%*s" $index "") }};" hx-get="/sagstrin/{{ .Id }}" hx-trigger="click" hx-target=".details">   
             <b>{{.Sagstrinstype.Type}}</b><p>{{.Dato.Format "02-01-2006" }}</p>
         </div>
         <div class="dot" style="--index:{{ len (printf "a%*s" $index "") }};"></div>

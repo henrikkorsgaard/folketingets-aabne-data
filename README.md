@@ -39,6 +39,8 @@ https://oda.ft.dk/api/Sag?$filter=typeid%20eq%203%20and%20substringof(%27forsvar
 
 ### Controversial legislation
 
+Idea: Allow people to bookmark legislation in 10 step read-and-vote to find out where you fit in DK Democracy.
+
 - L 87: Smykkeloven
 - L 188: Om forsvarssamarbejde mellem Danmark og Amerikas Forenede Stater m.v
 - Minister pension
