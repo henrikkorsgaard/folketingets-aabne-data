@@ -17,6 +17,8 @@
             {{ $classlist = print $classlist " right"}}
         {{end}}
 
+
+        {{/* TODO Change the functionality to point to the last item */}}
         {{ if .HasAfstemning }}
             {{ $afstemningsId = .Id }}
             {{ $classlist = print $classlist " afstemning"}}
