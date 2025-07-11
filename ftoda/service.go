@@ -66,7 +66,6 @@ func (s *FTODAService) GetSagstrinBySagsId(sagid int) (sagstrin []Sagstrin, err 
 		expand: "Sagstrinstype,Afstemning",
 	}
 
-	fmt.Println(q.PrettyUrl(s.api.host))
 	// this need to be moved into a different repo service
 	odata, err := s.api.getData(q)
 	if err != nil {
@@ -91,8 +90,10 @@ func (s *FTODAService) GetSagstrinById(id int) (sag Sagstrin, err error) {
 	q := odataQuery{
 		entity: "Sagstrin",
 		filter: "id eq " + strconv.Itoa(id),
-		expand: "Sagstrinstype,Afstemning",
+		expand: "Sagstrinstype,Afstemning,Dagsordenspunkt,SagstrinAktør,SagstrinDokument",
 	}
+
+	fmt.Println(q.PrettyUrl(s.api.host))
 	// this need to be moved into a different repo service
 	odata, err := s.api.getData(q)
 	if err != nil {

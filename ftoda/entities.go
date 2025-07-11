@@ -141,3 +141,10 @@ type Sagstrinstype struct {
 	Dato FtodaDate     `gorm:"column:dato" json:"dato"`
 	//Opdateringsdato datatypes.Date
 }
+
+type SagstrinAktør struct {
+	Id         int `gorm:"primaryKey" json:"id"`
+	SagstrinId int `gorm:"sagstrinid" json:"sagstrinid"`
+	AktørId    int `gorm:"aktørid" json:"aktørid"`
+	RolleId    int `gorm:"rolleid" json:"rolleid"`
+}

@@ -57,6 +57,16 @@ Pivoting away from this application being a BFF for a static client hosted elsew
 
 Each can have a filtering dimension (search, facets, similarities) and detailed view. They likely overlap, so a Lovforslag has a votes and an Actor has a vote. I wonder if the Votes in itself is interesting?
 
+# Content for Sag
+I need a way to couple debates to specific Sag
+
+Also, add emneord as a data point for sag
+
+# Content for sagstrin
+https://oda.ft.dk/api/SagstrinAkt%C3%B8rRolle
+
+https://oda.ft.dk/api/Sagstrin?$format=json&$expand=Sagstrinstype,Afstemning,Dagsordenspunkt,SagstrinAkt%C3%B8r,SagstrinDokument&$filter=id%20eq%20265561&$skip=0&orderby=id
+
 # Application Design considerations
 In terms of the design, I've hit a forking path: 
 
