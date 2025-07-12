@@ -1,5 +1,9 @@
 {{define "lovforslag"}}
     {{ template "header" }}
+
+    <script>
+        console.log({{.}})
+    </script>
     <div class="card title">
         <h1 >{{.Nummer}}: {{.TitelKort}}</h1>
     </div>
@@ -8,6 +12,8 @@
         <p>{{.Resume}}</p>
         <h3>Afstemningskonklusion</h3>
         <p>{{.Afstemningskonklusion}}</p>
+        <h4>Emner: {{ join .Emneord }}
+        </h4>
     </div>
     <div hx-get="/sagstrin?sagid={{.Id}}" hx-swap="outerHTML" hx-trigger="load" hx-request='{"noHeaders": true}'></div>
     {{ template "footer" }}

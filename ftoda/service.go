@@ -113,6 +113,37 @@ func (s *FTODAService) GetSagstrinById(id int) (sag Sagstrin, err error) {
 }
 
 /*
+	Emneord
+*/
+
+func (s *FTODAService) GetEmneordById(id int) (emne Emneord, err error) {
+	//First we should check a database, but that is not created yet
+	//If not found in database, then we get it from the api
+	//I would expect this to be in the database real fast :)
+	q := odataQuery{
+		entity: "Emneord",
+		filter: "id eq " + strconv.Itoa(id),
+	}
+	fmt.Println(q.PrettyUrl(s.api.host))
+	// this need to be moved into a different repo service
+	odata, err := s.api.getData(q)
+	if err != nil {
+		fmt.Printf("error from GetEmneordById: %s\n", err)
+		return emne, err
+	}
+
+	// this need to be moved into a different repo service
+	var emner []Emneord
+	err = json.Unmarshal(odata.Result, &emner)
+	if err != nil {
+		fmt.Printf("error from GetEmneordById: %s\n", err)
+		return emne, err
+	}
+
+	return emner[0], nil
+}
+
+/*
 	Lovforslag
 */
 
@@ -125,6 +156,7 @@ func (s *FTODAService) GetLovforslagById(id int) (sag Sag, err error) {
 		filter: "typeid eq 3 and id eq " + strconv.Itoa(id),
 		expand: "EmneordSag",
 	}
+	fmt.Println(q.PrettyUrl(s.api.host))
 	// this need to be moved into a different repo service
 	odata, err := s.api.getData(q)
 	if err != nil {
@@ -141,7 +173,6 @@ func (s *FTODAService) GetLovforslagById(id int) (sag Sag, err error) {
 	}
 
 	/* Get Emneord and append to json */
-
 	return sager[0], nil
 }
 

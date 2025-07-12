@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"strings"
 )
 
 //go:embed **/*.gohtml
@@ -15,9 +16,18 @@ type TemplateEngine struct {
 	tmpl *template.Template
 }
 
+var functions = template.FuncMap{
+	"join": join,
+}
+
+func join(arr []string) string {
+	return strings.Join(arr[:], ", ")
+}
+
 func NewTemplateEngine() TemplateEngine {
 
-	tmpl, err := template.ParseFS(folder, "*/*.gohtml")
+	//tmpl, err := template.ParseFS(folder, "*/*.gohtml")
+	tmpl, err := template.New("").Funcs(functions).ParseFS(folder, "*/*.gohtml")
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +44,8 @@ on dev environment.
 func (te *TemplateEngine) ExecuteTemplate(w http.ResponseWriter, name string, data any) error {
 	// we want to make sure that the templates are loaded on each request when we are developing
 	if environment := os.Getenv("ENVIRONMENT"); environment == "dev" {
-		tmpl, err := template.ParseGlob("templates/*/*.gohtml")
+		tmpl, err := template.New("").Funcs(functions).ParseGlob("templates/*/*.gohtml")
+		tmpl.Funcs(functions)
 		if err != nil {
 			fmt.Println(err)
 			return err

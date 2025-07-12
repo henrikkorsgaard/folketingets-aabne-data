@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -56,12 +57,19 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService, templateEngine *templat
 
 			//101403
 			sag, err := ftodaService.GetLovforslagById(id)
-
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("500 - Something bad happened!"))
 				w.Write([]byte(err.Error()))
 			}
+
+			for _, emneordsag := range sag.EmneordSager {
+				emne, err := ftodaService.GetEmneordById(emneordsag.EmneordId)
+				if err == nil {
+					sag.Emneord = append(sag.Emneord, emne.Emneord)
+				}
+			}
+			fmt.Println(sag.Emneord)
 
 			//TODO: Set headers globally with a proxy handler
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -75,6 +83,7 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService, templateEngine *templat
 	)
 }
 
+// There is a lot of abstraction potential here as soon as I add emneord etc.
 type SagsUpdate struct {
 	Count int64
 	Total int64
