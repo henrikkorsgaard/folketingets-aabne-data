@@ -2,6 +2,7 @@ package ftoda
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,20 +11,61 @@ import (
 	"strings"
 )
 
+var (
+	ErrOdataRequest    = errors.New("odata request error")
+	ErrEncodingUrl     = errors.New("error encoding the odata url")
+	ErrParsingBody     = errors.New("error parsing odata response body")
+	ErrUnmarshallOdata = errors.New("error unmarshalling json to odata ")
+	ErrUnmarshallType  = errors.New("error unmashalling json to type")
+)
+
 type apiRepository struct {
 	host string
 }
 
-// This should be internal
-// And the API should be Public with a private db and api
 func newAPIRepository(host string) *apiRepository {
 	return &apiRepository{
 		host: host,
 	}
 }
 
-// TODO: add select as option. This allow us to filter have minimal and full service
-// This will happen when we start consuming the bff with the frontend elements.
+func (repo *apiRepository) getData(q odataQuery, v any) error {
+
+	queryUrl, err := q.GetEncodedUrl(repo.host)
+	if err != nil {
+		return errors.Join(ErrEncodingUrl, err)
+	}
+
+	res, err := http.Get(queryUrl)
+	if err != nil {
+		return errors.Join(ErrOdataRequest, err)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return errors.Join(ErrParsingBody, err)
+	}
+
+	var odata odataResult
+	err = json.Unmarshal(body, &odata)
+	if err != nil {
+		return errors.Join(ErrUnmarshallOdata, err)
+	}
+
+	err = json.Unmarshal(odata.Result, v)
+	if err != nil {
+		return errors.Join(ErrUnmarshallType, err)
+	}
+	return nil
+}
+
+type odataResult struct {
+	Metadata string          `json:"odata.metadata"`
+	Result   json.RawMessage `json:"value"`
+	NextLink string          `json:"odata.nextLink"`
+	Skip     int
+}
+
 type odataQuery struct {
 	entity  string
 	filter  string
@@ -112,39 +154,4 @@ func (q *odataQuery) GetEncodedUrl(host string) (string, error) {
 	baseUrl.RawQuery = params.Encode()
 
 	return baseUrl.String(), nil
-}
-
-type odataResult struct {
-	Metadata string          `json:"odata.metadata"`
-	Result   json.RawMessage `json:"value"`
-	NextLink string          `json:"odata.nextLink"`
-	Skip     int
-}
-
-func (repo *apiRepository) getData(q odataQuery) (odata odataResult, err error) {
-
-	queryUrl, err := q.GetEncodedUrl(repo.host)
-	if err != nil {
-		return odata, err
-	}
-
-	res, err := http.Get(queryUrl)
-	if err != nil {
-		err = fmt.Errorf("error making http request: %s", err)
-		return odata, err
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		err = fmt.Errorf("error reading the body of the request: %s", err)
-		return odata, err
-	}
-
-	err = json.Unmarshal(body, &odata)
-	if err != nil {
-		err = fmt.Errorf("unable to marshal JSON: %s", err)
-		return odata, err
-	}
-
-	return odata, err
 }

@@ -32,7 +32,7 @@ func addRoutes(mux *http.ServeMux, ftodaService *ftoda.FTODAService, templateEng
 	mux.Handle("/lovforslag/{id}", GetLovforslagById(ftodaService, templateEngine))
 	mux.Handle("/lovforslag/update", UpdateLovforslag(ftodaService, templateEngine))
 	mux.Handle("/afstemning", GetAfstemningBySagstrinId(ftodaService, templateEngine))
-	mux.Handle("/sagstrin", GetSagstrinBySagsId(ftodaService, templateEngine))
+	mux.Handle("/sagstrin", GetLovforslagsTrinBySagsId(ftodaService, templateEngine))
 	mux.Handle("/sagstrin/{id}", GetSagstrinById(ftodaService, templateEngine))
 }
 

@@ -63,12 +63,31 @@ I need a way to couple debates to specific Sag
 Also, add emneord as a data point for sag
 
 # Content for sagstrin
+The different sagstrin are quite verbose compared to the summary listed by [FTs official listing](https://www.ft.dk/samling/20241/lovforslag/l188/index.htm). They have the following overall steps:
+
+- Fremsættelse (inkluding "Lovforslag som fremsat")
+- 1. Behandling
+-  Udvalgsbehandling
+- 2. Behandling
+    - Afstemning
+    - Lovforslag som optrykt
+- Udvalgsbehandling
+    - Spørgsmål/svar
+    - Udvalgsbehandling
+    - Betænknign
+- 3. Behandling
+    - Afstemning
+    - Lovforslag som vedtaget
+
+
 https://oda.ft.dk/api/SagstrinAkt%C3%B8rRolle
 
 https://oda.ft.dk/api/Sagstrin?$format=json&$expand=Sagstrinstype,Afstemning,Dagsordenspunkt,SagstrinAkt%C3%B8r,SagstrinDokument&$filter=id%20eq%20265561&$skip=0&orderby=id
 
 
 Debates can be access under each legislation here: https://www.ft.dk/samling/20241/lovforslag/l188/index.htm
+
+Lovnummer links here: https://www.retsinformation.dk/eli/lta/2025/698
 
 # Application Design considerations
 In terms of the design, I've hit a forking path: 
@@ -87,3 +106,10 @@ Going for a tight coupling with a BFF HOATEOAS design have a couple downsides:
 
 
 
+## Analysis ideas
+### Lovforslag
+- Number of sagstrin
+- Number of changes from initial lovforslag to final proposition
+- Number of tags (emneord)
+- Number of questions
+- Number of debate points (need to be data mined independently)

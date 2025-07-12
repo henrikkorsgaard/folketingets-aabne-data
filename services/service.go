@@ -29,7 +29,7 @@ func NewFTODAService(odaHost string, dbHost string) FTODAService {
 
 func (s *FTODAService) GetAfstemningBySagstrinId(sagstrinid int) (afstemning Afstemning, err error) {
 
-	q := odataQuery{
+	q := OdataQuery{
 		entity: "Afstemning",
 		filter: "sagstrinid eq " + strconv.Itoa(sagstrinid),
 	}
@@ -59,7 +59,7 @@ func (s *FTODAService) GetSagstrinBySagsId(sagid int) (sagstrin []Sagstrin, err 
 	//First we should check a database, but that is not created yet
 	//If not found in database, then we get it from the api
 
-	q := odataQuery{
+	q := OdataQuery{
 		entity: "Sagstrin",
 		filter: "sagid eq " + strconv.Itoa(sagid),
 		order:  "asc",
@@ -87,7 +87,7 @@ func (s *FTODAService) GetSagstrinById(id int) (sag Sagstrin, err error) {
 	//First we should check a database, but that is not created yet
 	//If not found in database, then we get it from the api
 
-	q := odataQuery{
+	q := OdataQuery{
 		entity: "Sagstrin",
 		filter: "id eq " + strconv.Itoa(id),
 		expand: "Sagstrinstype,Afstemning,Dagsordenspunkt,SagstrinAktør,SagstrinDokument",
@@ -120,7 +120,7 @@ func (s *FTODAService) GetEmneordById(id int) (emne Emneord, err error) {
 	//First we should check a database, but that is not created yet
 	//If not found in database, then we get it from the api
 	//I would expect this to be in the database real fast :)
-	q := odataQuery{
+	q := OdataQuery{
 		entity: "Emneord",
 		filter: "id eq " + strconv.Itoa(id),
 	}
@@ -147,7 +147,7 @@ func (s *FTODAService) GetEmneordById(id int) (emne Emneord, err error) {
 	Lovforslag
 */
 
-func (s *FTODAService) GetLovforslagById(id int) (sag Sag, err error) {
+func (s *FTODAService) GetSagById(id int) (Sag, error) {
 	//First we should check a database, but that is not created yet
 	//If not found in database, then we get it from the api
 
@@ -156,23 +156,12 @@ func (s *FTODAService) GetLovforslagById(id int) (sag Sag, err error) {
 		filter: "typeid eq 3 and id eq " + strconv.Itoa(id),
 		expand: "EmneordSag",
 	}
-	fmt.Println(q.PrettyUrl(s.api.host))
-	// this need to be moved into a different repo service
-	odata, err := s.api.getData(q)
-	if err != nil {
-		fmt.Printf("error from getLovforslag: %s\n", err)
-		return sag, err
-	}
 
-	// this need to be moved into a different repo service
 	var sager []Sag
-	err = json.Unmarshal(odata.Result, &sager)
+	err := s.api.getData(q, &sager)
 	if err != nil {
-		fmt.Printf("error from getLovforslag: %s\n", err)
-		return sag, err
+		return Sag{}, err
 	}
-
-	/* Get Emneord and append to json */
 	return sager[0], nil
 }
 

@@ -1,7 +1,6 @@
 package ftoda
 
 import (
-	"encoding/json"
 	"strings"
 	"time"
 )
@@ -37,18 +36,6 @@ func (d *FtodaDate) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	d.Time = t
-	return nil
-}
-
-type FtodaSagstype string
-
-func (st *FtodaSagstype) UnmarshalJSON(b []byte) error {
-	var s string
-	if err := json.Unmarshal(b, &s); err != nil {
-		return err
-	}
-	parts := strings.Split(s, "/til")
-	*st = FtodaSagstype(parts[0])
 	return nil
 }
 
@@ -119,25 +106,80 @@ type Aktor struct {
 	//Opdateringsdato datatypes.Date
 }
 
+/*
+The official representation of legislation sort the sagstrin into buckets:
+
+- Fremsættelse: When the legislation is proposed
+	- Fremsættelse typeid: 6,
+	- Lovforslag som fremsat
+- 1. Behandling: The initial debate of the legislation
+	- 1. Behandling
+	-
+- 2. Behandling: The second debate, change and vote
+- 3. Behandling: The final debate, change and vote
+- Udvalgsbehandling: Between the step 1. and 2. and 2. and 3., legislation can go into domain/area specific committee (e.g. tax)
+
+We need to just bucket things and then handle if they fall outside
+
+*/
+
 type Sagstrin struct {
 	Id            int           `gorm:"primaryKey" json:"id"`
 	Titel         string        `gorm:"titel" json:"titel"`
 	Sagid         int           `gorm:"sagid" json:"sagid"`
-	Type          string        `gorm:"type" json:"type"`
 	Typeid        int           `gorm:"column:typeid" json:"typeid"`
 	Statusid      int           `gorm:"column:statusid" json:"statusid"`
 	Sagstrinstype Sagstrinstype `gorm:"sagstrinstype" json:"sagstrinstype"`
 	Dato          FtodaDate     `gorm:"column:dato" json:"dato"`
 	Afstemning    []Afstemning  `gorm:"column:afstemning" json:"afstemning"`
-	HasAfstemning bool          //we don't need to persist this
 	//Opdateringsdato datatypes.Date
 }
 
 type Sagstrinstype struct {
-	Id   int           `gorm:"primaryKey" json:"id"`
-	Type FtodaSagstype `gorm:"type" json:"type"`
-	Dato FtodaDate     `gorm:"column:dato" json:"dato"`
+	Id   int       `gorm:"primaryKey" json:"id"`
+	Type string    `gorm:"type" json:"type"` //this should be a string
+	Dato FtodaDate `gorm:"column:dato" json:"dato"`
 	//Opdateringsdato datatypes.Date
+}
+
+type LovforslagsType int
+
+// see example here: https://www.ft.dk/samling/20131/lovforslag/l160/index.htm
+
+const (
+	Fremsættelse LovforslagsType = iota
+	FørsteBehandling
+	AndenBehandling
+	TredjeBehandling
+	FørsteUdvalgsbehandling
+	AndenUdvalgsbehandling
+	NoClue //for catching stuff we want to do something about
+)
+
+func (lft LovforslagsType) String() string {
+	return [...]string{"Fremsættelse", "1. Behandling", "2. Behandling", "3. Behandling", "Udvalgsbehandling", "2. Udvalgsbehandling", "NoClue"}[lft]
+}
+
+type LovforslagsTrin struct {
+	//this is the parent
+	Id       int        `gorm:"primaryKey" json:"id"`
+	Sagstrin []Sagstrin `gorm:"sagstrin" json:"sagstrin"`
+	Sagid    int        `gorm:"sagid" json:"sagid"`
+	Type     string     `gorm:"type" json:"type"`
+}
+
+func InitiateLovforslagsTrin(sagid int) []LovforslagsTrin {
+	m := make([]LovforslagsTrin, 7)
+
+	m[0] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(0).String()}
+	m[1] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(1).String()}
+	m[2] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(2).String()}
+	m[3] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(3).String()}
+	m[4] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(4).String()}
+	m[5] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(5).String()}
+	m[6] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(6).String()}
+
+	return m
 }
 
 type SagstrinAktør struct {
