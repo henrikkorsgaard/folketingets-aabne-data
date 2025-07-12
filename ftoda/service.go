@@ -123,6 +123,7 @@ func (s *FTODAService) GetLovforslagById(id int) (sag Sag, err error) {
 	q := odataQuery{
 		entity: "Sag",
 		filter: "typeid eq 3 and id eq " + strconv.Itoa(id),
+		expand: "EmneordSag",
 	}
 	// this need to be moved into a different repo service
 	odata, err := s.api.getData(q)
@@ -138,6 +139,8 @@ func (s *FTODAService) GetLovforslagById(id int) (sag Sag, err error) {
 		fmt.Printf("error from getLovforslag: %s\n", err)
 		return sag, err
 	}
+
+	/* Get Emneord and append to json */
 
 	return sager[0], nil
 }
