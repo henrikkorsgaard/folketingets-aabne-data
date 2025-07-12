@@ -67,6 +67,9 @@ https://oda.ft.dk/api/SagstrinAkt%C3%B8rRolle
 
 https://oda.ft.dk/api/Sagstrin?$format=json&$expand=Sagstrinstype,Afstemning,Dagsordenspunkt,SagstrinAkt%C3%B8r,SagstrinDokument&$filter=id%20eq%20265561&$skip=0&orderby=id
 
+
+Debates can be access under each legislation here: https://www.ft.dk/samling/20241/lovforslag/l188/index.htm
+
 # Application Design considerations
 In terms of the design, I've hit a forking path: 
 
