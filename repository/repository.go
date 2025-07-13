@@ -16,4 +16,7 @@ var (
 type Repository interface {
 	getSagById(id int) (sag ftoda.Sag, err error)
 	getSagerByType(sagtype int) (sager []ftoda.Sag, err error)
+	getSagstrinById(id int) (sagstrin ftoda.Sagstrin, err error)
+	getSagstrinBySagId(sagid int) (sagstrin []ftoda.Sagstrin, err error)
+	getEmneordBySagId(sagid int) (emneord []ftoda.Emneord, err error)
 }

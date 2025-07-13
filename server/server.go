@@ -30,9 +30,9 @@ func addRoutes(mux *http.ServeMux, ftodaService *repository.FTODAService, templa
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	mux.Handle("/lovforslag", GetLovforslag(ftodaService, templateEngine))
 	mux.Handle("/lovforslag/{id}", GetLovforslagById(ftodaService, templateEngine))
-	mux.Handle("/lovforslag/update", UpdateLovforslag(ftodaService, templateEngine))
+	//mux.Handle("/lovforslag/update", UpdateLovforslag(ftodaService, templateEngine))
 	mux.Handle("/afstemning", GetAfstemningBySagstrinId(ftodaService, templateEngine))
-	mux.Handle("/sagstrin", GetLovforslagsTrinBySagsId(ftodaService, templateEngine))
+	//mux.Handle("/sagstrin", GetLovforslagsTrinBySagsId(ftodaService, templateEngine))
 	mux.Handle("/sagstrin/{id}", GetSagstrinById(ftodaService, templateEngine))
 }
 

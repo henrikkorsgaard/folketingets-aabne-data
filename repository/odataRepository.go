@@ -17,8 +17,8 @@ var (
 	ErrOdataRequest    = errors.New("odata request error")
 	ErrEncodingUrl     = errors.New("error encoding the odata url")
 	ErrParsingBody     = errors.New("error parsing odata response body")
-	ErrUnmarshallOdata = errors.New("error unmarshalling json to odata ")
-	ErrUnmarshallType  = errors.New("error unmashalling json to type")
+	ErrUnmarshallOdata = errors.New("odata: cannot parse odata result ")
+	ErrUnmarshallType  = errors.New("odata: cannot parse datatype")
 )
 
 type odataRepository struct {
@@ -46,18 +46,90 @@ func (repo *odataRepository) getSagById(id int) (sag ftoda.Sag, err error) {
 	return sager[0], nil
 }
 
-func (repo *odataRepository) getSagerByType(sagtype int) (sag ftoda.Sag, err error) {
+func (repo *odataRepository) getSagerByType(sagtype int) (sager []ftoda.Sag, err error) {
 	q := odataQuery{
 		entity: "Sag",
 		filter: "typeid eq " + strconv.Itoa(sagtype),
 	}
 
-	var sager []ftoda.Sag
 	err = repo.getData(q, &sager)
 	if err != nil {
-		return sag, errors.Join(ErrRepoGettingSag, err)
+		return sager, errors.Join(ErrRepoGettingSag, err)
 	}
-	return sager[0], nil
+	return sager, nil
+}
+
+func (repo *odataRepository) getSagstrinById(id int) (sagstrin ftoda.Sagstrin, err error) {
+	q := odataQuery{
+		entity: "Sagstrin",
+		filter: "id eq " + strconv.Itoa(id),
+	}
+	var sagstrinArr []ftoda.Sagstrin
+	err = repo.getData(q, &sagstrinArr)
+	if err != nil {
+		return sagstrin, errors.Join(ErrRepoGettingSagstrin, err)
+	}
+
+	return sagstrinArr[0], err
+}
+
+func (repo *odataRepository) getSagstrinBySagId(sagid int) (sagstrin []ftoda.Sagstrin, err error) {
+	q := odataQuery{
+		entity: "Sagstrin",
+		filter: "sagid eq " + strconv.Itoa(sagid),
+		order:  "asc",
+	}
+
+	err = repo.getData(q, &sagstrin)
+	if err != nil {
+		return sagstrin, errors.Join(ErrRepoGettingSagstrin, err)
+	}
+	return sagstrin, err
+}
+
+/*
+Helper type that allow us to fetch odata in one call
+while still adhearing to the repository interface definitions
+
+Details: The ftoda odata version does not allow $filter operations
+on $expand. Instead we query Emneordsag with sagid filter and expand
+to Emneord.
+*/
+type EmneordSagEmneord struct {
+	Id        int `json:"id"`
+	EmneordId int `json:"emneordid"`
+	SagId     int `json:"sagid"`
+	Emneord   ftoda.Emneord
+}
+
+func (repo *odataRepository) getEmneordBySagId(sagid int) (emneord []ftoda.Emneord, err error) {
+
+	q := odataQuery{
+		entity: "EmneordSag",
+		filter: "sagid eq " + strconv.Itoa(sagid),
+		expand: "Emneord",
+	}
+
+	var emneordsager []EmneordSagEmneord
+	err = repo.getData(q, &emneordsager)
+	if err != nil {
+		return emneord, errors.Join(ErrGettingEmneord, err)
+	}
+
+	for _, ems := range emneordsager {
+		emneord = append(emneord, ftoda.Emneord{
+			Id:      ems.Emneord.Id,
+			Emneord: ems.Emneord.Emneord,
+			TypeId:  ems.Emneord.TypeId,
+			EmneordSag: ftoda.EmneordSag{
+				Id:        ems.Id,
+				EmneordId: ems.EmneordId,
+				SagId:     ems.SagId,
+			},
+		})
+	}
+
+	return emneord, err
 }
 
 func (repo *odataRepository) getData(q odataQuery, v any) error {
@@ -85,6 +157,7 @@ func (repo *odataRepository) getData(q odataQuery, v any) error {
 
 	err = json.Unmarshal(odata.Result, v)
 	if err != nil {
+		fmt.Println(string(odata.Result))
 		return errors.Join(ErrUnmarshallType, err)
 	}
 	return nil

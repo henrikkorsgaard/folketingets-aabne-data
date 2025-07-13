@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-// See https://stackoverflow.com/questions/45303326/how-to-parse-non-standard-time-format-from-json
-
 /*
 	Note:
 	The ftoda data contains 2 date variants
@@ -18,13 +16,7 @@ import (
 	See: https://oda.ft.dk/api/Sagstrin?$format=json&$filter=sagid%20eq%20102467&$skip=0&orderby=id%20desc
 */
 
-/*
-	see: https://go.dev/play/p/14Un1FWtUf6
-
-	We trim the datetime to only have date. Because that is all we need.
-
-*/
-
+// TODO: Write scanner for gorm https://stackoverflow.com/a/65459041
 type FtodaDate struct {
 	time.Time //make a gorm data alias instead?
 }
@@ -51,25 +43,33 @@ type Sag struct {
 	Paragrafnummer int    `gorm:"column:paragrafnummer" json:"paragrafnummer"`
 	Paragraf       string `gorm:"column:paragraf" json:"paragraf"`
 	Lovnummer      string `gorm:"column:lovnummer" json:"lovnummer"`
-	//EmneordSager          []EmneordSag `gorm:"emneordsag" json:"emneordsag"`
+
 	//Opdateringsdato datatypes.Date
 
-	/* Relational values extended without persisting this */
-	Emneord []string `gorm:"-"`
 }
 
 type EmneordSag struct {
 	Id        int `gorm:"primarykey" json:"id"`
 	EmneordId int `gorm:"emneordid" json:"emneordid"`
 	SagId     int `gorm:"sagid" json:"sagid"`
+	//Opdateringsdato datatypes.Date
 }
 
 type Emneord struct {
-	Id      int    `gorm:"primarykey" json:"id"`
-	Emneord string `gorm:"emneord" json:"emneord"`
-	TypeId  int    `gorm:"typeid" json:"typeid"`
+	Id         int        `gorm:"primarykey" json:"id"`
+	Emneord    string     `gorm:"emneord" json:"emneord"`
+	TypeId     int        `gorm:"typeid" json:"typeid"`
+	EmneordSag EmneordSag `gorm:"-" json:"-"`
 	//Opdateringsdato datatypes.Date
 }
+
+/*
+func (d *Emneord) UnmarshalJSON(b []byte) error {
+	fmt.Println("here")
+	fmt.Printf(" --- %s ---\n", string(b))
+
+	return nil
+}*/
 
 type Afstemning struct {
 	Id         int `gorm:"primaryKey" json:"id"`
@@ -106,32 +106,13 @@ type Aktor struct {
 	//Opdateringsdato datatypes.Date
 }
 
-/*
-The official representation of legislation sort the sagstrin into buckets:
-
-- Fremsættelse: When the legislation is proposed
-	- Fremsættelse typeid: 6,
-	- Lovforslag som fremsat
-- 1. Behandling: The initial debate of the legislation
-	- 1. Behandling
-	-
-- 2. Behandling: The second debate, change and vote
-- 3. Behandling: The final debate, change and vote
-- Udvalgsbehandling: Between the step 1. and 2. and 2. and 3., legislation can go into domain/area specific committee (e.g. tax)
-
-We need to just bucket things and then handle if they fall outside
-
-*/
-
 type Sagstrin struct {
-	Id            int           `gorm:"primaryKey" json:"id"`
-	Titel         string        `gorm:"titel" json:"titel"`
-	Sagid         int           `gorm:"sagid" json:"sagid"`
-	Typeid        int           `gorm:"column:typeid" json:"typeid"`
-	Statusid      int           `gorm:"column:statusid" json:"statusid"`
-	Sagstrinstype Sagstrinstype `gorm:"sagstrinstype" json:"sagstrinstype"`
-	Dato          FtodaDate     `gorm:"column:dato" json:"dato"`
-	Afstemning    []Afstemning  `gorm:"column:afstemning" json:"afstemning"`
+	Id       int       `gorm:"primaryKey" json:"id"`
+	Titel    string    `gorm:"titel" json:"titel"`
+	Sagid    int       `gorm:"sagid" json:"sagid"`
+	Typeid   int       `gorm:"column:typeid" json:"typeid"`
+	Statusid int       `gorm:"column:statusid" json:"statusid"`
+	Dato     FtodaDate `gorm:"column:dato" json:"dato"`
 	//Opdateringsdato datatypes.Date
 }
 
@@ -140,46 +121,6 @@ type Sagstrinstype struct {
 	Type string    `gorm:"type" json:"type"` //this should be a string
 	Dato FtodaDate `gorm:"column:dato" json:"dato"`
 	//Opdateringsdato datatypes.Date
-}
-
-type LovforslagsType int
-
-// see example here: https://www.ft.dk/samling/20131/lovforslag/l160/index.htm
-
-const (
-	Fremsættelse LovforslagsType = iota
-	FørsteBehandling
-	AndenBehandling
-	TredjeBehandling
-	FørsteUdvalgsbehandling
-	AndenUdvalgsbehandling
-	NoClue //for catching stuff we want to do something about
-)
-
-func (lft LovforslagsType) String() string {
-	return [...]string{"Fremsættelse", "1. Behandling", "2. Behandling", "3. Behandling", "Udvalgsbehandling", "2. Udvalgsbehandling", "NoClue"}[lft]
-}
-
-type LovforslagsTrin struct {
-	//this is the parent
-	Id       int        `gorm:"primaryKey" json:"id"`
-	Sagstrin []Sagstrin `gorm:"sagstrin" json:"sagstrin"`
-	Sagid    int        `gorm:"sagid" json:"sagid"`
-	Type     string     `gorm:"type" json:"type"`
-}
-
-func InitiateLovforslagsTrin(sagid int) []LovforslagsTrin {
-	m := make([]LovforslagsTrin, 7)
-
-	m[0] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(0).String()}
-	m[1] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(1).String()}
-	m[2] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(2).String()}
-	m[3] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(3).String()}
-	m[4] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(4).String()}
-	m[5] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(5).String()}
-	m[6] = LovforslagsTrin{Sagid: sagid, Type: LovforslagsType(6).String()}
-
-	return m
 }
 
 type SagstrinAktør struct {

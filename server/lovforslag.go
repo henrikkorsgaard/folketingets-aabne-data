@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda/lovforslag"
 	"github.com/henrikkorsgaard/folketingets-aabne-data/repository"
 	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 )
@@ -55,7 +56,7 @@ func GetLovforslagById(ftodaService *repository.FTODAService, templateEngine *te
 			}
 
 			//101403
-			sag, err := ftodaService.GetSagById(id)
+			lovforslag, err := lovforslag.NewFromSagId(id, ftodaService)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("500 - Something bad happened!"))
@@ -74,7 +75,7 @@ func GetLovforslagById(ftodaService *repository.FTODAService, templateEngine *te
 			//TODO: Set headers globally with a proxy handler
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-			err = templateEngine.ExecuteTemplate(w, "lovforslag", sag)
+			err = templateEngine.ExecuteTemplate(w, "lovforslag", lovforslag)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte(err.Error()))
@@ -89,6 +90,7 @@ type SagsUpdate struct {
 	Total int64
 }
 
+/*
 func UpdateLovforslag(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -112,4 +114,4 @@ func UpdateLovforslag(ftodaService *repository.FTODAService, templateEngine *tem
 			}
 		},
 	)
-}
+}*/

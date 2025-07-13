@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	ErrDatabaseConnection = errors.New("error connecting to the database")
-	ErrDatabaseUpdateSag  = errors.New("error updating sager in database")
+	ErrDatabaseConnection     = errors.New("error connecting to the database")
+	ErrDatabaseUpdateSag      = errors.New("error updating sager in database")
+	ErrDatabaseUpdateSagstrin = errors.New("error updating sagstrin in database")
 )
 
 type dbRepository struct {
@@ -24,11 +25,15 @@ func newDatabaseRepo(host string) *dbRepository {
 		panic(errors.Join(ErrDatabaseConnection, err))
 	}
 
-	db.AutoMigrate(&ftoda.Sag{})
+	db.AutoMigrate(&ftoda.Sag{}, &ftoda.Emneord{}, &ftoda.EmneordSag{}, &ftoda.Sagstrin{})
 	return &dbRepository{
 		db: db,
 	}
 }
+
+/*
+	Sag
+*/
 
 func (repo *dbRepository) getSagById(id int) (sag ftoda.Sag, err error) {
 	result := repo.db.First(&sag, id)
@@ -55,6 +60,71 @@ func (repo *dbRepository) updateSager(sager []ftoda.Sag) (rows int64, err error)
 	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&sager)
 	if result.Error != nil {
 		return rows, errors.Join(ErrDatabaseUpdateSag, result.Error)
+	}
+	return result.RowsAffected, err
+}
+
+/*
+	Sagstrin
+*/
+
+func (repo *dbRepository) getSagstrinById(id int) (sagstrin ftoda.Sagstrin, err error) {
+	result := repo.db.First(&sagstrin, id)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return sagstrin, errors.Join(ErrRepoGettingSagstrin, err)
+	}
+
+	return sagstrin, err
+}
+
+func (repo *dbRepository) getSagstrinBySagId(sagid int) (sagstrin []ftoda.Sagstrin, err error) {
+	result := repo.db.Where("sagid = ?", sagid).Find(&sagstrin)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return sagstrin, errors.Join(ErrRepoGettingSag, err)
+	}
+
+	return sagstrin, err
+}
+
+func (repo *dbRepository) updateSagstrin(sagstrin []ftoda.Sagstrin) (rows int64, err error) {
+	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&sagstrin)
+	if result.Error != nil {
+		return rows, errors.Join(ErrDatabaseUpdateSagstrin, result.Error)
+	}
+	return result.RowsAffected, err
+}
+
+/*
+	Emneord
+*/
+
+func (repo *dbRepository) getEmneordBySagId(sagid int) (emneord []ftoda.Emneord, err error) {
+	/*
+		var emneordsag []ftoda.EmneordSag
+		//result := repo.db.Where("sagid = ?", sagid).Find(&emneordsag)
+
+		if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return emneord, errors.Join(ErrRepoGettingSag, err)
+		}
+		//db.Joins("JOIN emails ON emails.user_id = users.id AND emails.email = ?", "jinzhu@example.org").Joins("JOIN credit_cards ON credit_cards.user_id = users.id").Where("credit_cards.number = ?", "411111111111").Find(&user)
+		return emneord, err
+	*/
+
+	return
+}
+
+func (repo *dbRepository) updateEmneord(emneord []ftoda.Emneord) (rows int64, err error) {
+	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&emneord)
+	if result.Error != nil {
+		return rows, errors.Join(ErrDatabaseUpdateSagstrin, result.Error)
+	}
+	return result.RowsAffected, err
+}
+
+func (repo *dbRepository) updateEmneordSag(emneordSager []ftoda.EmneordSag) (rows int64, err error) {
+	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&emneordSager)
+	if result.Error != nil {
+		return rows, errors.Join(ErrDatabaseUpdateSagstrin, result.Error)
 	}
 	return result.RowsAffected, err
 }

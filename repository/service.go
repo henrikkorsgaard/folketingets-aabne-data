@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
@@ -58,20 +59,80 @@ func (s *FTODAService) GetSagById(id int) (sag ftoda.Sag, err error) {
 }
 
 func (s *FTODAService) GetSagerByType(sagtype int, limit int, offset int) (sager []ftoda.Sag, err error) {
-	/*
-		q := odataQuery{
-			entity: "Sag",
-			filter: "typeid eq " + strconv.Itoa(sagtype),
-			skip:   offset,
-			top:    limit,
-		}
 
-		err = s.api.getData(q, &sager)
-		if err != nil {
-			return nil, errors.Join(ErrGettingSag, err)
-		}
-	*/
-	return
+	sager, err = s.db.getSagerByType(sagtype)
+	if err != nil {
+		return sager, err
+	}
+
+	if len(sager) > 0 {
+		return sager, err
+	}
+
+	sager, err = s.api.getSagerByType(sagtype)
+	if err != nil {
+		return sager, err
+	}
+
+	_, err = s.db.updateSager(sager)
+	if err != nil {
+		return sager, err
+	}
+
+	return sager, err
+}
+
+/*
+	Sagstrin
+*/
+
+func (s *FTODAService) GetSagstrinBySagsId(sagid int) (sagstrin []ftoda.Sagstrin, err error) {
+
+	sagstrin, err = s.db.getSagstrinBySagId(sagid)
+	if err != nil {
+		return sagstrin, err
+	}
+
+	if len(sagstrin) > 0 {
+		return sagstrin, err
+	}
+
+	sagstrin, err = s.api.getSagstrinBySagId(sagid)
+	if err != nil {
+		return sagstrin, err
+	}
+
+	_, err = s.db.updateSagstrin(sagstrin)
+	if err != nil {
+		return sagstrin, err
+	}
+
+	return sagstrin, err
+}
+
+func (s *FTODAService) GetSagstrinById(id int) (sagstrin ftoda.Sagstrin, err error) {
+
+	sagstrin, err = s.db.getSagstrinById(id)
+	if err != nil {
+		return sagstrin, err
+	}
+
+	//guard function returns if db returns sag
+	if !reflect.ValueOf(sagstrin).IsZero() {
+		return sagstrin, err
+	}
+
+	sagstrin, err = s.api.getSagstrinById(id)
+	if err != nil {
+		return sagstrin, err
+	}
+
+	_, err = s.db.updateSagstrin([]ftoda.Sagstrin{sagstrin})
+	if err != nil {
+		return sagstrin, err
+	}
+
+	return sagstrin, err
 }
 
 /*
@@ -95,88 +156,34 @@ func (s *FTODAService) GetAfstemningBySagstrinId(sagstrinid int) (afstemning fto
 }
 
 /*
-	Sagstrin
-*/
-
-func (s *FTODAService) GetSagstrinBySagsId(sagid int) (sagstrin []ftoda.Sagstrin, err error) {
-	/*
-		q := odataQuery{
-			entity: "Sagstrin",
-			filter: "sagid eq " + strconv.Itoa(sagid),
-			order:  "asc",
-			expand: "Sagstrinstype,Afstemning",
-		}
-
-		err = s.api.getData(q, &sagstrin)
-		if err != nil {
-			return sagstrin, errors.Join(ErrGettingSagstrin, err)
-		}
-	*/
-	return
-}
-
-func (s *FTODAService) GetSagstrinById(id int) (sag ftoda.Sagstrin, err error) {
-	/*
-		q := odataQuery{
-			entity: "Sagstrin",
-			filter: "id eq " + strconv.Itoa(id),
-			expand: "Sagstrinstype,Afstemning,Dagsordenspunkt,SagstrinAktør,SagstrinDokument",
-		}
-
-		var sagstrin []Sagstrin
-		err = s.api.getData(q, &sagstrin)
-		if err != nil {
-			return sag, errors.Join(ErrGettingSagstrin, err)
-		}
-	*/
-	return
-}
-
-/*
 	Emneord
 */
 
-func (s *FTODAService) GetEmneordById(id int) (emne ftoda.Emneord, err error) {
-	/*
-		q := odataQuery{
-			entity: "Emneord",
-			filter: "id eq " + strconv.Itoa(id),
-		}
+func (s *FTODAService) GetEmneordBySagId(sagid int) (emneord []ftoda.Emneord, err error) {
 
-		var emner []Emneord
-		err = s.api.getData(q, &emner)
-		if err != nil {
-			return emne, errors.Join(ErrGettingEmneord, err)
-		}
-	*/
-	return
-}
+	emneord, err = s.api.getEmneordBySagId(sagid)
+	if err != nil {
+		return emneord, err
+	}
 
-/*
-	Lovforslag
-*/
+	var emneordsager []ftoda.EmneordSag
+	for _, emn := range emneord {
+		emneordsager = append(emneordsager, emn.EmneordSag)
+	}
 
-func (s *FTODAService) UpdateSagerByType(sagtype int) (sager []ftoda.Sag, updateCount int64, err error) {
-	/*
-		q := odataQuery{
-			entity: "Sag",
-			filter: "typeid eq " + strconv.Itoa(sagtype),
-			skip:   0,
-		}
+	r1, err := s.db.updateEmneordSag(emneordsager)
+	if err != nil {
+		return emneord, err
+	}
 
-		err = s.api.getData(q, &sager)
-		if err != nil {
-			return sager, updateCount, errors.Join(ErrGettingSag, err)
-		}
+	fmt.Printf("Emneordsag upsert rows %d\n", r1)
 
-		updateCount = s.db.insertBulk(sager)
-	*/
-	return
-}
+	r2, err := s.db.updateEmneord(emneord)
+	if err != nil {
+		return emneord, err
+	}
 
-func (s *FTODAService) GetLovforslagCount() (count int64) {
-	/*
-		affectedRows := s.db.getRowCount("sags")
-	*/
-	return
+	fmt.Printf("Emneord upsert rows %d\n", r2)
+
+	return emneord, err
 }
