@@ -41,7 +41,7 @@ func (s *FTODAService) GetAfstemningBySagstrinId(sagstrinid int) (afstemning Afs
 	}
 
 	var afstemninger []Afstemning
-	err = s.api.getData(q, &afstemning)
+	err = s.api.getData(q, &afstemninger)
 	if err != nil {
 		return afstemning, errors.Join(ErrGettingAfstemning, err)
 	}
@@ -112,8 +112,6 @@ func (s *FTODAService) GetEmneordById(id int) (emne Emneord, err error) {
 */
 
 func (s *FTODAService) GetSagById(id int) (sag Sag, err error) {
-	//First we should check a database, but that is not created yet
-	//If not found in database, then we get it from the api
 
 	q := odataQuery{
 		entity: "Sag",
