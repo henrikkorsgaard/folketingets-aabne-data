@@ -1,15 +1,14 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
+	"github.com/henrikkorsgaard/folketingets-aabne-data/repository"
 	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 )
 
-func GetLovforslag(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+func GetLovforslag(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 
@@ -25,7 +24,7 @@ func GetLovforslag(ftodaService *ftoda.FTODAService, templateEngine *templates.T
 				offset = 0
 			}
 
-			sager, err := ftodaService.GetLovforslag(limit, offset)
+			sager, err := ftodaService.GetSagerByType(3, limit, offset)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte(err.Error()))
@@ -45,7 +44,7 @@ func GetLovforslag(ftodaService *ftoda.FTODAService, templateEngine *templates.T
 We should include sagstin for lovforslag. This includes the history of the legislation
 //https://oda.ft.dk/api/Sagstrin?$format=json&$filter=sagid%20eq%20102266
 */
-func GetLovforslagById(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+func GetLovforslagById(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -56,21 +55,22 @@ func GetLovforslagById(ftodaService *ftoda.FTODAService, templateEngine *templat
 			}
 
 			//101403
-			sag, err := ftodaService.GetLovforslagById(id)
+			sag, err := ftodaService.GetSagById(id)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("500 - Something bad happened!"))
 				w.Write([]byte(err.Error()))
 			}
 
-			for _, emneordsag := range sag.EmneordSager {
-				emne, err := ftodaService.GetEmneordById(emneordsag.EmneordId)
-				if err == nil {
-					sag.Emneord = append(sag.Emneord, emne.Emneord)
+			/*
+				for _, emneordsag := range sag.EmneordSager {
+					emne, err := ftodaService.GetEmneordById(emneordsag.EmneordId)
+					if err == nil {
+						sag.Emneord = append(sag.Emneord, emne.Emneord)
+					}
 				}
-			}
-			fmt.Println(sag.Emneord)
-
+				fmt.Println(sag.Emneord)
+			*/
 			//TODO: Set headers globally with a proxy handler
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
@@ -89,10 +89,10 @@ type SagsUpdate struct {
 	Total int64
 }
 
-func UpdateLovforslag(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+func UpdateLovforslag(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			_, updated, err := ftodaService.UpdateLovforslag()
+			_, updated, err := ftodaService.UpdateSagerByType(3)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("500: Database update failed"))

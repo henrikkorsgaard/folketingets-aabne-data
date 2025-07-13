@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
+	"github.com/henrikkorsgaard/folketingets-aabne-data/repository"
 	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 )
 
-func GetAfstemningBySagstrinId(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+func GetAfstemningBySagstrinId(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {

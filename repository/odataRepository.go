@@ -1,4 +1,4 @@
-package ftoda
+package repository
 
 import (
 	"encoding/json"
@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
 )
 
 var (
@@ -19,19 +21,48 @@ var (
 	ErrUnmarshallType  = errors.New("error unmashalling json to type")
 )
 
-type apiRepository struct {
+type odataRepository struct {
 	host string
 }
 
-func newAPIRepository(host string) *apiRepository {
-	return &apiRepository{
+func newOdataRepo(host string) *odataRepository {
+	return &odataRepository{
 		host: host,
 	}
 }
 
-func (repo *apiRepository) getData(q odataQuery, v any) error {
+func (repo *odataRepository) getSagById(id int) (sag ftoda.Sag, err error) {
+	q := odataQuery{
+		entity: "Sag",
+		filter: "id eq " + strconv.Itoa(id),
+		expand: "EmneordSag",
+	}
 
-	queryUrl, err := q.GetEncodedUrl(repo.host)
+	var sager []ftoda.Sag
+	err = repo.getData(q, &sager)
+	if err != nil {
+		return sag, errors.Join(ErrRepoGettingSag, err)
+	}
+	return sager[0], nil
+}
+
+func (repo *odataRepository) getSagerByType(sagtype int) (sag ftoda.Sag, err error) {
+	q := odataQuery{
+		entity: "Sag",
+		filter: "typeid eq " + strconv.Itoa(sagtype),
+	}
+
+	var sager []ftoda.Sag
+	err = repo.getData(q, &sager)
+	if err != nil {
+		return sag, errors.Join(ErrRepoGettingSag, err)
+	}
+	return sager[0], nil
+}
+
+func (repo *odataRepository) getData(q odataQuery, v any) error {
+
+	queryUrl, err := q.getEncodedUrl(repo.host)
 	if err != nil {
 		return errors.Join(ErrEncodingUrl, err)
 	}
@@ -59,6 +90,10 @@ func (repo *apiRepository) getData(q odataQuery, v any) error {
 	return nil
 }
 
+/*
+	Odata helper functions
+*/
+
 type odataResult struct {
 	Metadata string          `json:"odata.metadata"`
 	Result   json.RawMessage `json:"value"`
@@ -77,7 +112,7 @@ type odataQuery struct {
 }
 
 // For debugging odata url oddities
-func (q *odataQuery) PrettyUrl(host string) string {
+func (q *odataQuery) prettyUrl(host string) string {
 	var sb strings.Builder
 
 	sb.WriteString("https://")
@@ -117,7 +152,7 @@ func (q *odataQuery) PrettyUrl(host string) string {
 	return sb.String()
 }
 
-func (q *odataQuery) GetEncodedUrl(host string) (string, error) {
+func (q *odataQuery) getEncodedUrl(host string) (string, error) {
 	baseUrl, err := url.Parse("https://" + host + "/api/" + q.entity)
 	if err != nil {
 		err = fmt.Errorf("error with baseurl: %s", err)

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"slices"
 
-	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
+	"github.com/henrikkorsgaard/folketingets-aabne-data/repository"
 	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 )
 
@@ -15,7 +15,7 @@ var originAllowlist = []string{
 }
 
 // Pattern adopted from https://grafana.com/blog/2024/02/09/how-i-write-http-services-in-go-after-13-years/
-func NewServer(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+func NewServer(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 	mux := http.NewServeMux()
 	addRoutes(mux, ftodaService, templateEngine)
 
@@ -25,7 +25,7 @@ func NewServer(ftodaService *ftoda.FTODAService, templateEngine *templates.Templ
 	return handler
 }
 
-func addRoutes(mux *http.ServeMux, ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) {
+func addRoutes(mux *http.ServeMux, ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) {
 	mux.Handle("/healthy", healthy())
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	mux.Handle("/lovforslag", GetLovforslag(ftodaService, templateEngine))

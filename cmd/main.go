@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
+	"github.com/henrikkorsgaard/folketingets-aabne-data/repository"
 
 	"github.com/henrikkorsgaard/folketingets-aabne-data/server"
 	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
@@ -16,7 +16,7 @@ import (
 func main() {
 	dbHost := os.Getenv("DB_HOST")
 	odataHost := os.Getenv("ODATA_HOST")
-	ftodaService := ftoda.NewFTODAService(odataHost, dbHost)
+	ftodaService := repository.New(odataHost, dbHost)
 	templateEngine := templates.NewTemplateEngine()
 
 	fmt.Println("Server is running on port 3000...")

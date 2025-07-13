@@ -5,10 +5,11 @@ import (
 	"strconv"
 
 	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
+	"github.com/henrikkorsgaard/folketingets-aabne-data/repository"
 	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 )
 
-func GetSagstrinBySagsId(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+func GetSagstrinBySagsId(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +33,7 @@ func GetSagstrinBySagsId(ftodaService *ftoda.FTODAService, templateEngine *templ
 	)
 }
 
-func GetLovforslagsTrinBySagsId(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+func GetLovforslagsTrinBySagsId(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +68,7 @@ func GetLovforslagsTrinBySagsId(ftodaService *ftoda.FTODAService, templateEngine
 	)
 }
 
-func GetSagstrinById(ftodaService *ftoda.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+func GetSagstrinById(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {

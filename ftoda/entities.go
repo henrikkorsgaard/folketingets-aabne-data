@@ -40,18 +40,18 @@ func (d *FtodaDate) UnmarshalJSON(b []byte) error {
 }
 
 type Sag struct {
-	Id                    int          `gorm:"primaryKey" json:"id"`
-	Titel                 string       `json:"titel"`
-	TitelKort             string       `gorm:"column:titelkort" json:"titelkort"`
-	Nummer                string       `gorm:"column:nummer" json:"nummer"` //e.g. L 105
-	Resume                string       `json:"resume"`
-	Afstemningskonklusion string       `gorm:"column:afstemningskonklusion" json:"afstemningskonklusion"`
-	PeriodeId             int          //maps onto
-	Begrundelse           string       `gorm:"column:begrundelse" json:"begrundelse"`
-	Paragrafnummer        int          `gorm:"column:paragrafnummer" json:"paragrafnummer"`
-	Paragraf              string       `gorm:"column:paragraf" json:"paragraf"`
-	Lovnummer             string       `gorm:"column:lovnummer" json:"lovnummer"`
-	EmneordSager          []EmneordSag `gorm:"emneordsag" json:"emneordsag"`
+	Id                    int    `gorm:"primaryKey" json:"id"`
+	Titel                 string `json:"titel"`
+	TitelKort             string `gorm:"column:titelkort" json:"titelkort"`
+	Nummer                string `gorm:"column:nummer" json:"nummer"` //e.g. L 105
+	Resume                string `json:"resume"`
+	Afstemningskonklusion string `gorm:"column:afstemningskonklusion" json:"afstemningskonklusion"`
+	//PeriodeId             int    //maps onto
+	Begrundelse    string `gorm:"column:begrundelse" json:"begrundelse"`
+	Paragrafnummer int    `gorm:"column:paragrafnummer" json:"paragrafnummer"`
+	Paragraf       string `gorm:"column:paragraf" json:"paragraf"`
+	Lovnummer      string `gorm:"column:lovnummer" json:"lovnummer"`
+	//EmneordSager          []EmneordSag `gorm:"emneordsag" json:"emneordsag"`
 	//Opdateringsdato datatypes.Date
 
 	/* Relational values extended without persisting this */
