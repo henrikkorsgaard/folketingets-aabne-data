@@ -1,9 +1,15 @@
 package ftoda
 
 import (
-	"encoding/json"
-	"fmt"
+	"errors"
 	"strconv"
+)
+
+var (
+	ErrGettingSagstrin   = errors.New("error getting sagstrin")
+	ErrGettingAfstemning = errors.New("error getting afstemning")
+	ErrGettingEmneord    = errors.New("error getting emneord")
+	ErrGettingSag        = errors.New("error getting sag")
 )
 
 // Todo - rename to store
@@ -29,23 +35,15 @@ func NewFTODAService(odaHost string, dbHost string) FTODAService {
 
 func (s *FTODAService) GetAfstemningBySagstrinId(sagstrinid int) (afstemning Afstemning, err error) {
 
-	q := OdataQuery{
+	q := odataQuery{
 		entity: "Afstemning",
 		filter: "sagstrinid eq " + strconv.Itoa(sagstrinid),
 	}
 
-	fmt.Println(q.PrettyUrl(s.api.host))
-	odata, err := s.api.getData(q)
-	if err != nil {
-		fmt.Printf("error from afstemning: %s\n", err)
-		return afstemning, err
-	}
-
 	var afstemninger []Afstemning
-	err = json.Unmarshal(odata.Result, &afstemninger)
+	err = s.api.getData(q, &afstemning)
 	if err != nil {
-		fmt.Printf("error from afstemning: %s\n", err)
-		return afstemning, err
+		return afstemning, errors.Join(ErrGettingAfstemning, err)
 	}
 
 	return afstemninger[0], nil
@@ -56,57 +54,34 @@ func (s *FTODAService) GetAfstemningBySagstrinId(sagstrinid int) (afstemning Afs
 */
 
 func (s *FTODAService) GetSagstrinBySagsId(sagid int) (sagstrin []Sagstrin, err error) {
-	//First we should check a database, but that is not created yet
-	//If not found in database, then we get it from the api
 
-	q := OdataQuery{
+	q := odataQuery{
 		entity: "Sagstrin",
 		filter: "sagid eq " + strconv.Itoa(sagid),
 		order:  "asc",
 		expand: "Sagstrinstype,Afstemning",
 	}
 
-	// this need to be moved into a different repo service
-	odata, err := s.api.getData(q)
+	err = s.api.getData(q, &sagstrin)
 	if err != nil {
-		fmt.Printf("error from GetSagstrinBySagsId: %s\n", err)
-		return sagstrin, err
-	}
-
-	// this need to be moved into a different repo service
-	err = json.Unmarshal(odata.Result, &sagstrin)
-	if err != nil {
-		fmt.Printf("error from  GetSagstrinBySagsId: %s\n", err)
-		return sagstrin, err
+		return sagstrin, errors.Join(ErrGettingSagstrin, err)
 	}
 
 	return sagstrin, nil
 }
 
 func (s *FTODAService) GetSagstrinById(id int) (sag Sagstrin, err error) {
-	//First we should check a database, but that is not created yet
-	//If not found in database, then we get it from the api
 
-	q := OdataQuery{
+	q := odataQuery{
 		entity: "Sagstrin",
 		filter: "id eq " + strconv.Itoa(id),
 		expand: "Sagstrinstype,Afstemning,Dagsordenspunkt,SagstrinAktør,SagstrinDokument",
 	}
 
-	fmt.Println(q.PrettyUrl(s.api.host))
-	// this need to be moved into a different repo service
-	odata, err := s.api.getData(q)
-	if err != nil {
-		fmt.Printf("error from GetSagstrinById: %s\n", err)
-		return sag, err
-	}
-
-	// this need to be moved into a different repo service
 	var sagstrin []Sagstrin
-	err = json.Unmarshal(odata.Result, &sagstrin)
+	err = s.api.getData(q, &sagstrin)
 	if err != nil {
-		fmt.Printf("error from GetSagstrinById: %s\n", err)
-		return sag, err
+		return sag, errors.Join(ErrGettingSagstrin, err)
 	}
 
 	return sagstrin[0], nil
@@ -117,27 +92,16 @@ func (s *FTODAService) GetSagstrinById(id int) (sag Sagstrin, err error) {
 */
 
 func (s *FTODAService) GetEmneordById(id int) (emne Emneord, err error) {
-	//First we should check a database, but that is not created yet
-	//If not found in database, then we get it from the api
-	//I would expect this to be in the database real fast :)
-	q := OdataQuery{
+
+	q := odataQuery{
 		entity: "Emneord",
 		filter: "id eq " + strconv.Itoa(id),
 	}
-	fmt.Println(q.PrettyUrl(s.api.host))
-	// this need to be moved into a different repo service
-	odata, err := s.api.getData(q)
-	if err != nil {
-		fmt.Printf("error from GetEmneordById: %s\n", err)
-		return emne, err
-	}
 
-	// this need to be moved into a different repo service
 	var emner []Emneord
-	err = json.Unmarshal(odata.Result, &emner)
+	err = s.api.getData(q, &emner)
 	if err != nil {
-		fmt.Printf("error from GetEmneordById: %s\n", err)
-		return emne, err
+		return emne, errors.Join(ErrGettingEmneord, err)
 	}
 
 	return emner[0], nil
@@ -147,7 +111,7 @@ func (s *FTODAService) GetEmneordById(id int) (emne Emneord, err error) {
 	Lovforslag
 */
 
-func (s *FTODAService) GetSagById(id int) (Sag, error) {
+func (s *FTODAService) GetSagById(id int) (sag Sag, err error) {
 	//First we should check a database, but that is not created yet
 	//If not found in database, then we get it from the api
 
@@ -158,63 +122,46 @@ func (s *FTODAService) GetSagById(id int) (Sag, error) {
 	}
 
 	var sager []Sag
-	err := s.api.getData(q, &sager)
+	err = s.api.getData(q, &sager)
 	if err != nil {
-		return Sag{}, err
+		return sag, errors.Join(ErrGettingSag, err)
 	}
 	return sager[0], nil
 }
 
-// offset map into skip next for now
-func (s *FTODAService) GetLovforslag(limit int, offset int) ([]Sag, error) {
+func (s *FTODAService) GetSagerByType(sagtype int, limit int, offset int) (sager []Sag, err error) {
 
 	q := odataQuery{
 		entity: "Sag",
-		filter: "typeid eq 3",
+		filter: "typeid eq " + strconv.Itoa(sagtype),
 		skip:   offset,
 		top:    limit,
 	}
 
-	odata, err := s.api.getData(q)
+	err = s.api.getData(q, &sager)
 	if err != nil {
-		fmt.Printf("error from getLovforslag: %s\n", err)
-		return nil, err
-	}
-
-	var sager []Sag
-	err = json.Unmarshal(odata.Result, &sager)
-	if err != nil {
-		fmt.Printf("error from getLovforslag: %s\n", err)
-		return nil, err
+		return nil, errors.Join(ErrGettingSag, err)
 	}
 
 	return sager, nil
 }
 
-func (s *FTODAService) UpdateLovforslag() ([]Sag, int64, error) {
+func (s *FTODAService) UpdateSagerByType(sagtype int) (sager []Sag, updateCount int64, err error) {
 
 	q := odataQuery{
 		entity: "Sag",
-		filter: "typeid eq 3",
+		filter: "typeid eq " + strconv.Itoa(sagtype),
 		skip:   0,
 	}
 
-	odata, err := s.api.getData(q)
+	err = s.api.getData(q, &sager)
 	if err != nil {
-		fmt.Printf("error from getLovforslag: %s\n", err)
-		return nil, 0, err
+		return sager, updateCount, errors.Join(ErrGettingSag, err)
 	}
 
-	var sager []Sag
-	err = json.Unmarshal(odata.Result, &sager)
-	if err != nil {
-		fmt.Printf("error from getLovforslag: %s\n", err)
-		return nil, 0, err
-	}
+	updateCount = s.db.insertBulk(sager)
 
-	affectedRows := s.db.insertBulk(sager)
-
-	return sager, affectedRows, nil
+	return sager, updateCount, nil
 }
 
 func (s *FTODAService) GetLovforslagCount() int64 {
