@@ -1,6 +1,8 @@
 package ftoda
 
 import (
+	"database/sql/driver"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -16,9 +18,18 @@ import (
 	See: https://oda.ft.dk/api/Sagstrin?$format=json&$filter=sagid%20eq%20102467&$skip=0&orderby=id%20desc
 */
 
-// TODO: Write scanner for gorm https://stackoverflow.com/a/65459041
 type FtodaDate struct {
 	time.Time //make a gorm data alias instead?
+}
+
+func (d *FtodaDate) Value() (driver.Value, error) {
+	return driver.Value(d.Time.Format("2006-01-02T15:04:05")), nil
+}
+
+func (d *FtodaDate) Scan(value interface{}) error {
+	// TODO: Write scanner for gorm https://stackoverflow.com/a/65459041
+	fmt.Println(value)
+	return nil
 }
 
 func (d *FtodaDate) UnmarshalJSON(b []byte) error {
