@@ -8,7 +8,7 @@ import (
 	"github.com/henrikkorsgaard/folketingets-aabne-data/templates"
 )
 
-func GetSagstrinBySagsId(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+func GetLovtrinBySagsId(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +68,7 @@ func GetLovforslagsTrinBySagsId(ftodaService *repository.FTODAService, templateE
 	)
 }*/
 
-func GetSagstrinById(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
+func GetlovtrinById(ftodaService *repository.FTODAService, templateEngine *templates.TemplateEngine) http.Handler {
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {

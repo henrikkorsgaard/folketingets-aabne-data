@@ -32,8 +32,9 @@ func addRoutes(mux *http.ServeMux, ftodaService *repository.FTODAService, templa
 	mux.Handle("/lovforslag/{id}", GetLovforslagById(ftodaService, templateEngine))
 	//mux.Handle("/lovforslag/update", UpdateLovforslag(ftodaService, templateEngine))
 	mux.Handle("/afstemning", GetAfstemningBySagstrinId(ftodaService, templateEngine))
-	//mux.Handle("/sagstrin", GetLovforslagsTrinBySagsId(ftodaService, templateEngine))
-	mux.Handle("/sagstrin/{id}", GetSagstrinById(ftodaService, templateEngine))
+	mux.Handle("/lovtrin", GetLovtrinBySagsId(ftodaService, templateEngine))
+	mux.Handle("/analysis", GetAnalysis(ftodaService, templateEngine))
+	//mux.Handle("/lovtrin/{id}", GetLovtrinById(ftodaService, templateEngine)) //This might be wrong because Lovtrin does not have an ID yet.
 }
 
 func healthy() http.Handler {

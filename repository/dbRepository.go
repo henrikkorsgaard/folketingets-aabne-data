@@ -56,12 +56,31 @@ func (repo *dbRepository) getSagerByType(sagtype int) (sager []ftoda.Sag, err er
 	return sager, err
 }
 
+func (repo *dbRepository) getSagerByTypeWithSagstrin(sagtype int) (sager []ftoda.SagSagstrin, err error) {
+	/* TODO: IMPLEMENT
+	result := repo.db.Where("typeid = ?", sagtype).Find(&sager)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return sager, errors.Join(ErrRepoGettingSag, err)
+	}
+	*/
+	return sager, err
+}
+
 func (repo *dbRepository) updateSager(sager []ftoda.Sag) (rows int64, err error) {
 	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&sager)
 	if result.Error != nil {
 		return rows, errors.Join(ErrDatabaseUpdateSag, result.Error)
 	}
-	return result.RowsAffected, err
+	return rows, err
+}
+
+func (repo *dbRepository) updateSagerWithSagstrin(sager []ftoda.SagSagstrin) (rows int64, err error) {
+	/* TODO: IMPLMENNT
+	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&sager)
+	if result.Error != nil {
+		return rows, errors.Join(ErrDatabaseUpdateSag, result.Error)
+	}*/
+	return rows, err
 }
 
 /*

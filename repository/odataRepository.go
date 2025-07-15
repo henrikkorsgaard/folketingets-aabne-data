@@ -59,6 +59,21 @@ func (repo *odataRepository) getSagerByType(sagtype int) (sager []ftoda.Sag, err
 	return sager, nil
 }
 
+func (repo *odataRepository) getSagerByTypeWithSagstrin(sagtype int) (sager []ftoda.SagSagstrin, err error) {
+	q := odataQuery{
+		entity: "Sag",
+		filter: "typeid eq " + strconv.Itoa(sagtype),
+		expand: "Sagstrin",
+	}
+
+	err = repo.getData(q, &sager)
+	if err != nil {
+		return sager, errors.Join(ErrRepoGettingSag, err)
+	}
+	fmt.Println(sager[0])
+	return sager, err
+}
+
 func (repo *odataRepository) getSagstrinById(id int) (sagstrin ftoda.Sagstrin, err error) {
 	q := odataQuery{
 		entity: "Sagstrin",

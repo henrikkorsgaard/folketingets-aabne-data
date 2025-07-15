@@ -10,11 +10,6 @@ type Lovforslag struct {
 	Emneord []string //we need to add emneord
 }
 
-type Lovtrin struct {
-	Type     string
-	Sagstrin []ftoda.Sagstrin
-}
-
 func NewFromSagId(sagid int, repo *repository.FTODAService) (l Lovforslag, err error) {
 
 	sag, err := repo.GetSagById(sagid)

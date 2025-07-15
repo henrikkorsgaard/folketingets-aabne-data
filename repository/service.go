@@ -82,6 +82,30 @@ func (s *FTODAService) GetSagerByType(sagtype int, limit int, offset int) (sager
 	return sager, err
 }
 
+func (s *FTODAService) GetSagerByTypeWithSagstrin(sagtype int, limit int, offset int) (sager []ftoda.SagSagstrin, err error) {
+	/*
+		sager, err = s.db.getSagerByTypeWithSagstrin(sagtype)
+		if err != nil {
+			return sager, err
+		}
+
+		if len(sager) > 0 {
+			return sager, err
+		}*/
+
+	sager, err = s.api.getSagerByTypeWithSagstrin(sagtype)
+	if err != nil {
+		return sager, err
+	}
+	/*
+		_, err = s.db.updateSagerWithSagstrin(sager)
+		if err != nil {
+			return sager, err
+		}*/
+
+	return sager, err
+}
+
 /*
 	Sagstrin
 */
@@ -133,26 +157,6 @@ func (s *FTODAService) GetSagstrinById(id int) (sagstrin ftoda.Sagstrin, err err
 	}
 
 	return sagstrin, err
-}
-
-/*
-	Afstemning
-*/
-
-func (s *FTODAService) GetAfstemningBySagstrinId(sagstrinid int) (afstemning ftoda.Afstemning, err error) {
-	/*
-		q := odataQuery{
-			entity: "Afstemning",
-			filter: "sagstrinid eq " + strconv.Itoa(sagstrinid),
-		}
-
-		var afstemninger []Afstemning
-		err = s.api.getData(q, &afstemninger)
-		if err != nil {
-			return afstemning, errors.Join(ErrGettingAfstemning, err)
-		}*/
-
-	return
 }
 
 /*

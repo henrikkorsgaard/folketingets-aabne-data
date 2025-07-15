@@ -44,11 +44,12 @@ func (d *FtodaDate) UnmarshalJSON(b []byte) error {
 
 type Sag struct {
 	Id                    int    `gorm:"primaryKey" json:"id"`
-	Titel                 string `json:"titel"`
+	Titel                 string `gorm:"column:titel" json:"titel"`
 	TitelKort             string `gorm:"column:titelkort" json:"titelkort"`
 	Nummer                string `gorm:"column:nummer" json:"nummer"` //e.g. L 105
 	Resume                string `json:"resume"`
 	Afstemningskonklusion string `gorm:"column:afstemningskonklusion" json:"afstemningskonklusion"`
+	StatusId              int    `gorm:"column:statusid" json:"statusid"`
 	//PeriodeId             int    //maps onto
 	Begrundelse    string `gorm:"column:begrundelse" json:"begrundelse"`
 	Paragrafnummer int    `gorm:"column:paragrafnummer" json:"paragrafnummer"`
@@ -56,7 +57,13 @@ type Sag struct {
 	Lovnummer      string `gorm:"column:lovnummer" json:"lovnummer"`
 
 	//Opdateringsdato datatypes.Date
+}
 
+// Helper type for analysis
+// TODO: Make relational for database optimization
+type SagSagstrin struct {
+	Sag
+	Sagstrin []SagSagstrin `json:"sagstrin"`
 }
 
 type EmneordSag struct {
@@ -73,14 +80,6 @@ type Emneord struct {
 	EmneordSag EmneordSag `gorm:"-" json:"-"`
 	//Opdateringsdato datatypes.Date
 }
-
-/*
-func (d *Emneord) UnmarshalJSON(b []byte) error {
-	fmt.Println("here")
-	fmt.Printf(" --- %s ---\n", string(b))
-
-	return nil
-}*/
 
 type Afstemning struct {
 	Id         int `gorm:"primaryKey" json:"id"`
