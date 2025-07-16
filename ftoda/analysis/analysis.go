@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/henrikkorsgaard/folketingets-aabne-data/ftoda"
 	"github.com/henrikkorsgaard/folketingets-aabne-data/repository"
 )
 
 // I don't know if I want to do the analysis in go and return it as an analysis
 // or return the objects to the template and write the there with html+js+vis
-func LovforslagSagstrinTypeDistribution(lovforslagCount int, repo *repository.FTODAService) {
+func LovforslagSagstrinTypeDistribution(lovforslagCount int, repo *repository.FTODAService) (sagstrinsager []ftoda.SagSagstrin, err error) {
 
 	// we also need sagstrin status to be able to match this.
 
-	sager, err := repo.GetSagerByTypeWithSagstrin(3, 200, 0)
+	sagstrinsager, err = repo.GetSagerByTypeWithSagstrin(3, 400, 0)
 	if err != nil {
-		panic(err) //just for now
+		return sagstrinsager, err
 	}
 
 	//histogram based on number of sagstrin
@@ -27,7 +28,7 @@ func LovforslagSagstrinTypeDistribution(lovforslagCount int, repo *repository.FT
 	//histogram based on the event series - that would be unique event series and then count them
 	sagstrinEventSeriesHistorgram := make(map[string]int)
 
-	for _, s := range sager {
+	for _, s := range sagstrinsager {
 		sagstrinCount := len(s.Sagstrin)
 		sagstrinCountHistogram[sagstrinCount] += 1
 		sagstrinEventseries := ""
@@ -38,5 +39,7 @@ func LovforslagSagstrinTypeDistribution(lovforslagCount int, repo *repository.FT
 		sagstrinEventSeriesHistorgram[sagstrinEventseries] += 1
 	}
 
-	fmt.Printf("Analysing %d lovforslag:\n\tSagstring count: %+v\n\tSagstring type: %+v\n\tSagstring series: %+v\n\t", len(sager), sagstrinCountHistogram, sagstrinTypeHistorgram, sagstrinEventSeriesHistorgram)
+	fmt.Printf("Analysing %d lovforslag:\n\tSagstring count: %+v\n\tSagstring type: %+v\n\tSagstring series: %+v\n\t", len(sagstrinsager), sagstrinCountHistogram, sagstrinTypeHistorgram, sagstrinEventSeriesHistorgram)
+
+	return sagstrinsager, err
 }

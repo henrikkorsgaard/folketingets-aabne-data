@@ -21,7 +21,7 @@ type dbRepository struct {
 }
 
 func newDatabaseRepo(host string) *dbRepository {
-	db, err := gorm.Open(sqlite.Open(host), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(host), &gorm.Config{ /*Logger: logger.Default.LogMode((logger.Silent))*/ })
 	if err != nil {
 		panic(errors.Join(ErrDatabaseConnection, err))
 	}
@@ -58,12 +58,21 @@ func (repo *dbRepository) getSagerByType(sagtype int) (sager []ftoda.Sag, err er
 }
 
 func (repo *dbRepository) getSagerByTypeWithSagstrin(sagtype int, limit int) (sager []ftoda.SagSagstrin, err error) {
-	/* TODO: IMPLEMENT
+
+	/*
+
+		query := db.Table("order").Select("MAX(order.finished_at) as latest").Joins("left join user user on order.user_id = user.id").Where("user.age > ?", 18).Group("order.user_id")
+		db.Model(&Order{}).Joins("join (?) q on order.finished_at = q.latest", query).Scan(&results)
+		// SELECT `order`.`user_id`,`order`.`finished_at` FROM `order` join (SELECT MAX(order.finished_at) as latest FROM `order` left join user user on order.user_id = user.id WHERE user.age > 18 GROUP BY `order`.`user_id`) q on order.finished_at = q.latest
+
+
+	*/
+
 	result := repo.db.Where("typeid = ?", sagtype).Find(&sager)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return sager, errors.Join(ErrRepoGettingSag, err)
 	}
-	*/
+
 	return sager, err
 }
 

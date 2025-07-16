@@ -71,7 +71,7 @@ func (repo *odataRepository) getSagerByTypeWithSagstrin(sagtype int, limit int) 
 	}
 	fmt.Println(q.prettyUrl(repo.host))
 	//We limit the api calls to 500 here. This should be in a .env.
-	for q.skip < q.top || q.skip == 500 {
+	for q.skip <= (q.top-100) && q.skip < 500 {
 		var nextBatch []ftoda.SagSagstrin
 		err = repo.getData(q, &nextBatch)
 		if err != nil {
@@ -221,8 +221,6 @@ func queryOdata(urlString string) (result odataResult, err error) {
 
 	err = json.Unmarshal(body, &result)
 	if err != nil {
-		fmt.Println(result)
-		panic(errors.Join(ErrUnmarshallOdata, err))
 		return result, errors.Join(ErrUnmarshallOdata, err)
 	}
 
