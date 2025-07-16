@@ -97,24 +97,24 @@ func (s *FTODAService) GetSagerByTypeWithSagstrin(sagtype int, limit int, offset
 	if err != nil {
 		return sagerSagstring, err
 	}
+	/*
+		var sager []ftoda.Sag
+		var sagstrin []ftoda.Sagstrin
+		for _, s := range sagerSagstring {
+			sager = append(sager, s.Sag)
+			sagstrin = append(sagstrin, s.Sagstrin...)
+		}
 
-	var sager []ftoda.Sag
-	var sagstrin []ftoda.Sagstrin
-	for _, s := range sagerSagstring {
-		sager = append(sager, s.Sag)
-		sagstrin = append(sagstrin, s.Sagstrin...)
-	}
+		_, err = s.db.updateSager(sager)
+		if err != nil {
+			return sagerSagstring, err
+		}
 
-	_, err = s.db.updateSager(sager)
-	if err != nil {
-		return sagerSagstring, err
-	}
-
-	_, err = s.db.updateSagstrin(sagstrin)
-	if err != nil {
-		return sagerSagstring, err
-	}
-
+		_, err = s.db.updateSagstrin(sagstrin)
+		if err != nil {
+			return sagerSagstring, err
+		}
+	*/
 	return sagerSagstring, err
 }
 

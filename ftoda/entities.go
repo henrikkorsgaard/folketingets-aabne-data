@@ -34,6 +34,13 @@ func (d *FtodaDate) Scan(value interface{}) error {
 
 func (d *FtodaDate) UnmarshalJSON(b []byte) error {
 	s := strings.Trim(string(b), `"`)
+	//There are examples where data is null
+	// See: https://oda.ft.dk/api/Sagstrin?$filter=id%20eq%20259715
+
+	if s == "null" {
+		d.Time = time.Time{}
+		return nil
+	}
 	t, err := time.Parse("2006-01-02T15:04:05", s)
 	if err != nil {
 		return err

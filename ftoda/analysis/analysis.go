@@ -1,29 +1,42 @@
 package analysis
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/henrikkorsgaard/folketingets-aabne-data/repository"
 )
 
-// what should this return?
-// the template or the data
-
-// we can get:
-// Distribution across types
-//
-
+// I don't know if I want to do the analysis in go and return it as an analysis
+// or return the objects to the template and write the there with html+js+vis
 func LovforslagSagstrinTypeDistribution(lovforslagCount int, repo *repository.FTODAService) {
 
 	// we also need sagstrin status to be able to match this.
 
-	_, err := repo.GetSagerByTypeWithSagstrin(3, 200, 0)
+	sager, err := repo.GetSagerByTypeWithSagstrin(3, 200, 0)
 	if err != nil {
 		panic(err) //just for now
 	}
 
-	//lets get 100 lovforslag
-	//expand with sagstrin for fast query or individual queries?
-	//We only need it for this analysis.
-	//but without some bulk work, e.g. getsagstrinbyids []sagid, then  it will be 1+100 queries.
-	// with the raw query, I can use it as an update point.
-	// that will be an issue if I do not implement releational types. What the heck.
+	//histogram based on number of sagstrin
+	sagstrinCountHistogram := make(map[int]int)
+
+	//historgram based on the type of sagstrin in sag
+	sagstrinTypeHistorgram := make(map[int]int)
+
+	//histogram based on the event series - that would be unique event series and then count them
+	sagstrinEventSeriesHistorgram := make(map[string]int)
+
+	for _, s := range sager {
+		sagstrinCount := len(s.Sagstrin)
+		sagstrinCountHistogram[sagstrinCount] += 1
+		sagstrinEventseries := ""
+		for _, st := range s.Sagstrin {
+			sagstrinTypeHistorgram[st.Typeid] += 1
+			sagstrinEventseries += strconv.Itoa(st.Typeid)
+		}
+		sagstrinEventSeriesHistorgram[sagstrinEventseries] += 1
+	}
+
+	fmt.Printf("Analysing %d lovforslag:\n\tSagstring count: %+v\n\tSagstring type: %+v\n\tSagstring series: %+v\n\t", len(sager), sagstrinCountHistogram, sagstrinTypeHistorgram, sagstrinEventSeriesHistorgram)
 }

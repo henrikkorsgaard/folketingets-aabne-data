@@ -69,7 +69,7 @@ func (repo *odataRepository) getSagerByTypeWithSagstrin(sagtype int, limit int) 
 		top:    limit,
 		skip:   0,
 	}
-
+	fmt.Println(q.prettyUrl(repo.host))
 	//We limit the api calls to 500 here. This should be in a .env.
 	for q.skip < q.top || q.skip == 500 {
 		var nextBatch []ftoda.SagSagstrin
@@ -81,6 +81,7 @@ func (repo *odataRepository) getSagerByTypeWithSagstrin(sagtype int, limit int) 
 		sager = append(sager, nextBatch...)
 		//we know the api is limited to 100. TODO: Put into .env
 		q.skip += 100
+		fmt.Println(q.prettyUrl(repo.host))
 	}
 
 	return sager, err
@@ -118,11 +119,6 @@ func (repo *odataRepository) getSagstrinstype() (sagstrintypes []ftoda.Sagstrins
 	q := odataQuery{
 		entity: "Sagstrinstype",
 		top:    200,
-	}
-
-	err = repo.getData(q, &sagstrintypes)
-	if err != nil {
-		return sagstrintypes, errors.Join(ErrRepoGettingSagstrinstype, err)
 	}
 
 	//We limit the api calls to 500 here.
@@ -204,6 +200,7 @@ func (repo *odataRepository) getData(q odataQuery, v any) error {
 
 	err = json.Unmarshal(odata.Result, v)
 	if err != nil {
+		fmt.Println(string(odata.Result))
 		return errors.Join(ErrUnmarshallType, err)
 	}
 
@@ -224,6 +221,8 @@ func queryOdata(urlString string) (result odataResult, err error) {
 
 	err = json.Unmarshal(body, &result)
 	if err != nil {
+		fmt.Println(result)
+		panic(errors.Join(ErrUnmarshallOdata, err))
 		return result, errors.Join(ErrUnmarshallOdata, err)
 	}
 
