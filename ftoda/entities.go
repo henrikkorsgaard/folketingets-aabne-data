@@ -36,7 +36,7 @@ func (d *FtodaDate) UnmarshalJSON(b []byte) error {
 	s := strings.Trim(string(b), `"`)
 	//There are examples where data is null
 	// See: https://oda.ft.dk/api/Sagstrin?$filter=id%20eq%20259715
-
+	// We handle this by setting d.Time to 0001-01-01 00:00:00 +0000 UTC
 	if s == "null" {
 		d.Time = time.Time{}
 		return nil
