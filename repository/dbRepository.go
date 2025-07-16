@@ -105,6 +105,11 @@ func (repo *dbRepository) getSagstrinBySagId(sagid int) (sagstrin []ftoda.Sagstr
 	return sagstrin, err
 }
 
+func (repo *dbRepository) getSagstrinstype() (sagstrintypes []ftoda.Sagstrinstype, err error) {
+	//TODO: Implement
+	return
+}
+
 func (repo *dbRepository) updateSagstrin(sagstrin []ftoda.Sagstrin) (rows int64, err error) {
 	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&sagstrin)
 	if result.Error != nil {

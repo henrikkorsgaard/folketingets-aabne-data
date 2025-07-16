@@ -159,6 +159,16 @@ func (s *FTODAService) GetSagstrinById(id int) (sagstrin ftoda.Sagstrin, err err
 	return sagstrin, err
 }
 
+func (s *FTODAService) GetSagstrintype() (sagstrintype []ftoda.Sagstrinstype, err error) {
+	// we have an issue with the index here.
+	sagstrintype, err = s.api.getSagstrinstype()
+	if err != nil {
+		return sagstrintype, err
+	}
+
+	return sagstrintype, err
+}
+
 /*
 	Emneord
 */

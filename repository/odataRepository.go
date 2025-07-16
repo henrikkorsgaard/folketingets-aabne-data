@@ -102,6 +102,19 @@ func (repo *odataRepository) getSagstrinBySagId(sagid int) (sagstrin []ftoda.Sag
 	return sagstrin, err
 }
 
+func (repo *odataRepository) getSagstrinstype() (sagstrintypes []ftoda.Sagstrinstype, err error) {
+	q := odataQuery{
+		entity: "Sagstrinstype",
+		top:    200,
+	}
+
+	err = repo.getData(q, &sagstrintypes)
+	if err != nil {
+		return sagstrintypes, errors.Join(ErrRepoGettingSagstrin, err)
+	}
+	return sagstrintypes, err
+}
+
 /*
 Helper type that allow us to fetch odata in one call
 while still adhearing to the repository interface definitions
@@ -154,20 +167,9 @@ func (repo *odataRepository) getData(q odataQuery, v any) error {
 		return errors.Join(ErrEncodingUrl, err)
 	}
 
-	res, err := http.Get(queryUrl)
+	odata, err := queryOdata(queryUrl)
 	if err != nil {
-		return errors.Join(ErrOdataRequest, err)
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return errors.Join(ErrParsingBody, err)
-	}
-
-	var odata odataResult
-	err = json.Unmarshal(body, &odata)
-	if err != nil {
-		return errors.Join(ErrUnmarshallOdata, err)
+		return err // we join errors in the query function
 	}
 
 	err = json.Unmarshal(odata.Result, v)
@@ -175,7 +177,31 @@ func (repo *odataRepository) getData(q odataQuery, v any) error {
 		fmt.Println(string(odata.Result))
 		return errors.Join(ErrUnmarshallType, err)
 	}
+
+	fmt.Println(odata.NextLink)
+	fmt.Println(odata.Skip) //DO I Pull skip from next link or do I query it from an URL?
 	return nil
+}
+
+func queryOdata(urlString string) (result odataResult, err error) {
+
+	res, err := http.Get(urlString)
+	if err != nil {
+		return result, errors.Join(ErrOdataRequest, err)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return result, errors.Join(ErrParsingBody, err)
+	}
+
+	var odata odataResult
+	err = json.Unmarshal(body, &odata)
+	if err != nil {
+		return result, errors.Join(ErrUnmarshallOdata, err)
+	}
+
+	return result, err
 }
 
 /*

@@ -128,7 +128,7 @@ type Sagstrin struct {
 
 type Sagstrinstype struct {
 	Id   int       `gorm:"primaryKey" json:"id"`
-	Type string    `gorm:"type" json:"type"` //this should be a string
+	Type string    `gorm:"type" json:"type"`
 	Dato FtodaDate `gorm:"column:dato" json:"dato"`
 	//Opdateringsdato datatypes.Date
 }
