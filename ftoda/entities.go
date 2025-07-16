@@ -63,7 +63,7 @@ type Sag struct {
 // TODO: Make relational for database optimization
 type SagSagstrin struct {
 	Sag
-	Sagstrin []SagSagstrin `json:"sagstrin"`
+	Sagstrin []Sagstrin `json:"sagstrin"`
 }
 
 type EmneordSag struct {

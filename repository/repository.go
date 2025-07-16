@@ -7,16 +7,17 @@ import (
 )
 
 var (
-	ErrRepoGettingSagstrin   = errors.New("error getting sagstrin from repo")
-	ErrRepoGettingAfstemning = errors.New("error getting afstemning from repo")
-	ErrRepoGettingEmneord    = errors.New("error getting emneord from repo")
-	ErrRepoGettingSag        = errors.New("error getting sag from repo")
+	ErrRepoGettingSagstrin      = errors.New("error getting sagstrin from repo")
+	ErrRepoGettingSagstrinstype = errors.New("error getting sagstrinstype from repo")
+	ErrRepoGettingAfstemning    = errors.New("error getting afstemning from repo")
+	ErrRepoGettingEmneord       = errors.New("error getting emneord from repo")
+	ErrRepoGettingSag           = errors.New("error getting sag from repo")
 )
 
 type Repository interface {
 	getSagById(id int) (sag ftoda.Sag, err error)
 	getSagerByType(sagtype int) (sager []ftoda.Sag, err error)
-	getSagerByTypeWithSagstrin(sagtype int) (sager []ftoda.SagSagstrin, err error)
+	getSagerByTypeWithSagstrin(sagtype int, limit int) (sager []ftoda.SagSagstrin, err error)
 	getSagstrinById(id int) (sagstrin ftoda.Sagstrin, err error)
 	getSagstrinBySagId(sagid int) (sagstrin []ftoda.Sagstrin, err error)
 	getSagstrinstype() (sagstrintypes []ftoda.Sagstrinstype, err error)

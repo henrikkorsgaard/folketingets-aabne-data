@@ -18,7 +18,9 @@ var (
 	ErrEncodingUrl     = errors.New("error encoding the odata url")
 	ErrParsingBody     = errors.New("error parsing odata response body")
 	ErrUnmarshallOdata = errors.New("odata: cannot parse odata result ")
+	ErrNextLinkOdata   = errors.New("odata: error querying the next link")
 	ErrUnmarshallType  = errors.New("odata: cannot parse datatype")
+	ErrTypeNotArray    = errors.New("odata: type is not array")
 )
 
 type odataRepository struct {
@@ -59,18 +61,28 @@ func (repo *odataRepository) getSagerByType(sagtype int) (sager []ftoda.Sag, err
 	return sager, nil
 }
 
-func (repo *odataRepository) getSagerByTypeWithSagstrin(sagtype int) (sager []ftoda.SagSagstrin, err error) {
+func (repo *odataRepository) getSagerByTypeWithSagstrin(sagtype int, limit int) (sager []ftoda.SagSagstrin, err error) {
 	q := odataQuery{
 		entity: "Sag",
 		filter: "typeid eq " + strconv.Itoa(sagtype),
 		expand: "Sagstrin",
+		top:    limit,
+		skip:   0,
 	}
 
-	err = repo.getData(q, &sager)
-	if err != nil {
-		return sager, errors.Join(ErrRepoGettingSag, err)
+	//We limit the api calls to 500 here. This should be in a .env.
+	for q.skip < q.top || q.skip == 500 {
+		var nextBatch []ftoda.SagSagstrin
+		err = repo.getData(q, &nextBatch)
+		if err != nil {
+			return sager, errors.Join(ErrRepoGettingSag, err)
+		}
+
+		sager = append(sager, nextBatch...)
+		//we know the api is limited to 100. TODO: Put into .env
+		q.skip += 100
 	}
-	fmt.Println(sager[0])
+
 	return sager, err
 }
 
@@ -110,8 +122,22 @@ func (repo *odataRepository) getSagstrinstype() (sagstrintypes []ftoda.Sagstrins
 
 	err = repo.getData(q, &sagstrintypes)
 	if err != nil {
-		return sagstrintypes, errors.Join(ErrRepoGettingSagstrin, err)
+		return sagstrintypes, errors.Join(ErrRepoGettingSagstrinstype, err)
 	}
+
+	//We limit the api calls to 500 here.
+	for q.skip < q.top || q.skip == 500 {
+		var nextBatch []ftoda.Sagstrinstype
+		err = repo.getData(q, &nextBatch)
+		if err != nil {
+			return sagstrintypes, errors.Join(ErrRepoGettingSagstrinstype, err)
+		}
+
+		sagstrintypes = append(sagstrintypes, nextBatch...)
+		//we know the api is limited to 100. TODO: Put into .env
+		q.skip += 100
+	}
+
 	return sagstrintypes, err
 }
 
@@ -160,13 +186,17 @@ func (repo *odataRepository) getEmneordBySagId(sagid int) (emneord []ftoda.Emneo
 	return emneord, err
 }
 
+/*
+	Query pagination control should happen in the calling function
+	because we cannot work nicely with the passed v any.
+*/
+
 func (repo *odataRepository) getData(q odataQuery, v any) error {
 
 	queryUrl, err := q.getEncodedUrl(repo.host)
 	if err != nil {
 		return errors.Join(ErrEncodingUrl, err)
 	}
-
 	odata, err := queryOdata(queryUrl)
 	if err != nil {
 		return err // we join errors in the query function
@@ -174,12 +204,9 @@ func (repo *odataRepository) getData(q odataQuery, v any) error {
 
 	err = json.Unmarshal(odata.Result, v)
 	if err != nil {
-		fmt.Println(string(odata.Result))
 		return errors.Join(ErrUnmarshallType, err)
 	}
 
-	fmt.Println(odata.NextLink)
-	fmt.Println(odata.Skip) //DO I Pull skip from next link or do I query it from an URL?
 	return nil
 }
 
@@ -195,8 +222,7 @@ func queryOdata(urlString string) (result odataResult, err error) {
 		return result, errors.Join(ErrParsingBody, err)
 	}
 
-	var odata odataResult
-	err = json.Unmarshal(body, &odata)
+	err = json.Unmarshal(body, &result)
 	if err != nil {
 		return result, errors.Join(ErrUnmarshallOdata, err)
 	}

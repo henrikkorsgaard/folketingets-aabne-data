@@ -82,7 +82,7 @@ func (s *FTODAService) GetSagerByType(sagtype int, limit int, offset int) (sager
 	return sager, err
 }
 
-func (s *FTODAService) GetSagerByTypeWithSagstrin(sagtype int, limit int, offset int) (sager []ftoda.SagSagstrin, err error) {
+func (s *FTODAService) GetSagerByTypeWithSagstrin(sagtype int, limit int, offset int) (sagerSagstring []ftoda.SagSagstrin, err error) {
 	/*
 		sager, err = s.db.getSagerByTypeWithSagstrin(sagtype)
 		if err != nil {
@@ -93,17 +93,29 @@ func (s *FTODAService) GetSagerByTypeWithSagstrin(sagtype int, limit int, offset
 			return sager, err
 		}*/
 
-	sager, err = s.api.getSagerByTypeWithSagstrin(sagtype)
+	sagerSagstring, err = s.api.getSagerByTypeWithSagstrin(sagtype, limit)
 	if err != nil {
-		return sager, err
+		return sagerSagstring, err
 	}
-	/*
-		_, err = s.db.updateSagerWithSagstrin(sager)
-		if err != nil {
-			return sager, err
-		}*/
 
-	return sager, err
+	var sager []ftoda.Sag
+	var sagstrin []ftoda.Sagstrin
+	for _, s := range sagerSagstring {
+		sager = append(sager, s.Sag)
+		sagstrin = append(sagstrin, s.Sagstrin...)
+	}
+
+	_, err = s.db.updateSager(sager)
+	if err != nil {
+		return sagerSagstring, err
+	}
+
+	_, err = s.db.updateSagstrin(sagstrin)
+	if err != nil {
+		return sagerSagstring, err
+	}
+
+	return sagerSagstring, err
 }
 
 /*
@@ -160,8 +172,21 @@ func (s *FTODAService) GetSagstrinById(id int) (sagstrin ftoda.Sagstrin, err err
 }
 
 func (s *FTODAService) GetSagstrintype() (sagstrintype []ftoda.Sagstrinstype, err error) {
-	// we have an issue with the index here.
+	sagstrintype, err = s.db.getSagstrinstype()
+	if err != nil {
+		return sagstrintype, err
+	}
+
+	if len(sagstrintype) > 0 {
+		return sagstrintype, err
+	}
+
 	sagstrintype, err = s.api.getSagstrinstype()
+	if err != nil {
+		return sagstrintype, err
+	}
+
+	_, err = s.db.updateSagstrintype(sagstrintype)
 	if err != nil {
 		return sagstrintype, err
 	}

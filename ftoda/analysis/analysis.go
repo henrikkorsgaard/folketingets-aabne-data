@@ -15,12 +15,10 @@ func LovforslagSagstrinTypeDistribution(lovforslagCount int, repo *repository.FT
 
 	// we also need sagstrin status to be able to match this.
 
-	_, err := repo.GetSagerByTypeWithSagstrin(3, 100, 0)
+	_, err := repo.GetSagerByTypeWithSagstrin(3, 200, 0)
 	if err != nil {
 		panic(err) //just for now
 	}
-
-	//fmt.Println(sager)
 
 	//lets get 100 lovforslag
 	//expand with sagstrin for fast query or individual queries?

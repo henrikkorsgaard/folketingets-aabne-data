@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	ErrDatabaseConnection     = errors.New("error connecting to the database")
-	ErrDatabaseUpdateSag      = errors.New("error updating sager in database")
-	ErrDatabaseUpdateSagstrin = errors.New("error updating sagstrin in database")
+	ErrDatabaseConnection          = errors.New("error connecting to the database")
+	ErrDatabaseUpdateSag           = errors.New("error updating sager in database")
+	ErrDatabaseUpdateSagstrin      = errors.New("error updating sagstrin in database")
+	ErrDatabaseUpdateSagstrinstype = errors.New("error updating sagstrinstype in database")
 )
 
 type dbRepository struct {
@@ -56,7 +57,7 @@ func (repo *dbRepository) getSagerByType(sagtype int) (sager []ftoda.Sag, err er
 	return sager, err
 }
 
-func (repo *dbRepository) getSagerByTypeWithSagstrin(sagtype int) (sager []ftoda.SagSagstrin, err error) {
+func (repo *dbRepository) getSagerByTypeWithSagstrin(sagtype int, limit int) (sager []ftoda.SagSagstrin, err error) {
 	/* TODO: IMPLEMENT
 	result := repo.db.Where("typeid = ?", sagtype).Find(&sager)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -71,15 +72,6 @@ func (repo *dbRepository) updateSager(sager []ftoda.Sag) (rows int64, err error)
 	if result.Error != nil {
 		return rows, errors.Join(ErrDatabaseUpdateSag, result.Error)
 	}
-	return rows, err
-}
-
-func (repo *dbRepository) updateSagerWithSagstrin(sager []ftoda.SagSagstrin) (rows int64, err error) {
-	/* TODO: IMPLMENNT
-	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&sager)
-	if result.Error != nil {
-		return rows, errors.Join(ErrDatabaseUpdateSag, result.Error)
-	}*/
 	return rows, err
 }
 
@@ -105,17 +97,33 @@ func (repo *dbRepository) getSagstrinBySagId(sagid int) (sagstrin []ftoda.Sagstr
 	return sagstrin, err
 }
 
-func (repo *dbRepository) getSagstrinstype() (sagstrintypes []ftoda.Sagstrinstype, err error) {
-	//TODO: Implement
-	return
-}
-
 func (repo *dbRepository) updateSagstrin(sagstrin []ftoda.Sagstrin) (rows int64, err error) {
 	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&sagstrin)
 	if result.Error != nil {
 		return rows, errors.Join(ErrDatabaseUpdateSagstrin, result.Error)
 	}
-	return result.RowsAffected, err
+	return rows, err
+}
+
+/*
+	Sagstrinstype
+*/
+
+func (repo *dbRepository) getSagstrinstype() (sagstrintypes []ftoda.Sagstrinstype, err error) {
+	result := repo.db.Find(&sagstrintypes)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return sagstrintypes, errors.Join(ErrRepoGettingSagstrinstype, err)
+	}
+	return sagstrintypes, err
+}
+
+func (repo *dbRepository) updateSagstrintype(sagstrintypes []ftoda.Sagstrinstype) (rows int64, err error) {
+	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&sagstrintypes)
+	if result.Error != nil {
+		return rows, errors.Join(ErrDatabaseUpdateSagstrinstype, result.Error)
+	}
+
+	return rows, err
 }
 
 /*
