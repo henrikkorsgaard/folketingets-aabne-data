@@ -63,6 +63,7 @@ type Sag struct {
 	Paragraf       string `gorm:"column:paragraf" json:"paragraf"`
 	Lovnummer      string `gorm:"column:lovnummer" json:"lovnummer"`
 
+	Sagstrin []Sagstrin `json:"sagstrin"` //need to make this relational
 	//Opdateringsdato datatypes.Date
 }
 
