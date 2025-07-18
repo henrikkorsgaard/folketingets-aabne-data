@@ -37,7 +37,7 @@ func (repo *odataRepository) getSagById(id int) (sag ftoda.Sag, err error) {
 	q := odataQuery{
 		entity: "Sag",
 		filter: "id eq " + strconv.Itoa(id),
-		expand: "EmneordSag",
+		expand: "Sagstrin",
 	}
 
 	var sager []ftoda.Sag

@@ -7,6 +7,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/gorm/logger"
 )
 
 var (
@@ -21,7 +22,7 @@ type dbRepository struct {
 }
 
 func newDatabaseRepo(host string) *dbRepository {
-	db, err := gorm.Open(sqlite.Open(host), &gorm.Config{ /*Logger: logger.Default.LogMode((logger.Silent))*/ })
+	db, err := gorm.Open(sqlite.Open(host), &gorm.Config{Logger: logger.Default.LogMode((logger.Warn))})
 	if err != nil {
 		panic(errors.Join(ErrDatabaseConnection, err))
 	}
@@ -37,7 +38,8 @@ func newDatabaseRepo(host string) *dbRepository {
 */
 
 func (repo *dbRepository) getSagById(id int) (sag ftoda.Sag, err error) {
-	result := repo.db.First(&sag, id)
+	// Use Find instead of First to preserve log levels for warn without "record not found logs"
+	result := repo.db.Find(&sag, id)
 	//this will only return errors (from result.Error) if the error is not
 	//a record not found error
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
