@@ -76,12 +76,14 @@ func (repo *dbRepository) getSagerByTypeWithSagstrin(sagtype int, limit int) (sa
 	return sager, err
 }
 
-func (repo *dbRepository) updateSager(sager []ftoda.Sag) (rows int64, err error) {
-	result := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&sager)
+// Done with test
+func (repo *dbRepository) updateSager(sager []ftoda.Sag) (int64, error) {
+	result := repo.db.Save(&sager)
 	if result.Error != nil {
-		return rows, errors.Join(ErrDatabaseUpdateSag, result.Error)
+		return result.RowsAffected, errors.Join(ErrDatabaseUpdateSag, result.Error)
 	}
-	return rows, err
+
+	return result.RowsAffected, result.Error
 }
 
 /*
@@ -97,8 +99,10 @@ func (repo *dbRepository) getSagstrinById(id int) (sagstrin ftoda.Sagstrin, err 
 	return sagstrin, err
 }
 
+// Done with test
 func (repo *dbRepository) getSagstrinBySagId(sagid int) (sagstrin []ftoda.Sagstrin, err error) {
-	result := repo.db.Where("sagid = ?", sagid).Find(&sagstrin)
+
+	result := repo.db.Where("sag_id = ?", sagid).Find(&sagstrin)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return sagstrin, errors.Join(ErrRepoGettingSag, err)
 	}

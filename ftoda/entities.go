@@ -1,8 +1,8 @@
 package ftoda
 
 import (
+	"database/sql"
 	"database/sql/driver"
-	"fmt"
 	"strings"
 	"time"
 )
@@ -19,17 +19,19 @@ import (
 */
 
 type FtodaDate struct {
-	time.Time //make a gorm data alias instead?
+	Time time.Time
 }
 
-func (d *FtodaDate) Value() (driver.Value, error) {
-	return driver.Value(d.Time.Format("2006-01-02T15:04:05")), nil
+func (date *FtodaDate) Scan(value interface{}) (err error) {
+	nullTime := &sql.NullTime{}
+	err = nullTime.Scan(value)
+	date.Time = nullTime.Time
+	return
 }
 
-func (d *FtodaDate) Scan(value interface{}) error {
-	// TODO: Write scanner for gorm https://stackoverflow.com/a/65459041
-	fmt.Println(value)
-	return nil
+func (date FtodaDate) Value() (driver.Value, error) {
+	y, m, d := time.Time(date.Time).Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, time.Time(date.Time).Location()), nil
 }
 
 func (d *FtodaDate) UnmarshalJSON(b []byte) error {
@@ -63,7 +65,17 @@ type Sag struct {
 	Paragraf       string `gorm:"column:paragraf" json:"paragraf"`
 	Lovnummer      string `gorm:"column:lovnummer" json:"lovnummer"`
 
-	Sagstrin []Sagstrin `json:"sagstrin"` //need to make this relational
+	Sagstrin []Sagstrin `gorm:"foreignKey:SagId" json:"sagstrin"` //need to make this relational
+	//Opdateringsdato datatypes.Date
+}
+
+type Sagstrin struct {
+	Id       int       `gorm:"primaryKey" json:"id"`
+	Titel    string    `json:"titel"`
+	SagId    int       `json:"sagid"`
+	Typeid   int       `json:"typeid"`
+	Statusid int       `json:"statusid"`
+	Dato     FtodaDate `json:"dato"`
 	//Opdateringsdato datatypes.Date
 }
 
@@ -121,16 +133,6 @@ type Aktor struct {
 	Periode        int       `gorm:"periode" json:"periode"`
 	Startdato      FtodaDate `gorm:"startdato" json:"startdato"`
 	Slutdato       FtodaDate `gorm:"slutdato" json:"slutdato"`
-	//Opdateringsdato datatypes.Date
-}
-
-type Sagstrin struct {
-	Id       int       `gorm:"primaryKey" json:"id"`
-	Titel    string    `gorm:"titel" json:"titel"`
-	Sagid    int       `gorm:"sagid" json:"sagid"`
-	Typeid   int       `gorm:"column:typeid" json:"typeid"`
-	Statusid int       `gorm:"column:statusid" json:"statusid"`
-	Dato     FtodaDate `gorm:"column:dato" json:"dato"`
 	//Opdateringsdato datatypes.Date
 }
 
