@@ -44,16 +44,4 @@ func TestSagAndSagstrinRelation(t *testing.T) {
 	sagstrin, err := db.getSagstrinBySagId(1)
 	is.NoErr(err)
 	is.Equal(sagstrin[0], st1)
-
 }
-
-/*
-func TestGetSagerByTypeWithSagstrin(t *testing.T) {
-	is := is.New(t)
-	s := New("oda.ft.dk", "test.db")
-	//prep insert
-	s.GetSagerByTypeWithSagstrin(3, 5, 0)
-	sager, err := s.db.getSagerByTypeWithSagstrin(3, 5)
-	is.NoErr(err)
-	is.Equal(len(sager), 5)
-}*/
