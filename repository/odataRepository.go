@@ -213,6 +213,7 @@ func queryOdata(urlString string) (result odataResult, err error) {
 	if err != nil {
 		return result, errors.Join(ErrOdataRequest, err)
 	}
+	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
